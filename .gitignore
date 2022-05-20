@@ -18,6 +18,8 @@ yarn-error.log
 supervisord.log
 supervisord.pid
 
+/resources/js/src/libs/axios.js
+
 .DS_Store
 node_modules
 /dist
