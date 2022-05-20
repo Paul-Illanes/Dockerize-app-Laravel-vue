@@ -78,6 +78,9 @@ class AuthController extends Controller
         // );
         $object = new \stdClass();
         $object->ability[0] = ['action' => 'manage', 'subject' => 'all'];
+        $object->ability[1] = ['action' => 'read', 'subject' => 'user'];
+        $object->ability[2] = ['action' => 'read', 'subject' => 'user'];
+        $object->ability[3] = ['action' => 'read', 'subject' => 'user'];
         // $object->ability[1] = ['action' => 'read', 'subject' => 'Auth'];
         $user = [
             "id" => 1,

@@ -274,7 +274,23 @@ export default {
                             password: this.password,
                             c_password: this.password,
                         })
-                        .then((res) => console.log(res));
+                        .then((res) => {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Registrado Correctamente",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Ya puedes iniciar session en tu cuenta!`,
+                                },
+                            });
+                        })
+                        .catch((error) => {
+                            this.$refs.registerForm.setErrors(
+                                error.response.data.errors
+                            );
+                        });
                 }
             });
         },

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\admin\UsersController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,5 +22,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
+        //usuarios
+        Route::get('/getUsers', [UsersController::class, 'usersList']);
     });
 });

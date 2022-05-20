@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection'
 import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
-// import apps from './routes/apps'
+import admin from './routes/admin'
 import dashboard from './routes/dashboard'
 // import uiElements from './routes/ui-elements/index'
 import pages from './routes/pages'
@@ -22,7 +22,7 @@ const router = new VueRouter({
   },
   routes: [
     { path: '/', redirect: { name: 'dashboard-analytics' } },
-    // ...apps,
+    ...admin,
     ...dashboard,
     ...pages,
     // ...chartsMaps,
