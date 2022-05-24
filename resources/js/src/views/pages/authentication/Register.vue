@@ -270,6 +270,7 @@ export default {
                     this.$http
                         .post("/api/auth/register", {
                             name: this.username,
+                            username: this.username,
                             email: this.userEmail,
                             password: this.password,
                             c_password: this.password,

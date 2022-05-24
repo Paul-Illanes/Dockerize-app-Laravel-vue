@@ -14,4 +14,9 @@ export default [
     route: 'admin-users-list',
     icon: 'UserIcon',
   },
+  {
+    title: 'Roles',
+    route: 'admin-roles-list',
+    icon: 'UserIcon',
+  },
 ]

@@ -1,15 +1,10 @@
 <template>
     <b-card-code title="Roles" no-body>
         <b-card-body>
-            <div class="d-flex justify-content-between flex-wrap mb-2">
-                <b-button variant="primary" :to="{ name: 'admin-users-add' }">
-                    Add User
-                </b-button>
-            </div>
             <div class="d-flex justify-content-between flex-wrap">
                 <!-- sorting  -->
                 <b-form-group
-                    label="sort"
+                    label=""
                     label-size="sm"
                     label-align-sm="left"
                     label-cols-sm="2"
@@ -129,6 +124,10 @@
                 </b-pagination>
             </div>
         </b-card-body>
+
+        <template #code>
+            {{ codeKitchenSink }}
+        </template>
     </b-card-code>
 </template>
 
@@ -147,6 +146,7 @@ import {
     BButton,
     BCardBody,
 } from "bootstrap-vue";
+import { codeKitchenSink } from "./code";
 
 export default {
     components: {
@@ -167,7 +167,7 @@ export default {
         return {
             items: [],
             perPage: 5,
-            pageOptions: [3, 5, 10, 50],
+            pageOptions: [3, 5, 10],
             totalRows: 1,
             currentPage: 1,
             sortBy: "",
@@ -182,14 +182,10 @@ export default {
                     sortable: true,
                 },
 
-                { key: "name", label: "Nombre", sortable: true },
-                { key: "lastname", label: "Apellidos", sortable: true },
-                { key: "email", label: "Email", sortable: true },
-                { key: "pin", label: "pin", sortable: true },
-                { key: "role", label: "Rol", sortable: true },
+                { key: "name", label: "nombre", sortable: true },
             ],
             /* eslint-disable global-require */
-            // codeKitchenSink,
+            codeKitchenSink,
         };
     },
     computed: {
@@ -213,10 +209,9 @@ export default {
     },
     created() {
         // this.row = this.tableBasic;
-        this.$http.get("/api/auth/getUsers").then((res) => {
-            console.log(res.data);
+        this.$http.get("/api/auth/getRoles").then((res) => {
+            console.log(res.data.data);
             this.items = res.data.data;
-            this.totalRows = this.items.length;
         });
     },
 };

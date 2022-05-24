@@ -8,7 +8,6 @@ import App from './App.vue'
 
 // Global Components
 import './global-components'
-
 // 3rd party plugins
 import '@axios'
 import '@/libs/acl'

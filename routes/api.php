@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\API\admin\UsersController;
+use App\Http\Controllers\API\admin\RoleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,5 +25,9 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('user', [AuthController::class, 'user']);
         //usuarios
         Route::get('/getUsers', [UsersController::class, 'usersList']);
+        //Roles
+        Route::get('/getRoles', [RoleController::class, 'getList']);
+        //test composition api
+        Route::get('/invoices', [UsersController::class, 'invoices']);
     });
 });
