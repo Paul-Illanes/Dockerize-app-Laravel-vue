@@ -1,6 +1,6 @@
 <template>
     <section id="dashboard-analytics">
-        <h1>fer</h1>
+        <h1>bienvenido</h1>
     </section>
 </template>
 

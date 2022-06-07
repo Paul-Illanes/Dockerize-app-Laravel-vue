@@ -4,7 +4,7 @@
             <!-- Brand logo-->
             <b-link class="brand-logo">
                 <vuexy-logo />
-                <h2 class="brand-text text-primary ml-1">Vuexy</h2>
+                <h2 class="brand-text text-primary ml-1">ESSALUD</h2>
             </b-link>
             <!-- /Brand logo-->
 
@@ -13,7 +13,54 @@
                 <div
                     class="w-100 d-lg-flex align-items-center justify-content-center px-5"
                 >
-                    <b-img fluid :src="imgUrl" alt="Login V2" />
+                    <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
+                        <div class="text-center">
+                            <b-img
+                                fluid
+                                :src="imgUrl"
+                                width="400px"
+                                alt="Login V2"
+                            />
+                        </div>
+                        <b-card-title
+                            title-tag="h2"
+                            class="font-weight-bold mb-1 text-center"
+                        >
+                            Consideraciones
+                        </b-card-title>
+                        <b-card-text class="mb-2">
+                            Uso del sistema
+                        </b-card-text>
+                        <p class="card-text">
+                            Debe registrarse con sus datos personales, y su
+                            <strong>Correo electrónico personal</strong>.
+                        </p>
+
+                        <p class="card-text">
+                            Debido a la importancia de la información personal
+                            que se gestiona, luego de su registro le llegará un
+                            correo electrónico con un código de validación.
+                        </p>
+
+                        <p class="card-text">
+                            Antes de pasar a otro módulo es necesario esperar
+                            que el actual esté completamente cargado.
+                        </p>
+                        <div class="bg-info p-2">
+                            <p class="card-text font-weight-bold">
+                                Al registrarme declaro bajo JURAMENTO, la
+                                veracidad de la información proporcionada,
+                                somentiéndome a la verificación posterior y
+                                asumiendo la responsabilidad en caso de
+                                comprobarse lo contrario, de acuerdo con la ley
+                                del Procedimiento Administrativo General N°
+                                27444.
+                            </p>
+                        </div>
+                        <a target="_blank" href="http://172.26.58.5/descargas"
+                            >Descargas</a
+                        >
+                    </b-col>
                 </div>
             </b-col>
             <!-- /Left Text-->
@@ -21,21 +68,27 @@
             <!-- Login-->
             <b-col lg="4" class="d-flex align-items-center auth-bg px-2 p-lg-5">
                 <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
-                    <b-card-title title-tag="h2" class="font-weight-bold mb-1">
-                        Welcome to Vuexy! 👋
+                    <b-card-title
+                        title-tag="h2"
+                        class="font-weight-bold mb-1 text-center"
+                    >
+                        DIVISION DE RECURSOS HUMANOS
                     </b-card-title>
-                    <b-card-text class="mb-2">
-                        Please sign-in to your account and start the adventure
+                    <b-card-text class="mb-2 text-center">
+                        Plataforma Digital
                     </b-card-text>
 
                     <!-- form -->
                     <validation-observer ref="loginValidation">
                         <b-form class="auth-login-form mt-2" @submit.prevent>
                             <!-- email -->
-                            <b-form-group label="Email" label-for="login-email">
+                            <b-form-group
+                                label="Usuario"
+                                label-for="login-email"
+                            >
                                 <validation-provider
                                     #default="{ errors }"
-                                    name="Email"
+                                    name="username"
                                     rules="required"
                                 >
                                     <b-form-input
@@ -45,7 +98,7 @@
                                             errors.length > 0 ? false : null
                                         "
                                         name="login-email"
-                                        placeholder="john@example.com"
+                                        placeholder=""
                                     />
                                     <small class="text-danger">{{
                                         errors[0]
@@ -62,7 +115,7 @@
                                             name: 'auth-forgot-password-v2',
                                         }"
                                     >
-                                        <small>Forgot Password?</small>
+                                        <!-- <small>Forgot Password?</small> -->
                                     </b-link>
                                 </div>
                                 <validation-provider
@@ -112,7 +165,7 @@
                                     v-model="status"
                                     name="checkbox-1"
                                 >
-                                    Remember Me
+                                    recuerdame
                                 </b-form-checkbox>
                             </b-form-group>
 
@@ -123,38 +176,17 @@
                                 block
                                 @click="validationForm"
                             >
-                                Sign in
+                                Ingresar
                             </b-button>
                         </b-form>
                     </validation-observer>
 
                     <b-card-text class="text-center mt-2">
-                        <span>New on our platform? </span>
-                        <b-link :to="{ name: 'page-auth-register-v2' }">
-                            <span>&nbsp;Create an account</span>
+                        <span>Nuevo en la plataforma? </span>
+                        <b-link :to="{ name: 'auth-register' }">
+                            <span>&nbsp;Crear cuenta</span>
                         </b-link>
                     </b-card-text>
-
-                    <!-- divider -->
-                    <div class="divider my-2">
-                        <div class="divider-text">or</div>
-                    </div>
-
-                    <!-- social buttons -->
-                    <div class="auth-footer-btn d-flex justify-content-center">
-                        <b-button variant="facebook" href="javascript:void(0)">
-                            <feather-icon icon="FacebookIcon" />
-                        </b-button>
-                        <b-button variant="twitter" href="javascript:void(0)">
-                            <feather-icon icon="TwitterIcon" />
-                        </b-button>
-                        <b-button variant="google" href="javascript:void(0)">
-                            <feather-icon icon="MailIcon" />
-                        </b-button>
-                        <b-button variant="github" href="javascript:void(0)">
-                            <feather-icon icon="GithubIcon" />
-                        </b-button>
-                    </div>
                 </b-col>
             </b-col>
             <!-- /Login-->
@@ -258,14 +290,14 @@ export default {
                                     password: this.password,
                                 })
                                 .then((response) => {
-                                    console.log(response);
+                                  
                                     const userData = response.data;
 
                                     localStorage.setItem(
                                         "userData",
                                         JSON.stringify(response.data)
                                     );
-                                    console.log(userData.ability);
+                                  
                                     this.$ability.update(userData.ability);
                                     this.$router
                                         .replace(
@@ -279,13 +311,13 @@ export default {
                                                     ToastificationContent,
                                                 position: "top-right",
                                                 props: {
-                                                    title: `Welcome ${
+                                                    title: `Bienvenido ${
                                                         userData.name ||
                                                         userData.email
                                                     }`,
                                                     icon: "CoffeeIcon",
                                                     variant: "success",
-                                                    text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+                                                    text: `Iniciaste session como ${userData.role}.!`,
                                                 },
                                             });
                                         });

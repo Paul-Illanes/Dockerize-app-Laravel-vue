@@ -9,6 +9,7 @@ use Validator;
 use App\Http\Resources\UserResource;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Token;
 
 class AuthController extends Controller
 {
@@ -28,20 +29,29 @@ class AuthController extends Controller
             'lastname' => 'required|string',
             'mother_lastname' => 'required|string',
             'email' => 'required|string|unique:users',
+            'c_email' => 'required|same:email',
             'username' => 'required|int|unique:users',
-            'pin' => 'required|int|unique:users',
+            // 'pin' => 'required|int|unique:users',
             'password' => 'required|string',
             'c_password' => 'required|same:password'
         ]);
 
         $user = new User([
             'name'  => $request->name,
+            'lastname'  => $request->lastname,
+            'mother_lastname'  => $request->mother_lastname,
             'email' => $request->email,
-            'username' => 'abel',
-            'active' => 1,
-            'verified' => 1,
+            'username' => $request->email,
+            'verified' => $request->verified ? 1 : 0,
+            'active' => $request->activo ? 1 : 0,
             'password' => bcrypt($request->password),
         ]);
+
+        // $token = Token::create([
+        //     'user_id' => $user->id
+        // ]);
+        // // gerando el codigo de validacion de 5 digitos.
+        // $token->sendCode();
 
         if ($user->save()) {
             $tokenResult = $user->createToken('Personal Access Token');

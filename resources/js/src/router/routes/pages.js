@@ -37,6 +37,7 @@ export default [
     meta: {
       layout: 'full',
       resource: 'Auth',
+      action: 'read',
       redirectIfLoggedIn: true,
     },
   },
