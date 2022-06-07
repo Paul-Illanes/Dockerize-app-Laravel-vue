@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\API\admin\UsersController;
 use App\Http\Controllers\API\admin\RoleController;
+use App\Http\Controllers\API\admin\PermissionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,10 +25,31 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
         //usuarios
-        Route::get('/getUsers', [UsersController::class, 'usersList']);
+        // Route::get('/getUsers', [UsersController::class, 'usersList']);
         //Roles
-        Route::get('/getRoles', [RoleController::class, 'getList']);
+        // Route::get('/getRoles', [RoleController::class, 'getList']);
+        // Route::get('detail/{role}', [RoleController::class, 'getDetail']);
+        // Route::get('/getRoles', [RoleController::class, 'getList']);
+        //permisos
+        Route::get('permissions', [PermissionController::class, 'getList']);
         //test composition api
-        Route::get('/invoices', [UsersController::class, 'invoices']);
+        // Route::get('/create', [UsersController::class, 'invoices']);
+        //users
+        Route::group(['prefix' => 'users'], function () {
+            Route::get('/', [UsersController::class, 'usersList']);
+            Route::post('create', [UsersController::class, 'create']);
+            Route::get('detail/{user}', [UsersController::class, 'getDetail']);
+            Route::post('update/{user}', [UsersController::class, 'update']);
+            Route::post('delete/{user}', [UsersController::class, 'delete']);
+        });
+        //roles
+        Route::group(['prefix' => 'roles'], function () {
+            Route::get('/', [RoleController::class, 'getList']);
+            Route::get('/{role}', [RoleController::class, 'getOne']);
+            Route::post('create', [RoleController::class, 'create']);
+            Route::get('detail/{role}', [RoleController::class, 'getDetail']);
+            Route::post('update/{role}', [RoleController::class, 'update']);
+            Route::post('delete/{role}', [RoleController::class, 'delete']);
+        });
     });
 });

@@ -36,11 +36,11 @@
                                 <validation-provider
                                     #default="{ errors }"
                                     name="Email"
-                                    rules="required|email"
+                                    rules="required"
                                 >
                                     <b-form-input
                                         id="login-email"
-                                        v-model="userEmail"
+                                        v-model="userName"
                                         :state="
                                             errors.length > 0 ? false : null
                                         "
@@ -216,7 +216,7 @@ export default {
         return {
             status: "",
             password: "",
-            userEmail: "",
+            userName: "",
             sideImg: require("@/assets/images/pages/login-v2.svg"),
             // validation rulesimport store from '@/store/index'
             required,
@@ -244,12 +244,12 @@ export default {
                 if (success) {
                     this.$http
                         .post("/api/auth/login", {
-                            email: this.userEmail,
+                            username: this.userName,
                             password: this.password,
                         })
                         .then((response) => {
                             // const { userData } = response.data
-                            console.log(response);
+
                             useJwt.setToken(response.data.accessToken);
                             useJwt.setRefreshToken(response.data.refreshToken);
                             this.$http
@@ -258,12 +258,14 @@ export default {
                                     password: this.password,
                                 })
                                 .then((response) => {
+                                    console.log(response);
                                     const userData = response.data;
-                                    console.log(userData.role);
+
                                     localStorage.setItem(
                                         "userData",
                                         JSON.stringify(response.data)
                                     );
+                                    console.log(userData.ability);
                                     this.$ability.update(userData.ability);
                                     this.$router
                                         .replace(
@@ -278,8 +280,8 @@ export default {
                                                 position: "top-right",
                                                 props: {
                                                     title: `Welcome ${
-                                                        userData.fullName ||
-                                                        userData.username
+                                                        userData.name ||
+                                                        userData.email
                                                     }`,
                                                     icon: "CoffeeIcon",
                                                     variant: "success",

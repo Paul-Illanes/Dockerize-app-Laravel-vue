@@ -1,10 +1,18 @@
 <template>
     <b-card-code title="Roles" no-body>
         <b-card-body>
+            <div
+                class="d-flex justify-content-between flex-wrap mb-2"
+                v-if="$can('roles-create', 'ACL')"
+            >
+                <b-button variant="primary" :to="{ name: 'admin-roles-add' }">
+                    Agregar Rol
+                </b-button>
+            </div>
             <div class="d-flex justify-content-between flex-wrap">
                 <!-- sorting  -->
                 <b-form-group
-                    label=""
+                    label="Ordenar"
                     label-size="sm"
                     label-align-sm="left"
                     label-cols-sm="2"
@@ -34,7 +42,7 @@
 
                 <!-- filter -->
                 <b-form-group
-                    label="Filter"
+                    label="Filtrar"
                     label-cols-sm="2"
                     label-align-sm="left"
                     label-size="sm"
@@ -46,11 +54,11 @@
                             id="filterInput"
                             v-model="filter"
                             type="search"
-                            placeholder="Type to Search"
+                            placeholder="Escriba para buscar"
                         />
                         <b-input-group-append>
                             <b-button :disabled="!filter" @click="filter = ''">
-                                Clear
+                                Limpiar
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>
@@ -74,12 +82,17 @@
             :filter-included-fields="filterOn"
             @filtered="onFiltered"
         >
-            <template #cell(avatar)="data">
-                <b-avatar :src="data.value" />
-            </template>
-            <template #cell(status)="data">
-                <b-badge :variant="status[1][data.value]">
-                    {{ status[0][data.value] }}
+            <template #cell(action)="data">
+                <b-badge
+                    href="#"
+                    variant="primary"
+                    :to="{
+                        name: 'admin-roles-edit',
+                        params: { roleId: data.item.id },
+                    }"
+                >
+                    <feather-icon icon="LinkIcon" class="mr-25" />
+                    <span>Editar Permisos</span>
                 </b-badge>
             </template>
         </b-table>
@@ -118,16 +131,13 @@
                     <template #prev-text>
                         <feather-icon icon="ChevronLeftIcon" size="18" />
                     </template>
+
                     <template #next-text>
                         <feather-icon icon="ChevronRightIcon" size="18" />
                     </template>
                 </b-pagination>
             </div>
         </b-card-body>
-
-        <template #code>
-            {{ codeKitchenSink }}
-        </template>
     </b-card-code>
 </template>
 
@@ -146,7 +156,6 @@ import {
     BButton,
     BCardBody,
 } from "bootstrap-vue";
-import { codeKitchenSink } from "./code";
 
 export default {
     components: {
@@ -165,6 +174,7 @@ export default {
     },
     data() {
         return {
+            roleId: 0,
             items: [],
             perPage: 5,
             pageOptions: [3, 5, 10],
@@ -183,9 +193,9 @@ export default {
                 },
 
                 { key: "name", label: "nombre", sortable: true },
+                { key: "action", label: "action" },
             ],
             /* eslint-disable global-require */
-            codeKitchenSink,
         };
     },
     computed: {
@@ -209,9 +219,10 @@ export default {
     },
     created() {
         // this.row = this.tableBasic;
-        this.$http.get("/api/auth/getRoles").then((res) => {
+        this.$http.get("/api/auth/roles/").then((res) => {
             console.log(res.data.data);
             this.items = res.data.data;
+            this.totalRows = this.items.length;
         });
     },
 };

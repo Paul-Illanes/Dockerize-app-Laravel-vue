@@ -11,7 +11,8 @@ class UsersController extends Controller
 {
     public function usersList(Request $request)
     {
-        $users = User::all();
+        // $users = User::all();
+        $users = User::with('roles')->get();
         // return response()->json($users);
         $data = [
             'status' => 200,
@@ -24,6 +25,40 @@ class UsersController extends Controller
         // return RoleResource::collection($roles);
     }
 
+    public function create(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|string|max:191',
+            'lastname' => 'required|string|max:191',
+            'mother_lastname' => 'required|string|max:191',
+            'username' => 'required|int|unique:users',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required',
+            'c_password' => 'required|same:password',
+            'roles' => 'required'
+        ]);
+        $user = User::create([
+            'email' => $request->email,
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'mother_lastname' => $request->mother_lastname,
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'celular' => $request->celular,
+            'pin' => $request->pin,
+            'verified' => $request->verified ? 1 : 0,
+            'active' => $request->activo ? 1 : 0,
+        ]);
+        $user->assignRole($request->roles['name']);
+        $user->givePermissionTo($request->permissions ?? []);
+        // return new UserResource($user);
+        $data = [
+            'status' => 200,
+            'data' => $user,
+            'message' => 'Registrado correctamente'
+        ];
+        return response()->json($data);
+    }
     public function invoices(Request $request)
     {
         $invoice = [];

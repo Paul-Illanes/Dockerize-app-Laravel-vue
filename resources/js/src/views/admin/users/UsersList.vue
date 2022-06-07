@@ -1,7 +1,10 @@
 <template>
-    <b-card-code title="Roles" no-body>
+    <b-card-code title="Listado de usuarios" no-body>
         <b-card-body>
-            <div class="d-flex justify-content-between flex-wrap mb-2">
+            <div
+                class="d-flex justify-content-between flex-wrap mb-2"
+                v-if="$can('users-create', 'ACL')"
+            >
                 <b-button variant="primary" :to="{ name: 'admin-users-add' }">
                     Add User
                 </b-button>
@@ -9,10 +12,10 @@
             <div class="d-flex justify-content-between flex-wrap">
                 <!-- sorting  -->
                 <b-form-group
-                    label="sort"
+                    label="Ordenar"
                     label-size="sm"
                     label-align-sm="left"
-                    label-cols-sm="2"
+                    label-cols-sm="4"
                     label-for="sortBySelect"
                     class="mr-1 mb-md-0 white-nowrap"
                 >
@@ -39,7 +42,7 @@
 
                 <!-- filter -->
                 <b-form-group
-                    label="Filter"
+                    label="Filtrar"
                     label-cols-sm="2"
                     label-align-sm="left"
                     label-size="sm"
@@ -51,11 +54,11 @@
                             id="filterInput"
                             v-model="filter"
                             type="search"
-                            placeholder="Type to Search"
+                            placeholder="Escriba para buscar..."
                         />
                         <b-input-group-append>
                             <b-button :disabled="!filter" @click="filter = ''">
-                                Clear
+                                Limpiar
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>
@@ -88,53 +91,65 @@
                 </b-badge>
             </template>
         </b-table>
-
-        <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-            <!-- page length -->
-            <b-form-group
-                label="Per Page"
-                label-cols="6"
-                label-align="left"
-                label-size="sm"
-                label-for="sortBySelect"
-                class="text-nowrap mb-md-0 mr-1"
-            >
-                <b-form-select
-                    id="perPageSelect"
-                    v-model="perPage"
-                    size="sm"
-                    inline
-                    :options="pageOptions"
-                />
-            </b-form-group>
-
-            <!-- pagination -->
-            <div>
-                <b-pagination
-                    v-model="currentPage"
-                    :total-rows="totalRows"
-                    :per-page="perPage"
-                    first-number
-                    last-number
-                    prev-class="prev-item"
-                    next-class="next-item"
-                    class="mb-0"
+        <b-overlay :show="show" opacity="0.40" variant="success" blur="2px">
+            <template #overlay>
+                <div class="text-center text-info">
+                    <feather-icon icon="ClockIcon" size="24" />
+                    <b-card-text id="cancel-label">
+                        Cargando datos...
+                    </b-card-text>
+                </div>
+            </template>
+            <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+                <!-- page length -->
+                <b-form-group
+                    label="Mostrar"
+                    label-cols="6"
+                    label-align="left"
+                    label-size="sm"
+                    label-for="sortBySelect"
+                    class="text-nowrap mb-md-0 mr-1"
                 >
-                    <template #prev-text>
-                        <feather-icon icon="ChevronLeftIcon" size="18" />
-                    </template>
-                    <template #next-text>
-                        <feather-icon icon="ChevronRightIcon" size="18" />
-                    </template>
-                </b-pagination>
-            </div>
-        </b-card-body>
+                    <b-form-select
+                        id="perPageSelect"
+                        v-model="perPage"
+                        size="sm"
+                        inline
+                        :options="pageOptions"
+                    />
+                </b-form-group>
+
+                <!-- pagination -->
+                <div>
+                    <b-pagination
+                        v-model="currentPage"
+                        :total-rows="totalRows"
+                        :per-page="perPage"
+                        first-number
+                        last-number
+                        prev-class="prev-item"
+                        next-class="next-item"
+                        class="mb-0"
+                    >
+                        <template #prev-text>
+                            <feather-icon icon="ChevronLeftIcon" size="18" />
+                        </template>
+                        <template #next-text>
+                            <feather-icon icon="ChevronRightIcon" size="18" />
+                        </template>
+                    </b-pagination>
+                </div>
+            </b-card-body>
+        </b-overlay>
     </b-card-code>
 </template>
 
 <script>
 import BCardCode from "@core/components/b-card-code/BCardCode.vue";
+import Ripple from "vue-ripple-directive";
 import {
+    BOverlay,
+    BCardText,
     BTable,
     BAvatar,
     BBadge,
@@ -147,9 +162,12 @@ import {
     BButton,
     BCardBody,
 } from "bootstrap-vue";
+import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 
 export default {
     components: {
+        BCardText,
+        BOverlay,
         BCardCode,
         BTable,
         BAvatar,
@@ -163,8 +181,12 @@ export default {
         BButton,
         BCardBody,
     },
+    directives: {
+        Ripple,
+    },
     data() {
         return {
+            show: false,
             items: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
@@ -186,7 +208,7 @@ export default {
                 { key: "lastname", label: "Apellidos", sortable: true },
                 { key: "email", label: "Email", sortable: true },
                 { key: "pin", label: "pin", sortable: true },
-                { key: "role", label: "Rol", sortable: true },
+                { key: "roles[0].name", label: "Rol", sortable: true },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,
@@ -212,11 +234,13 @@ export default {
         },
     },
     created() {
+        this.show = true;
         // this.row = this.tableBasic;
-        this.$http.get("/api/auth/getUsers").then((res) => {
-            console.log(res.data);
+        this.$http.get("/api/auth/users/").then((res) => {
+            console.log(res);
             this.items = res.data.data;
             this.totalRows = this.items.length;
+            this.show = false;
         });
     },
 };

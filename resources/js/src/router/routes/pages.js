@@ -16,6 +16,7 @@ export default [
     meta: {
       layout: 'full',
       resource: 'Auth',
+      action: 'read',
       redirectIfLoggedIn: true,
     },
   },
@@ -45,6 +46,7 @@ export default [
     component: () => import('@/views/pages/miscellaneous/NotAuthorized.vue'),
     meta: {
       layout: 'full',
+      action: 'read',
       resource: 'Auth',
     },
   },

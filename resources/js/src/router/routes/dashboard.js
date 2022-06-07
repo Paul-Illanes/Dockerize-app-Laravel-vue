@@ -4,8 +4,8 @@ export default [
     name: 'dashboard-analytics',
     component: () => import('@/views/dashboard/analytics/Analytics.vue'),
     meta: {
-      resource: 'manage',
-      action: 'all',
+      resource: 'Home',
+      action: 'read'
     },
   },
 

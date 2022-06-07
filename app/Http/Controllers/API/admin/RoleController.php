@@ -29,15 +29,26 @@ class RoleController extends Controller
     {
         return new RoleResource($role);
     }
+    public function getOne(Request $request, Role $role)
+    {
+        $roles = Role::find($role)->first();
+        // return new RoleResource($roles);
+        // return response()->json($roles);
+        $data = [
+            'status' => 200,
+            'data' => $roles
+        ];
+        return response()->json($data);
+    }
 
     /**
      * @param \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postCreate(Request $request)
+    public function Create(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string|max:191'
+            'name' => 'required|string|max:191|unique:roles',
         ]);
 
         $role = Role::create([
@@ -54,7 +65,7 @@ class RoleController extends Controller
      * @param \App\Models\Role  $role
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postUpdate(Request $request, Role $role)
+    public function Update(Request $request, Role $role)
     {
         $this->validate($request, [
             'name' => 'required|string|max:191'
