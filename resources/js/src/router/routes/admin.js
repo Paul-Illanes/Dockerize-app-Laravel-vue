@@ -47,5 +47,40 @@ export default [
       action: 'users-create',
     },
   },
-
+  {
+    path: '/admin/users/edit/:userId',
+    name: 'admin-users-edit',
+    component: () => import('@/views/admin/users/UserEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'users-edit',
+    },
+  },
+  {
+    path: '/admin/permisos/list',
+    name: 'admin-permission-list',
+    component: () => import('@/views/admin/permissions/PermissionList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'users-index',
+    },
+  },
+  {
+    path: '/admin/permisos/edit/:permisoId',
+    name: 'admin-permission-edit',
+    component: () => import('@/views/admin/permissions/PermissionsEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'users-edit',
+    },
+  },
+  {
+    path: '/admin/permiso/add',
+    name: 'admin-permission-add',
+    component: () => import('@/views/admin/permissions/PermissionsAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'users-create',
+    },
+  },
 ]

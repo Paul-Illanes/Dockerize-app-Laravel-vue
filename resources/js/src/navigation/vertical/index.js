@@ -29,6 +29,13 @@ export default [
         action: 'roles-index',
         icon: 'UserCheckIcon',
       },
+      {
+        title: 'Permisos',
+        route: 'admin-permission-list',
+        resource: 'ACL',
+        action: 'users-index',
+        icon: 'UserXIcon',
+      },
     ],
   },
 ]

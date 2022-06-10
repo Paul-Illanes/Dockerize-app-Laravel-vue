@@ -1,15 +1,18 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Mail;
-class Token extends Model
+use App\Models\User;
+
+class Pin extends Model
 {
     //
-    const EXPIRATION_TIME =15;
-
-    protected $fillable=[
+    const EXPIRATION_TIME = 15;
+    protected $table = 'tokens';
+    protected $fillable = [
         'code',
         'user_id',
         'used',
@@ -18,9 +21,9 @@ class Token extends Model
     ];
 
 
-    public function __construct(array $attributes=[])
+    public function __construct(array $attributes = [])
     {
-        if(!isset($attributes['code'])){
+        if (!isset($attributes['code'])) {
             $attributes['code'] = $this->generateCode();
         }
 
@@ -31,12 +34,12 @@ class Token extends Model
      * Generate a six digits code
      * @param int $codeLength
      * @return string
-     */    
-    public function generateCode($codeLength =4)
+     */
+    public function generateCode($codeLength = 4)
     {
-        $min = pow(10,$codeLength);
+        $min = pow(10, $codeLength);
         $max = $min * 10 - 1;
-        $code = mt_rand($min,$max);
+        $code = mt_rand($min, $max);
 
         return $code;
     }
@@ -55,15 +58,15 @@ class Token extends Model
         //$this->sendEmail($this->user->email,$this->code) ;
 
         return true;
-
     }
 
-    private function sendEmail($to_email,$code){
+    private function sendEmail($to_email, $code)
+    {
         //$lang = CmsLang::where('iso', $iso)->first();
         Mail::send(
             'emails.pin',
-            ['code'=>$code],//['lang' => $lang],
-            function($m) use($to_email){
+            ['code' => $code], //['lang' => $lang],
+            function ($m) use ($to_email) {
                 $m->to($to_email);
                 $m->subject('DRH_ESSALUD codigo de verificacion');
             }
@@ -81,7 +84,7 @@ class Token extends Model
 
     public function isValid()
     {
-        return !$this->isUsed() ;
+        return !$this->isUsed();
         //&& !$this->isExpired();
     }
 
@@ -94,6 +97,4 @@ class Token extends Model
     {
         return $this->created_at->diffInMinutes(Carbon::now()) > static::EXPIRATION_TIME;
     }
-
-
 }

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Pin;
 
 class User extends Authenticatable
 {
@@ -21,6 +22,8 @@ class User extends Authenticatable
     protected $fillable = [
         'id',
         'name',
+        'lastname',
+        'mother_lastname',
         'email',
         'username',
         'active',
@@ -46,4 +49,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function pins()
+    {
+        return $this->hasMany(Pin::class);
+    }
+
+
+    public function profile()
+    {
+        return $this->hasOne('App\Profile', 'id', 'profile_id');
+    }
+
+    public function supestructuras()
+    {
+        return $this->belongsToMany('App\Models\Supestructura', 'user_has_supestructura', 'user_id', 'supestructura_id');
+    }
 }

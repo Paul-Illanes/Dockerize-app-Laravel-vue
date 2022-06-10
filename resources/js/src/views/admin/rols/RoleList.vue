@@ -220,8 +220,8 @@ export default {
     created() {
         // this.row = this.tableBasic;
         this.$http.get("/api/auth/roles/").then((res) => {
-            console.log(res.data.data);
-            this.items = res.data.data;
+            console.log(res);
+            this.items = res.data;
             this.totalRows = this.items.length;
         });
     },

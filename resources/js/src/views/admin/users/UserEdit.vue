@@ -128,7 +128,7 @@
                                     #default="{ errors }"
                                     name="Password"
                                     vid="password"
-                                    rules="required"
+                                    rules=""
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -148,6 +148,7 @@
                                             "
                                             name="register-password"
                                             placeholder="············"
+                                            disabled
                                         />
                                         <b-input-group-append is-text>
                                             <feather-icon
@@ -169,14 +170,14 @@
                         <b-col md="3">
                             <!-- password -->
                             <b-form-group
-                                label-for="register-password"
+                                label-for="register-c_password"
                                 label="Password"
                             >
                                 <validation-provider
                                     #default="{ errors }"
                                     name="Password"
                                     vid="password"
-                                    rules="required"
+                                    rules=""
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -196,6 +197,7 @@
                                             "
                                             name="register-c_password"
                                             placeholder="············"
+                                            disabled
                                         />
                                         <b-input-group-append is-text>
                                             <feather-icon
@@ -261,7 +263,7 @@
                         <b-col md="4">
                             <b-form-group>
                                 <label>Rol</label>
-                                {{ selectedRole }}
+
                                 <validation-provider
                                     #default="{ errors }"
                                     rules="required"
@@ -365,51 +367,6 @@
                 </b-form-checkbox-group>
             </b-form-group>
         </b-card-code>
-        <!-- <b-card-code title="Permisos">
-            
-            <b-form-group label="Listado de permisos :">
-                <b-form-checkbox
-                    v-model="permissionsAll"
-                    v-on:change="permisos_all"
-                    true-value="1"
-                    false-value="0"
-                >
-                    Seleccionar todo
-                </b-form-checkbox>
-                <b-form-checkbox-group
-                    id="checkbox-group-2"
-                    name="flavour-2"
-                    class="demo-inline-spacing"
-                >
-                    <b-row>
-                        <b-col
-                            v-for="item in permisos"
-                            v-bind:data="item"
-                            v-bind:key="item.name"
-                            lg="3"
-                            md="12"
-                        >
-                            <b-form-checkbox
-                                :value="item.name"
-                                v-model="selectedPermisos"
-                            >
-                                {{ item.name }}
-                            </b-form-checkbox>
-                        </b-col>
-                    </b-row>
-                </b-form-checkbox-group>
-            </b-form-group>
-            <b-col cols="12" class="mt-2">
-                <b-button
-                    variant="primary"
-                    type="submit"
-                    @click.prevent="register"
-                >
-                    Registrar
-                </b-button>
-                <b-button variant="danger" @click="back()"> Volver </b-button>
-            </b-col>
-        </b-card-code> -->
         <b-card-code title="Permisos">
             <b-card-body>
                 <div class="d-flex justify-content-between flex-wrap">
@@ -570,7 +527,7 @@
                     type="submit"
                     @click.prevent="register"
                 >
-                    Registrar
+                    Actualizar
                 </b-button>
                 <b-button variant="danger" @click="back()"> Volver </b-button>
             </b-col>
@@ -580,7 +537,6 @@
 
 <script>
 import BCardCode from "@core/components/b-card-code";
-import Ripple from "vue-ripple-directive";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
@@ -639,9 +595,6 @@ export default {
         BPagination,
     },
     mixins: [togglePasswordVisibility],
-    directives: {
-        Ripple,
-    },
     data() {
         return {
             //table
@@ -687,11 +640,13 @@ export default {
             selectedRole: "",
             selectedSuperstructuras: [],
             selectedPermisos: [],
+            selectedPermissions: [],
         };
     },
 
     mounted() {
         this.getRoles();
+        this.getDetail();
         this.totalRows = this.permisos.length;
     },
     computed: {
@@ -709,16 +664,17 @@ export default {
     },
 
     created() {
+        console.log(this.$route.params.userId);
         // this.row = this.tableBasic;
         this.$http.get("/api/auth/superstructura/").then((res) => {
             this.superstructuras = res.data;
+            console.log(this.superstructuras);
         });
         this.$http
             .get("/api/auth/permissions")
             .then((response) => {
                 this.permisos = response.data.data;
                 this.totalRows = this.permisos.length;
-                console.log(this.permisos);
             })
             .catch((error) => {
                 console.log(error);
@@ -729,6 +685,39 @@ export default {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
+        },
+        getDetail() {
+            this.$http
+                .get("/api/auth/users/detail/" + this.$route.params.userId)
+                .then((response) => {
+                    console.log(response.data);
+                    this.email = response.data.user.email;
+                    this.username = response.data.user.username;
+                    this.name = response.data.user.name;
+                    this.lastname = response.data.user.lastname;
+                    this.mother_lastname = response.data.user.mother_lastname;
+                    this.active = response.data.user.active;
+                    // this.password = response.data.user.password;
+                    // this.c_password = response.data.user.email;
+                    this.pin = response.data.user.pin;
+                    // this.verified = response.data.user.verified;
+                    this.verified =
+                        response.data.user.verified == 1 ? "true" : "false";
+                    this.activo =
+                        response.data.user.active == 1 ? "true" : "false";
+                    // this.activo = response.data.user.active;
+                    this.celular = response.data.user.celular;
+                    // this.name = response.data.data.name;
+                    // this.email = response.data.data.email;
+                    // this.status = response.data.data.status;
+                    this.selectedSuperstructuras = response.data.table;
+                    this.selectedRole = response.data.roles;
+                    this.selectedPermisos = response.data.permissions;
+                    console.log(this.selectedSuperstructuras);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
         back() {
             this.$router.back();
@@ -761,9 +750,7 @@ export default {
             this.$http
                 .get("/api/auth/roles/pluck")
                 .then((response) => {
-                    console.log(response);
                     this.roles = response.data;
-                    console.log(this.roles);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -773,36 +760,40 @@ export default {
             this.$refs.simpleRules.validate().then((success) => {
                 if (success) {
                     this.$http
-                        .post("/api/auth/users/create", {
-                            name: this.name,
-                            lastname: this.lastname,
-                            mother_lastname: this.mother_lastname,
-                            username: this.username,
-                            email: this.email,
-                            password: this.password,
-                            celular: this.celular,
-                            pin: this.pin,
-                            verified: this.verified,
-                            activo: this.activo,
-                            c_password: this.c_password,
-                            roles: this.selectedRole,
-                            permisos: this.selectedPermisos,
-                            structuras: this.selectedSuperstructuras,
-                        })
+                        .post(
+                            "/api/auth/users/update/" +
+                                this.$route.params.userId,
+                            {
+                                name: this.name,
+                                lastname: this.lastname,
+                                mother_lastname: this.mother_lastname,
+                                username: this.username,
+                                email: this.email,
+                                password: this.password,
+                                celular: this.celular,
+                                pin: this.pin,
+                                verified: this.verified,
+                                active: this.activo,
+                                c_password: this.c_password,
+                                roles: this.selectedRole,
+                                permisos: this.selectedPermisos,
+                                structuras: this.selectedSuperstructuras,
+                            }
+                        )
                         .then((res) => {
-                            console.log(res);
-                            // this.$toast({
-                            //     component: ToastificationContent,
-                            //     position: "top-right",
-                            //     props: {
-                            //         title: "success",
-                            //         icon: "CoffeeIcon",
-                            //         variant: "success",
-                            //         text: `Usuario registrado correctamente!`,
-                            //     },
-                            // });
+                            // console.log(res);
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "success",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Usuario actualizado correctamente!`,
+                                },
+                            });
 
-                            // this.$router.back();
+                            this.$router.back();
                         })
                         .catch((error) => {
                             console.log("xd");

@@ -16,10 +16,15 @@ class RoleController extends Controller
     public function getList(Request $request)
     {
         $roles = Role::all();
-
-        return RoleResource::collection($roles);
+        return response()->json($roles);
+        // return RoleResource::collection($roles);
     }
-
+    public function getPluck(Request $request)
+    {
+        $roles = Role::all()->pluck('name');
+        return response()->json($roles);
+        // return RoleResource::collection($roles);
+    }
     /**
      * @param \Illuminate\Http\Request  $request
      * @param \App\Models\Role  $role
@@ -32,8 +37,6 @@ class RoleController extends Controller
     public function getOne(Request $request, Role $role)
     {
         $roles = Role::find($role)->first();
-        // return new RoleResource($roles);
-        // return response()->json($roles);
         $data = [
             'status' => 200,
             'data' => $roles

@@ -1,12 +1,15 @@
 <template>
-    <b-card-code title="Listado de usuarios" no-body>
+    <b-card-code title="Permisos" no-body>
         <b-card-body>
             <div
                 class="d-flex justify-content-between flex-wrap mb-2"
-                v-if="$can('users-create', 'ACL')"
+                v-if="$can('roles-create', 'ACL')"
             >
-                <b-button variant="primary" :to="{ name: 'admin-users-add' }">
-                    Crear Usuario
+                <b-button
+                    variant="primary"
+                    :to="{ name: 'admin-permission-add' }"
+                >
+                    Agregar Permiso
                 </b-button>
             </div>
             <div class="d-flex justify-content-between flex-wrap">
@@ -15,7 +18,7 @@
                     label="Ordenar"
                     label-size="sm"
                     label-align-sm="left"
-                    label-cols-sm="4"
+                    label-cols-sm="2"
                     label-for="sortBySelect"
                     class="mr-1 mb-md-0 white-nowrap"
                 >
@@ -54,7 +57,7 @@
                             id="filterInput"
                             v-model="filter"
                             type="search"
-                            placeholder="Escriba para buscar..."
+                            placeholder="Escriba para buscar"
                         />
                         <b-input-group-append>
                             <b-button :disabled="!filter" @click="filter = ''">
@@ -88,16 +91,17 @@
                         :id="`user-row-${data.item.id}-send-icon`"
                         @click="
                             $router.push({
-                                name: 'admin-users-edit',
-                                params: { userId: data.item.id },
+                                name: 'admin-permission-edit',
+                                params: { permisoId: data.item.id },
                             })
                         "
                         icon="EditIcon"
                         class="cursor-pointer text-primary"
                         size="16"
                     />
+
                     <b-tooltip
-                        title="Editar Usuario"
+                        title="Editar Permiso"
                         class="cursor-pointer"
                         :target="`user-row-${data.item.id}-send-icon`"
                     />
@@ -109,71 +113,60 @@
                         class="mx-1 cursor-pointer text-danger"
                     />
                     <b-tooltip
-                        title="Eliminar Usuario"
+                        title="Eliminar Permiso"
                         :target="`invoice-row-${data.item.id}-preview-icon`"
                     />
                 </div>
             </template>
         </b-table>
-        <b-overlay :show="show" opacity="0.40" variant="success" blur="2px">
-            <template #overlay>
-                <div class="text-center text-info">
-                    <feather-icon icon="ClockIcon" size="24" />
-                    <b-card-text id="cancel-label">
-                        Cargando datos...
-                    </b-card-text>
-                </div>
-            </template>
-            <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-                <!-- page length -->
-                <b-form-group
-                    label="Mostrar"
-                    label-cols="6"
-                    label-align="left"
-                    label-size="sm"
-                    label-for="sortBySelect"
-                    class="text-nowrap mb-md-0 mr-1"
-                >
-                    <b-form-select
-                        id="perPageSelect"
-                        v-model="perPage"
-                        size="sm"
-                        inline
-                        :options="pageOptions"
-                    />
-                </b-form-group>
 
-                <!-- pagination -->
-                <div>
-                    <b-pagination
-                        v-model="currentPage"
-                        :total-rows="totalRows"
-                        :per-page="perPage"
-                        first-number
-                        last-number
-                        prev-class="prev-item"
-                        next-class="next-item"
-                        class="mb-0"
-                    >
-                        <template #prev-text>
-                            <feather-icon icon="ChevronLeftIcon" size="18" />
-                        </template>
-                        <template #next-text>
-                            <feather-icon icon="ChevronRightIcon" size="18" />
-                        </template>
-                    </b-pagination>
-                </div>
-            </b-card-body>
-        </b-overlay>
+        <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+            <!-- page length -->
+            <b-form-group
+                label="Per Page"
+                label-cols="6"
+                label-align="left"
+                label-size="sm"
+                label-for="sortBySelect"
+                class="text-nowrap mb-md-0 mr-1"
+            >
+                <b-form-select
+                    id="perPageSelect"
+                    v-model="perPage"
+                    size="sm"
+                    inline
+                    :options="pageOptions"
+                />
+            </b-form-group>
+
+            <!-- pagination -->
+            <div>
+                <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalRows"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    prev-class="prev-item"
+                    next-class="next-item"
+                    class="mb-0"
+                >
+                    <template #prev-text>
+                        <feather-icon icon="ChevronLeftIcon" size="18" />
+                    </template>
+
+                    <template #next-text>
+                        <feather-icon icon="ChevronRightIcon" size="18" />
+                    </template>
+                </b-pagination>
+            </div>
+        </b-card-body>
     </b-card-code>
 </template>
 
 <script>
 import BCardCode from "@core/components/b-card-code/BCardCode.vue";
-import Ripple from "vue-ripple-directive";
 import {
-    BOverlay,
-    BCardText,
     BTable,
     BAvatar,
     BBadge,
@@ -187,13 +180,9 @@ import {
     BCardBody,
     BTooltip,
 } from "bootstrap-vue";
-import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 
 export default {
     components: {
-        BTooltip,
-        BCardText,
-        BOverlay,
         BCardCode,
         BTable,
         BAvatar,
@@ -206,17 +195,14 @@ export default {
         BInputGroupAppend,
         BButton,
         BCardBody,
-    },
-    directives: {
-        Ripple,
+        BTooltip,
     },
     data() {
         return {
-            userId: 0,
-            show: false,
+            permisoId: 0,
             items: [],
             perPage: 5,
-            pageOptions: [3, 5, 10, 50],
+            pageOptions: [3, 5, 10],
             totalRows: 1,
             currentPage: 1,
             sortBy: "",
@@ -226,20 +212,15 @@ export default {
             filterOn: [],
             fields: [
                 {
-                    key: "id",
-                    label: "Id",
+                    key: "name",
+                    label: "Nombre",
                     sortable: true,
                 },
 
-                { key: "name", label: "Nombre", sortable: true },
-                { key: "lastname", label: "Apellidos", sortable: true },
-                { key: "email", label: "Email", sortable: true },
-                { key: "pin", label: "pin", sortable: true },
-                { key: "roles[0].name", label: "Rol", sortable: true },
-                { key: "action", label: "Action", sortable: false },
+                { key: "description", label: "Descripcion", sortable: true },
+                { key: "action", label: "action" },
             ],
             /* eslint-disable global-require */
-            // codeKitchenSink,
         };
     },
     computed: {
@@ -262,13 +243,11 @@ export default {
         },
     },
     created() {
-        this.show = true;
         // this.row = this.tableBasic;
-        this.$http.get("/api/auth/users/").then((res) => {
+        this.$http.get("/api/auth/permission/").then((res) => {
             console.log(res);
-            this.items = res.data.data;
+            this.items = res.data;
             this.totalRows = this.items.length;
-            this.show = false;
         });
     },
 };

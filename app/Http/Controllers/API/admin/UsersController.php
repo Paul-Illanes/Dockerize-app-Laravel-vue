@@ -5,7 +5,10 @@ namespace App\Http\Controllers\API\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Supestructura;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\DB;
+use App\Models\Pin;
 
 class UsersController extends Controller
 {
@@ -24,7 +27,34 @@ class UsersController extends Controller
 
         // return RoleResource::collection($roles);
     }
-
+    public function getDetail(Request $request, User $user)
+    {
+        // $user = $request->user();
+        $permissions = $user->getDirectPermissions()->pluck('name');
+        // $permissions = $user->getDirectPermissions();
+        $role = $user->getRoleNames();
+        //jalas todas
+        $consult = DB::table('user_has_supestructura')->where('user_id', $user->id)->pluck('supestructura_id');
+        // $ability = new \stdClass();
+        // $total = count($permissions);
+        // $i = 0;
+        // foreach ($permissions as $item) {
+        //     $ability->ability[$i] = ['action' => $item, 'subject' => 'ACL'];
+        //     $i++;
+        // }
+        // $homeAbility = $total + 1;
+        // $ability->ability[$total] = ['action' => 'read', 'subject' => 'Auth'];
+        // $ability->ability[$homeAbility] = ['action' => 'read', 'subject' => 'Home'];
+        // $user->ability = $ability->ability;
+        // $user->role = 'admin';
+        $data = [
+            'roles' => $role,
+            'permissions' => $permissions,
+            'user' => $user,
+            'table' => $consult
+        ];
+        return response()->json($data);
+    }
     public function create(Request $request)
     {
         $this->validate($request, [
@@ -49,16 +79,60 @@ class UsersController extends Controller
             'verified' => $request->verified ? 1 : 0,
             'active' => $request->activo ? 1 : 0,
         ]);
-        $user->assignRole($request->roles['name']);
-        $user->givePermissionTo($request->permissions ?? []);
-        // return new UserResource($user);
+        if ($user->id) {
+            $pin_code = Pin::create([
+                'user_id' => $user->id
+            ]);
+            // gerando el codigo de validacion de 5 digitos.
+            $pin_code->sendCode();
+            $user->assignRole($request->roles);
+            $user->supestructuras()->sync($request->structuras);
+            $user->syncPermissions($request->permisos);
+            $data = [
+                'status' => 200,
+                'data' => $user,
+                'message' => 'Registrado correctamente'
+            ];
+            return response()->json($data);
+        }
+    }
+    public function update(Request $request, User $user)
+    {
+
+        $this->validate($request, [
+            'email' => 'required|email:filter|max:255|unique:users,email,' . $user->id,
+            'name' => 'required|string|max:191',
+            'lastname' => 'required|string|max:191',
+            'mother_lastname' => 'required|string|max:191',
+            'username' => 'required|int|unique:users,username,' . $user->id,
+            // 'password' => 'required',
+            // 'c_password' => 'required|same:password',
+            'roles' => 'required'
+        ]);
+        $user->update([
+            'email' => $request->email,
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'mother_lastname' => $request->mother_lastname,
+            'username' => $request->username,
+            // 'password' => bcrypt($request->password),
+            'celular' => $request->celular,
+            'pin' => $request->pin,
+            'verified' => $request->verified ? 1 : 0,
+            'active' => $request->active ? 1 : 0,
+        ]);
+        // $user->syncPermissions($request->permissions ?? []);
+        $user->assignRole($request->roles);
+        $user->supestructuras()->sync($request->structuras);
+        $user->syncPermissions($request->permisos);
         $data = [
             'status' => 200,
             'data' => $user,
-            'message' => 'Registrado correctamente'
+            'message' => 'Actualizado correctamente'
         ];
         return response()->json($data);
     }
+
     public function invoices(Request $request)
     {
         $invoice = [];

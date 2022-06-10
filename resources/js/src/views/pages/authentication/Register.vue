@@ -1,14 +1,255 @@
 <template>
-    <div class="auth-wrapper auth-v2">
-        <b-row class="auth-inner m-0">
-            <!-- Brand logo-->
+    <b-card-text no-body class="mr-5">
+        <b-card-title
+            title-tag="h2"
+            class="font-weight-bold mb-1 text-center text-white"
+        >
+            <strong> DRH</strong>-ESSALUD
+        </b-card-title>
+        <validation-observer ref="registerForm" #default="{ invalid }">
+            <b-form
+                class="auth-register-form p-2 bg-white"
+                @submit.prevent="register"
+            >
+                <b-form-group label="DNI" label-for="register-username">
+                    <validation-provider
+                        #default="{ errors }"
+                        name="username"
+                        vid="username"
+                        rules="required"
+                    >
+                        <b-form-input
+                            id="register-dni"
+                            v-model="username"
+                            name="register-dni"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="DNI / CE"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group label="Nombres" label-for="register-username">
+                    <validation-provider
+                        #default="{ errors }"
+                        name="name"
+                        vid="name"
+                        rules="required"
+                    >
+                        <b-form-input
+                            id="register-name"
+                            v-model="name"
+                            name="register-name"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="Nombres"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group
+                    label="Apellido Paterno"
+                    label-for="register-username"
+                >
+                    <validation-provider
+                        #default="{ errors }"
+                        name="lastname"
+                        vid="lastname"
+                        rules="required"
+                    >
+                        <b-form-input
+                            id="register-lastname"
+                            v-model="lastname"
+                            name="register-lastname"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="Apellido paterno"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group
+                    label="Apellido Materno"
+                    label-for="register-mother_lastname"
+                >
+                    <validation-provider
+                        #default="{ errors }"
+                        name="mother_lastname"
+                        vid="mother_lastname"
+                        rules="required"
+                    >
+                        <b-form-input
+                            id="register-mother_lastname"
+                            v-model="mother_lastname"
+                            name="register-mother_lastname"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="Apellido materno"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group
+                    label="Correo electronico personal"
+                    label-for="register-email"
+                >
+                    <validation-provider
+                        #default="{ errors }"
+                        name="email"
+                        vid="email"
+                        rules="required|email"
+                    >
+                        <b-form-input
+                            id="register-email"
+                            v-model="email"
+                            name="register-email"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="user@example.com"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group
+                    label="Confirme correo electronico personal"
+                    label-for="register-c_email"
+                >
+                    <validation-provider
+                        #default="{ errors }"
+                        name="c_email"
+                        vid="c_email"
+                        rules="required|email"
+                    >
+                        <b-form-input
+                            id="register-c_email"
+                            v-model="c_email"
+                            name="register-c_email"
+                            :state="errors.length > 0 ? false : null"
+                            placeholder="user@example.com"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group label="Celular" label-for="register-celular">
+                    <validation-provider
+                        #default="{ errors }"
+                        name="celular"
+                        vid="celular"
+                        rules="required"
+                    >
+                        <b-form-input
+                            id="register-celular"
+                            v-model="celular"
+                            name="register-celular"
+                            :state="errors.length > 0 ? false : null"
+                        />
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group label-for="register-password" label="Password">
+                    <validation-provider
+                        #default="{ errors }"
+                        name="Password"
+                        vid="password"
+                        rules="required"
+                    >
+                        <b-input-group
+                            class="input-group-merge"
+                            :class="errors.length > 0 ? 'is-invalid' : null"
+                        >
+                            <b-form-input
+                                id="register-password"
+                                v-model="password"
+                                class="form-control-merge"
+                                :type="passwordFieldType"
+                                :state="errors.length > 0 ? false : null"
+                                name="register-password"
+                                placeholder="············"
+                            />
+                            <b-input-group-append is-text>
+                                <feather-icon
+                                    :icon="passwordToggleIcon"
+                                    class="cursor-pointer"
+                                    @click="togglePasswordVisibility"
+                                />
+                            </b-input-group-append>
+                        </b-input-group>
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group
+                    label-for="register-password"
+                    label="Confirmar Password"
+                >
+                    <validation-provider
+                        #default="{ errors }"
+                        name="c_assword"
+                        vid="c_password"
+                        rules="required"
+                    >
+                        <b-input-group
+                            class="input-group-merge"
+                            :class="errors.length > 0 ? 'is-invalid' : null"
+                        >
+                            <b-form-input
+                                id="register-c_password"
+                                v-model="c_password"
+                                class="form-control-merge"
+                                :type="passwordFieldType"
+                                :state="errors.length > 0 ? false : null"
+                                name="register-password"
+                                placeholder="············"
+                            />
+                            <b-input-group-append is-text>
+                                <feather-icon
+                                    :icon="passwordToggleIcon"
+                                    class="cursor-pointer"
+                                    @click="togglePasswordVisibility"
+                                />
+                            </b-input-group-append>
+                        </b-input-group>
+                        <small class="text-danger">{{ errors[0] }}</small>
+                    </validation-provider>
+                </b-form-group>
+
+                <b-form-group>
+                    <b-form-checkbox
+                        id="register-privacy-policy"
+                        v-model="status"
+                        name="checkbox-1"
+                    >
+                        Acepto los
+                        <b-link>terminos & condiciones</b-link>
+                    </b-form-checkbox>
+                </b-form-group>
+
+                <b-button
+                    variant="primary"
+                    block
+                    type="submit"
+                    :disabled="invalid"
+                >
+                    Crear cuenta
+                </b-button>
+                <b-card-text class="text-center mt-2">
+                    <span>Ya tienes una cuenta? </span>
+                    <b-link :to="{ name: 'auth-login' }">
+                        <span>Inicia Session</span>
+                    </b-link>
+                </b-card-text>
+            </b-form>
+        </validation-observer>
+    </b-card-text>
+
+    <!-- <b-row class="auth-inner m-0">
             <b-link class="brand-logo">
                 <vuexy-logo />
                 <h2 class="brand-text text-primary ml-1">ESSALUD</h2>
             </b-link>
-            <!-- /Brand logo-->
 
-            <!-- Left Text-->
             <b-col lg="8" class="d-none d-lg-flex align-items-center p-5">
                 <div
                     class="w-100 d-lg-flex align-items-center justify-content-center px-5"
@@ -63,15 +304,12 @@
                     </b-col>
                 </div>
             </b-col>
-            <!-- /Left Text-->
 
-            <!-- Register-->
             <b-col lg="4" class="d-flex align-items-center auth-bg px-2 p-lg-5">
                 <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
                     <b-card-title class="mb-1"> DRH-ESSALUD 🚀 </b-card-title>
                     <b-card-text class="mb-2"> Crear cuenta nueva </b-card-text>
 
-                    <!-- form -->
                     <validation-observer
                         ref="registerForm"
                         #default="{ invalid }"
@@ -80,7 +318,6 @@
                             class="auth-register-form mt-2"
                             @submit.prevent="register"
                         >
-                            <!-- dni -->
                             <b-form-group
                                 label="DNI"
                                 label-for="register-username"
@@ -106,7 +343,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- name -->
                             <b-form-group
                                 label="Nombres"
                                 label-for="register-username"
@@ -132,7 +368,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- lastname -->
                             <b-form-group
                                 label="Apellido Paterno"
                                 label-for="register-username"
@@ -158,7 +393,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- name -->
                             <b-form-group
                                 label="Apellido Materno"
                                 label-for="register-mother_lastname"
@@ -184,7 +418,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- email -->
                             <b-form-group
                                 label="Correo electronico personal"
                                 label-for="register-email"
@@ -210,7 +443,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- email confirmed -->
                             <b-form-group
                                 label="Confirme correo electronico personal"
                                 label-for="register-c_email"
@@ -236,7 +468,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- celular -->
                             <b-form-group
                                 label="Celular"
                                 label-for="register-celular"
@@ -261,7 +492,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- password -->
                             <b-form-group
                                 label-for="register-password"
                                 label="Password"
@@ -307,7 +537,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- password -->
                             <b-form-group
                                 label-for="register-password"
                                 label="Confirmar Password"
@@ -383,9 +612,17 @@
                     </p>
                 </b-col>
             </b-col>
-            <!-- /Register-->
+
+            <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                :disabled="show"
+                variant="outline-primary"
+                @click="show = true"
+            >
+                Show overlay
+            </b-button>
         </b-row>
-    </div>
+        <b-overlay :show="show" no-wrap /> -->
 </template>
 
 <script>

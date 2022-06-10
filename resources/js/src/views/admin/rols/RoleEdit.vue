@@ -315,7 +315,8 @@ export default {
                 };
             });
         this.$http.get("/api/auth/roles/").then((res) => {
-            this.roles = res.data.data;
+            this.roles = res.data;
+            console.log(this.roles);
         });
     },
     mounted() {

@@ -9,7 +9,8 @@ use Validator;
 use App\Http\Resources\UserResource;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use App\Token;
+use App\Models\Pin;
+use Mail;
 
 class AuthController extends Controller
 {
@@ -24,46 +25,47 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'lastname' => 'required|string',
-            'mother_lastname' => 'required|string',
-            'email' => 'required|string|unique:users',
-            'c_email' => 'required|same:email',
-            'username' => 'required|int|unique:users',
-            // 'pin' => 'required|int|unique:users',
-            'password' => 'required|string',
-            'c_password' => 'required|same:password'
-        ]);
-
-        $user = new User([
-            'name'  => $request->name,
-            'lastname'  => $request->lastname,
-            'mother_lastname'  => $request->mother_lastname,
-            'email' => $request->email,
-            'username' => $request->email,
-            'verified' => $request->verified ? 1 : 0,
-            'active' => $request->activo ? 1 : 0,
-            'password' => bcrypt($request->password),
-        ]);
-
-        // $token = Token::create([
-        //     'user_id' => $user->id
+        return response()->json($request->all());
+        // $request->validate([
+        //     'name' => 'required|string',
+        //     'lastname' => 'required|string',
+        //     'mother_lastname' => 'required|string',
+        //     'email' => 'required|string|unique:users',
+        //     'c_email' => 'required|same:email',
+        //     'username' => 'required|int|unique:users',
+        //     // 'pin' => 'required|int|unique:users',
+        //     'password' => 'required|string',
+        //     'c_password' => 'required|same:password'
         // ]);
-        // // gerando el codigo de validacion de 5 digitos.
-        // $token->sendCode();
 
-        if ($user->save()) {
-            $tokenResult = $user->createToken('Personal Access Token');
-            $token = $tokenResult->plainTextToken;
+        // $user = new User([
+        //     'name'  => $request->name,
+        //     'lastname'  => $request->lastname,
+        //     'mother_lastname'  => $request->mother_lastname,
+        //     'email' => $request->email,
+        //     'username' => $request->email,
+        //     'verified' => $request->verified ? 1 : 0,
+        //     'active' => $request->activo ? 1 : 0,
+        //     'password' => bcrypt($request->password),
+        // ]);
 
-            return response()->json([
-                'message' => 'Successfully created user!',
-                'accessToken' => $token,
-            ], 201);
-        } else {
-            return response()->json(['error' => 'Provide proper details']);
-        }
+        // if ($user->save()) {
+        //     $user->supestructuras()->sync($request->structuras);
+        //     $user->syncPermissions($request->permissions);
+        //     $tokenResult = $user->createToken('Personal Access Token');
+        //     $token = $tokenResult->plainTextToken;
+        //     $pin_code = Pin::create([
+        //         'user_id' => $user->id
+        //     ]);
+        //     // gerando el codigo de validacion de 5 digitos.
+        //     $pin_code->sendCode();
+        //     return response()->json([
+        //         'message' => 'Successfully created user!',
+        //         'accessToken' => $token,
+        //     ], 201);
+        // } else {
+        //     return response()->json(['error' => 'Provide proper details']);
+        // }
     }
     public function login(Request $request)
     {

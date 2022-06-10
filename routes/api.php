@@ -3,9 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+//admin cntrollers
 use App\Http\Controllers\API\admin\UsersController;
 use App\Http\Controllers\API\admin\RoleController;
 use App\Http\Controllers\API\admin\PermissionController;
+//employee controllers
+use App\Http\Controllers\API\employee\DirectorioReclamoController;
+use App\Http\Controllers\API\admin\SuperstructuraController;
+use App\Http\Controllers\API\admin\Permission;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,10 +25,12 @@ use App\Http\Controllers\API\admin\PermissionController;
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-
+    Route::get('/soporte', [DirectorioReclamoController::class, 'getList']);
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
+
+        Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
         //usuarios
         // Route::get('/getUsers', [UsersController::class, 'usersList']);
         //Roles
@@ -45,11 +52,20 @@ Route::group(['prefix' => 'auth'], function () {
         //roles
         Route::group(['prefix' => 'roles'], function () {
             Route::get('/', [RoleController::class, 'getList']);
+            Route::get('pluck', [RoleController::class, 'getPluck']);
             Route::get('/{role}', [RoleController::class, 'getOne']);
             Route::post('create', [RoleController::class, 'create']);
             Route::get('detail/{role}', [RoleController::class, 'getDetail']);
             Route::post('update/{role}', [RoleController::class, 'update']);
             Route::post('delete/{role}', [RoleController::class, 'delete']);
+        });
+        //permisos
+        Route::group(['prefix' => 'permission'], function () {
+            Route::get('/', [PermissionController::class, 'list']);
+            Route::post('create', [PermissionController::class, 'create']);
+            Route::get('detail/{permission}', [PermissionController::class, 'getDetail']);
+            Route::post('update/{permission}', [PermissionController::class, 'update']);
+            Route::post('delete/{permission}', [PermissionController::class, 'delete']);
         });
     });
 });

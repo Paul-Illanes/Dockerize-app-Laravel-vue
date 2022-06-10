@@ -10,16 +10,45 @@ export default [
     },
   },
   {
-    path: '/login',
-    name: 'auth-login',
-    component: () => import('@/views/pages/authentication/Login.vue'),
-    meta: {
-      layout: 'full',
-      resource: 'Auth',
-      action: 'read',
-      redirectIfLoggedIn: true,
+    path: '/auth',
+    name: 'auth',
+    component: () => import('@/views/pages/authentication/Auth.vue'),
+    children: [
+      {
+      path: '/login',
+      name: 'auth-login',
+      component: () => import('@/views/pages/authentication/Login.vue'),
+      meta: {
+        layout: 'full',
+        resource: 'Auth',
+        action: 'read',
+        redirectIfLoggedIn: true,
+      },
     },
+    {
+      path: '/register',
+      name: 'auth-register',
+      component: () => import('@/views/pages/authentication/Register.vue'),
+      meta: {
+        layout: 'full',
+        resource: 'Auth',
+        action: 'read',
+        redirectIfLoggedIn: true,
+      },
+    },
+  ]
   },
+  // {
+  //   path: '/login',
+  //   name: 'auth-login',
+  //   component: () => import('@/views/pages/authentication/Login.vue'),
+  //   meta: {
+  //     layout: 'full',
+  //     resource: 'Auth',
+  //     action: 'read',
+  //     redirectIfLoggedIn: true,
+  //   },
+  // },
   {
     path: '/second-page',
     name: 'second-page',
@@ -30,17 +59,17 @@ export default [
     },
   },
 
-  {
-    path: '/register',
-    name: 'auth-register',
-    component: () => import('@/views/pages/authentication/Register.vue'),
-    meta: {
-      layout: 'full',
-      resource: 'Auth',
-      action: 'read',
-      redirectIfLoggedIn: true,
-    },
-  },
+  // {
+  //   path: '/register',
+  //   name: 'auth-register',
+  //   component: () => import('@/views/pages/authentication/Register.vue'),
+  //   meta: {
+  //     layout: 'full',
+  //     resource: 'Auth',
+  //     action: 'read',
+  //     redirectIfLoggedIn: true,
+  //   },
+  // },
   {
     path: '/pages/miscellaneous/not-authorized',
     name: 'misc-not-authorized',
