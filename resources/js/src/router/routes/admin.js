@@ -59,7 +59,7 @@ export default [
   {
     path: '/admin/permisos/list',
     name: 'admin-permission-list',
-    component: () => import('@/views/admin/permissions/PermissionList.vue'),
+    component: () => import('@/views/admin/Permissions/PermissionList.vue'),
     meta: {
       resource: 'ACL',
       action: 'users-index',
@@ -68,7 +68,7 @@ export default [
   {
     path: '/admin/permisos/edit/:permisoId',
     name: 'admin-permission-edit',
-    component: () => import('@/views/admin/permissions/PermissionsEdit.vue'),
+    component: () => import('@/views/admin/Permissions/PermissionsEdit.vue'),
     meta: {
       resource: 'ACL',
       action: 'users-edit',
@@ -77,7 +77,7 @@ export default [
   {
     path: '/admin/permiso/add',
     name: 'admin-permission-add',
-    component: () => import('@/views/admin/permissions/PermissionsAdd.vue'),
+    component: () => import('@/views/admin/Permissions/PermissionsAdd.vue'),
     meta: {
       resource: 'ACL',
       action: 'users-create',
