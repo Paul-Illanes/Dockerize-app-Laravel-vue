@@ -83,4 +83,71 @@ export default [
       action: 'users-create',
     },
   },
+  // *===============================================---*
+  // *--------- cambios de turno---- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/cambios_de_turno/papeletas/list',
+    name: 'admin-papeletas-list',
+    component: () => import('@/views/admin/cambios_de_turno/papeletas/PapeletasList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'papeletas-index',
+    },
+  },
+  {
+    path: '/admin/cambios_de_turno/papeletas/edit/:papeletaId',
+    name: 'admin-papeleta-edit',
+    component: () => import('@/views/admin/cambios_de_turno/papeletas/PapeletasEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'papeletas-edit',
+    },
+  },
+  {
+    path: '/admin/cambios_de_turno/papeletas/add',
+    name: 'admin-papeletas-add',
+    component: () => import('@/views/admin/cambios_de_turno/papeletas/PapeletasAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'papeletas-create',
+    },
+  },
+    // Invoice
+    {
+      path: '/apps/invoice/list',
+      name: 'apps-invoice-list',
+      component: () => import('@/views/apps/invoice/invoice-list/InvoiceList.vue'),
+      meta: {
+        resource: 'ACL',
+        action: 'users-edit',
+      },
+    },
+    {
+      path: '/apps/invoice/preview/:id',
+      name: 'apps-invoice-preview',
+      component: () => import('@/views/apps/invoice/invoice-preview/InvoicePreview.vue'),
+      meta: {
+        resource: 'ACL',
+        action: 'users-edit',
+      },
+    },
+    {
+      path: '/apps/invoice/add/',
+      name: 'apps-invoice-add',
+      component: () => import('@/views/apps/invoice/invoice-add/InvoiceAdd.vue'),
+      meta: {
+        resource: 'ACL',
+        action: 'users-edit',
+      },
+    },
+    {
+      path: '/apps/invoice/edit/:id',
+      name: 'apps-invoice-edit',
+      component: () => import('@/views/apps/invoice/invoice-edit/InvoiceEdit.vue'),
+      meta: {
+        resource: 'ACL',
+        action: 'users-edit',
+      },
+    },
 ]

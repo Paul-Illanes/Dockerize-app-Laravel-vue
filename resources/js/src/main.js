@@ -14,6 +14,7 @@ import '@/libs/acl'
 import '@/libs/portal-vue'
 import '@/libs/toastification'
 
+import '@/@fake-db/db'
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
 Vue.use(ModalPlugin)

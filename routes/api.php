@@ -11,6 +11,7 @@ use App\Http\Controllers\API\admin\PermissionController;
 use App\Http\Controllers\API\employee\DirectorioReclamoController;
 use App\Http\Controllers\API\admin\SuperstructuraController;
 use App\Http\Controllers\API\admin\Permission;
+use App\Http\Controllers\API\admin\PapeletaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -66,6 +67,14 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('detail/{permission}', [PermissionController::class, 'getDetail']);
             Route::post('update/{permission}', [PermissionController::class, 'update']);
             Route::post('delete/{permission}', [PermissionController::class, 'delete']);
+        });
+        //papeletas
+        Route::group(['prefix' => 'papeleta'], function () {
+            Route::get('/', [PapeletaController::class, 'getList']);
+            Route::post('create', [PapeletaController::class, 'create']);
+            Route::get('detail/{papeleta}', [PapeletaController::class, 'getDetail']);
+            Route::post('update/{papeleta}', [PapeletaController::class, 'update']);
+            Route::post('delete/{papeleta}', [PapeletaController::class, 'delete']);
         });
     });
 });
