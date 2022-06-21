@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Papeleta extends Model
+class Papeleta extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     use HasFactory;
     protected $fillable = [
         'fecha',
@@ -35,4 +37,24 @@ class Papeleta extends Model
         'created_at',
         'updated_at',
     ];
+    public function scopeSupestructura($query, $user_id)
+    {
+        if ($user_id)
+            return $query->join('personas', 'personas.dni', '=', 'papeletas.dni')
+                ->whereIn(
+                    'personas.sub_estructura',
+                    \App\Models\User::find($user_id)
+                        ->supestructuras()
+                        ->select('id')
+                );
+    }
+    public function user()
+    {
+        //return $this->belongsTo(user::class);
+        return $this->hasOne('App\Models\User', 'id', 'created_by');
+    }
+    public function userUpdated()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'updated_by');
+    }
 }

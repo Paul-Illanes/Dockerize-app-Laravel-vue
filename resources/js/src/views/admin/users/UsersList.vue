@@ -1,16 +1,16 @@
 <template>
     <b-card-code title="Listado de usuarios" no-body>
-        <b-card-body>
+        <!-- <b-card-body>
             <div
                 class="d-flex justify-content-between flex-wrap mb-2"
                 v-if="$can('users-create', 'ACL')"
             >
                 <b-button variant="primary" :to="{ name: 'admin-users-add' }">
-                    Crear Usuario
+                    Add User
                 </b-button>
             </div>
             <div class="d-flex justify-content-between flex-wrap">
-                <!-- sorting  -->
+                
                 <b-form-group
                     label="Ordenar"
                     label-size="sm"
@@ -40,7 +40,7 @@
                     </b-input-group>
                 </b-form-group>
 
-                <!-- filter -->
+              
                 <b-form-group
                     label="Filtrar"
                     label-cols-sm="2"
@@ -64,8 +64,73 @@
                     </b-input-group>
                 </b-form-group>
             </div>
-        </b-card-body>
+        </b-card-body> -->
 
+        <div class="m-2">
+            <b-row>
+                <!-- Per Page --
+
+                <!-- Search -->
+                <b-col cols="12" md="6"> </b-col>
+            </b-row>
+            <!-- Table Top -->
+            <b-row>
+                <!-- Per Page -->
+                <b-col
+                    cols="12"
+                    md="6"
+                    class="d-flex align-items-center justify-content-start mb-md-0"
+                >
+                    <b-form-group
+                        label="Mostrar"
+                        label-cols="6"
+                        label-align="left"
+                        label-size="sm"
+                        label-for="sortBySelect"
+                        class="text-nowrap mb-md-0 mr-1"
+                    >
+                        <b-form-select
+                            id="perPageSelect"
+                            v-model="perPage"
+                            size="sm"
+                            inline
+                            :options="pageOptions"
+                        />
+                    </b-form-group>
+                </b-col>
+
+                <!-- Search -->
+                <b-col cols="12" md="6">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <b-form-group
+                            label="Filtrar"
+                            label-cols-sm="2"
+                            label-align-sm="left"
+                            label-size="sm"
+                            label-for="filterInput"
+                            class="mb-0"
+                        >
+                            <b-input-group size="sm">
+                                <b-form-input
+                                    id="filterInput"
+                                    v-model="filter"
+                                    type="search"
+                                    placeholder="Escriba para buscar..."
+                                />
+                                <b-input-group-append>
+                                    <b-button
+                                        :disabled="!filter"
+                                        @click="filter = ''"
+                                    >
+                                        Limpiar
+                                    </b-button>
+                                </b-input-group-append>
+                            </b-input-group>
+                        </b-form-group>
+                    </div>
+                </b-col>
+            </b-row>
+        </div>
         <b-table
             striped
             hover
@@ -82,37 +147,16 @@
             :filter-included-fields="filterOn"
             @filtered="onFiltered"
         >
-            <template #cell(action)="data">
-                <div class="text-nowrap">
-                    <feather-icon
-                        :id="`user-row-${data.item.id}-send-icon`"
-                        @click="
-                            $router.push({
-                                name: 'admin-users-edit',
-                                params: { userId: data.item.id },
-                            })
-                        "
-                        icon="EditIcon"
-                        class="cursor-pointer text-primary"
-                        size="16"
-                    />
-                    <b-tooltip
-                        title="Editar Usuario"
-                        class="cursor-pointer"
-                        :target="`user-row-${data.item.id}-send-icon`"
-                    />
-
-                    <feather-icon
-                        :id="`invoice-row-${data.item.id}-preview-icon`"
-                        icon="TrashIcon"
-                        size="16"
-                        class="mx-1 cursor-pointer text-danger"
-                    />
-                    <b-tooltip
-                        title="Eliminar Usuario"
-                        :target="`invoice-row-${data.item.id}-preview-icon`"
-                    />
-                </div>
+            <template #cell(index)="data">
+                {{ data.index + 1 }}
+            </template>
+            <template #cell(avatar)="data">
+                <b-avatar :src="data.value" />
+            </template>
+            <template #cell(status)="data">
+                <b-badge :variant="status[1][data.value]">
+                    {{ status[0][data.value] }}
+                </b-badge>
             </template>
         </b-table>
         <b-overlay :show="show" opacity="0.40" variant="success" blur="2px">
@@ -124,9 +168,21 @@
                     </b-card-text>
                 </div>
             </template>
-            <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-                <!-- page length -->
-                <b-form-group
+            <div class="mx-2 mb-2">
+                <b-row>
+                    <b-col
+                        cols="12"
+                        sm="6"
+                        class="d-flex align-items-center justify-content-center justify-content-sm-start"
+                    >
+                    </b-col>
+                    <b-col
+                        cols="12"
+                        sm="6"
+                        class="d-flex align-items-center justify-content-center justify-content-sm-end"
+                    >
+                        <!-- page length -->
+                        <!-- <b-form-group
                     label="Mostrar"
                     label-cols="6"
                     label-align="left"
@@ -141,29 +197,37 @@
                         inline
                         :options="pageOptions"
                     />
-                </b-form-group>
+                </b-form-group> -->
 
-                <!-- pagination -->
-                <div>
-                    <b-pagination
-                        v-model="currentPage"
-                        :total-rows="totalRows"
-                        :per-page="perPage"
-                        first-number
-                        last-number
-                        prev-class="prev-item"
-                        next-class="next-item"
-                        class="mb-0"
-                    >
-                        <template #prev-text>
-                            <feather-icon icon="ChevronLeftIcon" size="18" />
-                        </template>
-                        <template #next-text>
-                            <feather-icon icon="ChevronRightIcon" size="18" />
-                        </template>
-                    </b-pagination>
-                </div>
-            </b-card-body>
+                        <!-- pagination -->
+                        <div>
+                            <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
+                                :per-page="perPage"
+                                first-number
+                                last-number
+                                prev-class="prev-item"
+                                next-class="next-item"
+                                class="mb-0"
+                            >
+                                <template #prev-text>
+                                    <feather-icon
+                                        icon="ChevronLeftIcon"
+                                        size="18"
+                                    />
+                                </template>
+                                <template #next-text>
+                                    <feather-icon
+                                        icon="ChevronRightIcon"
+                                        size="18"
+                                    />
+                                </template>
+                            </b-pagination>
+                        </div>
+                    </b-col>
+                </b-row>
+            </div>
         </b-overlay>
     </b-card-code>
 </template>
@@ -172,6 +236,8 @@
 import BCardCode from "@core/components/b-card-code/BCardCode.vue";
 import Ripple from "vue-ripple-directive";
 import {
+    BRow,
+    BCol,
     BOverlay,
     BCardText,
     BTable,
@@ -185,13 +251,13 @@ import {
     BInputGroupAppend,
     BButton,
     BCardBody,
-    BTooltip,
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
-
+import vSelect from "vue-select";
 export default {
     components: {
-        BTooltip,
+        BRow,
+        BCol,
         BCardText,
         BOverlay,
         BCardCode,
@@ -206,13 +272,13 @@ export default {
         BInputGroupAppend,
         BButton,
         BCardBody,
+        vSelect,
     },
     directives: {
         Ripple,
     },
     data() {
         return {
-            userId: 0,
             show: false,
             items: [],
             perPage: 5,
@@ -226,8 +292,8 @@ export default {
             filterOn: [],
             fields: [
                 {
-                    key: "id",
-                    label: "Id",
+                    key: "index",
+                    label: "#",
                     sortable: true,
                 },
 
@@ -236,7 +302,6 @@ export default {
                 { key: "email", label: "Email", sortable: true },
                 { key: "pin", label: "pin", sortable: true },
                 { key: "roles[0].name", label: "Rol", sortable: true },
-                { key: "action", label: "Action", sortable: false },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,
@@ -256,6 +321,7 @@ export default {
     },
     methods: {
         onFiltered(filteredItems) {
+            console.log("fer");
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
@@ -273,3 +339,6 @@ export default {
     },
 };
 </script>
+<style lang="scss">
+@import "~@core/scss/vue/libs/vue-select.scss";
+</style>

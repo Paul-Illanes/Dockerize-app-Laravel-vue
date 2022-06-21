@@ -46,6 +46,8 @@ Route::group(['prefix' => 'auth'], function () {
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [UsersController::class, 'usersList']);
             Route::post('create', [UsersController::class, 'create']);
+            Route::get('pluck', [UsersController::class, 'getPluck']);
+            Route::get('tipo_permisos', [UsersController::class, 'getTipoPermiso']);
             Route::get('detail/{user}', [UsersController::class, 'getDetail']);
             Route::post('update/{user}', [UsersController::class, 'update']);
             Route::post('delete/{user}', [UsersController::class, 'delete']);
@@ -74,6 +76,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('create', [PapeletaController::class, 'create']);
             Route::get('detail/{papeleta}', [PapeletaController::class, 'getDetail']);
             Route::post('update/{papeleta}', [PapeletaController::class, 'update']);
+            Route::post('updateStatus/{papeleta}', [PapeletaController::class, 'update_estado']);
             Route::post('delete/{papeleta}', [PapeletaController::class, 'delete']);
         });
     });

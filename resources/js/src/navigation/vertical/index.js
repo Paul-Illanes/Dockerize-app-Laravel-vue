@@ -51,34 +51,4 @@ export default [
       },
     ],
   },
-  {
-    title: 'Invoice',
-    icon: 'FileTextIcon',
-    children: [
-      {
-        title: 'List',
-        route: 'apps-invoice-list',
-        resource: 'ACL',
-        action: 'users-index',
-      },
-      {
-        title: 'Preview',
-        route: { name: 'apps-invoice-preview', params: { id: 4987 } },
-        resource: 'ACL',
-        action: 'users-index',
-      },
-      {
-        title: 'Edit',
-        route: { name: 'apps-invoice-edit', params: { id: 4987 } },
-        resource: 'ACL',
-        action: 'users-index',
-      },
-      {
-        title: 'Add',
-        route: { name: 'apps-invoice-add' },
-        resource: 'ACL',
-        action: 'users-index',
-      },
-    ],
-  },
 ]

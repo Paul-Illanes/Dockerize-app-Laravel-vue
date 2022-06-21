@@ -13,6 +13,7 @@ import '@axios'
 import '@/libs/acl'
 import '@/libs/portal-vue'
 import '@/libs/toastification'
+import '@/libs/sweet-alerts'
 
 import '@/@fake-db/db'
 // BSV Plugin Registration

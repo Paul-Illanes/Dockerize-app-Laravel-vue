@@ -1,11 +1,12 @@
 import { ref, watch, computed } from '@vue/composition-api'
 import store from '@/store'
-
+import axios from '@axios'
+import { paginateArray, sortCompare } from '@/@fake-db/utils'
 // Notification
 import { useToast } from 'vue-toastification/composition'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
-export default function useInvoicesList() {
+export default function usePapeletaList() {
   // Use toast
   const toast = useToast()
 
@@ -13,13 +14,12 @@ export default function useInvoicesList() {
 
   // Table Handlers
   const tableColumns = [
-    { key: 'id', label: '#', sortable: true },
-    { key: 'anio', sortable: true },
-    { key: 'numero_correlativo', sortable: true },
-    { key: 'nro_papeleta', sortable: true },
+    { key: 'index', label: '#', sortable: true },
+    { key: 'dependencia', sortable: true },
     { key: 'fecha', sortable: true },
-    { key: 'cod_planilla', sortable: true },
     { key: 'dni', sortable: true },
+    { key: 'nombres', sortable: true },
+    { key: 'tipo_permiso', sortable: true },
     { key: 'fecha_salida', sortable: true },
     { key: 'fecha_retorno', sortable: true },
     { key: 'status', sortable: true },
@@ -32,7 +32,9 @@ export default function useInvoicesList() {
   const searchQuery = ref('')
   const sortBy = ref('id')
   const isSortDirDesc = ref(true)
-  const statusFilter = ref(null)
+  const statusFilter = ref('Pendientes')
+  const typeFilter = ref(null)
+  const refreshStatus = ref(0)
 
   const dataMeta = computed(() => {
     const localItemsCount = refInvoiceListTable.value ? refInvoiceListTable.value.localItems.length : 0
@@ -45,28 +47,31 @@ export default function useInvoicesList() {
 
   const refetchData = () => {
     refInvoiceListTable.value.refresh()
+    
   }
 
-  watch([currentPage, perPage, searchQuery, statusFilter], () => {
+  watch([currentPage, perPage, searchQuery, statusFilter, typeFilter,refreshStatus], () => {
     refetchData()
   })
 
   const fetchInvoices = (ctx, callback) => {
     store
-      .dispatch('app-invoice/fetchInvoices', {
+      .dispatch('app-papeleta/fetchInvoices', {
         q: searchQuery.value,
         perPage: perPage.value,
         page: currentPage.value,
         sortBy: sortBy.value,
         sortDesc: isSortDirDesc.value,
         status: statusFilter.value,
+        type: typeFilter.value,
+        refreshStatus: refreshStatus.value,
       })
       .then(response => {
-       console.log(response[0])
         const { invoices, total } = response[0]
-        
+
         callback(invoices)
         totalInvoices.value = total
+        refreshStatus.value = 0
       })
       .catch(() => {
         toast({
@@ -84,11 +89,19 @@ export default function useInvoicesList() {
   // *--------- UI ---------------------------------------*
   // *===============================================---*
 
+  const resolvePaperStatusVariant = status => {
+    if (status === 0) return 'warning'
+    if (status === 1) return 'success'
+    if (status === 2) return 'danger'
+    if (status === 3) return 'secondary'
+    return 'danger'
+  }
+
   const resolveInvoiceStatusVariantAndIcon = status => {
-    if (status === '0') return { variant: 'warning', icon: 'PieChartIcon', label: 'observado' }
-    if (status === '1') return { variant: 'success', icon: 'CheckCircleIcon', label: 'anulado' }
-    if (status === '2') return { variant: 'info', icon: 'ArrowDownCircleIcon', label: 'aprobado' }
-    return { variant: 'secondary', icon: 'XIcon' }
+    if (status === 0) return { variant: 'warning', label: 'observado' }
+    if (status === 1) return { variant: 'success', label: 'anulado' }
+    if (status === 2) return { variant: 'info', label: 'aprobado' }
+    return { variant: 'secondary', icon: 'XIcon', label: 'fer' }
   }
 
   const resolveClientAvatarVariant = status => {
@@ -115,10 +128,12 @@ export default function useInvoicesList() {
     refInvoiceListTable,
 
     statusFilter,
+    typeFilter,
 
     resolveInvoiceStatusVariantAndIcon,
     resolveClientAvatarVariant,
-
+    resolvePaperStatusVariant,
     refetchData,
+    refreshStatus
   }
 }

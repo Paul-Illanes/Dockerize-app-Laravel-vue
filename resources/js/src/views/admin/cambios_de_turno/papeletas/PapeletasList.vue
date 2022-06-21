@@ -1,206 +1,346 @@
 <template>
-    <div>
-        <user-list-add-new
-            :is-add-new-user-sidebar-active.sync="isAddNewUserSidebarActive"
-            :role-options="roleOptions"
-            :plan-options="planOptions"
-            @refetch-data="refetchData"
-        />
-
-        <!-- Filters -->
-        <users-list-filters
-            :role-filter.sync="roleFilter"
-            :plan-filter.sync="planFilter"
-            :status-filter.sync="statusFilter"
-            :role-options="roleOptions"
-            :plan-options="planOptions"
-            :status-options="statusOptions"
-        />
-
-        <!-- Table Container Card -->
-        <b-card no-body class="mb-0">
-            <div class="m-2">
-                <!-- Table Top -->
-                <b-row>
-                    <!-- Per Page -->
-                    <b-col
-                        cols="12"
-                        md="6"
-                        class="d-flex align-items-center justify-content-start mb-1 mb-md-0"
+    <!-- Table Container Card -->
+    <b-card no-body>
+        <div class="m-2">
+            <b-row>
+                <!-- Per Page -->
+                <b-col
+                    cols="12"
+                    md="6"
+                    class="d-flex align-items-center justify-content-start mb-2"
+                >
+                    <label style="font-weight: 700">Estado</label>
+                    <v-select
+                        v-model="statusFilter"
+                        :options="statusOptions"
+                        :clearable="false"
+                        class="invoice-filter-select d-inline-block ml-50 mr-5"
+                    />
+                </b-col>
+            </b-row>
+            <!-- Table Top -->
+            <b-row>
+                <!-- Per Page -->
+                <b-col
+                    cols="12"
+                    md="6"
+                    class="d-flex align-items-center justify-content-start mb-1 mb-md-0"
+                >
+                    <label>Entries</label>
+                    <v-select
+                        v-model="perPage"
+                        :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                        :options="perPageOptions"
+                        :clearable="false"
+                        class="per-page-selector d-inline-block ml-50 mr-1"
+                    />
+                    <b-button
+                        variant="primary"
+                        :to="{ name: 'admin-papeletas-add' }"
                     >
-                        <label>Show</label>
+                        Agregar
+                    </b-button>
+                </b-col>
+
+                <!-- Search -->
+                <b-col cols="12" md="6">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <b-form-input
+                            v-model="searchQuery"
+                            class="d-inline-block mr-1"
+                            placeholder="Buscar por nombres o dni..."
+                        />
                         <v-select
-                            v-model="perPage"
-                            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                            :options="perPageOptions"
-                            :clearable="false"
-                            class="per-page-selector d-inline-block mx-50"
-                        />
-                        <label>entries</label>
-                    </b-col>
-
-                    <!-- Search -->
-                    <b-col cols="12" md="6">
-                        <div
-                            class="d-flex align-items-center justify-content-end"
+                            v-model="typeFilter"
+                            :options="typeOptions"
+                            class="invoice-filter-select d-inline-block ml-50 w-100"
+                            placeholder="Filtrar por Tipo de permiso"
                         >
-                            <b-form-input
-                                v-model="searchQuery"
-                                class="d-inline-block mr-1"
-                                placeholder="Search..."
-                            />
-                            <b-button
-                                variant="primary"
-                                @click="isAddNewUserSidebarActive = true"
-                            >
-                                <span class="text-nowrap">Add User</span>
-                            </b-button>
-                        </div>
-                    </b-col>
-                </b-row>
-            </div>
-
-            <b-table
-                ref="refUserListTable"
-                class="position-relative"
-                :items="fetchUsers"
-                responsive
-                :fields="tableColumns"
-                primary-key="id"
-                :sort-by.sync="sortBy"
-                show-empty
-                empty-text="No matching records found"
-                :sort-desc.sync="isSortDirDesc"
-            >
-                <!-- Column: User -->
-                <template #cell(user)="data">
-                    <b-media vertical-align="center">
-                        <template #aside>
-                            <b-avatar
-                                size="32"
-                                :src="data.item.avatar"
-                                :text="avatarText(data.item.fullName)"
-                                :variant="`light-${resolveUserRoleVariant(
-                                    data.item.role
-                                )}`"
-                            />
-                        </template>
-                        <b-link class="font-weight-bold d-block text-nowrap">
-                            {{ data.item.fullName }}
-                        </b-link>
-                        <small class="text-muted"
-                            >@{{ data.item.username }}</small
-                        >
-                    </b-media>
-                </template>
-
-                <!-- Column: Role -->
-                <template #cell(role)="data">
-                    <div class="text-nowrap">
-                        <feather-icon
-                            :icon="resolveUserRoleIcon(data.item.role)"
-                            size="18"
-                            class="mr-50"
-                            :class="`text-${resolveUserRoleVariant(
-                                data.item.role
-                            )}`"
-                        />
-                        <span class="align-text-top text-capitalize">{{
-                            data.item.role
-                        }}</span>
+                            <template #selected-option="{ label }">
+                                <span class="text-truncate overflow-hidden">
+                                    {{ label }}
+                                </span>
+                            </template>
+                        </v-select>
                     </div>
-                </template>
+                </b-col>
+            </b-row>
+        </div>
 
-                <!-- Column: Status -->
-                <template #cell(status)="data">
-                    <b-badge
-                        pill
-                        :variant="`light-${resolveUserStatusVariant(
-                            data.item.status
-                        )}`"
-                        class="text-capitalize"
-                    >
-                        {{ data.item.status }}
-                    </b-badge>
-                </template>
+        <b-table
+            ref="refInvoiceListTable"
+            :items="fetchInvoices"
+            responsive
+            :fields="tableColumns"
+            primary-key="id"
+            :sort-by.sync="sortBy"
+            show-empty
+            empty-text="No matching records found"
+            :sort-desc.sync="isSortDirDesc"
+            :refresh="refreshStatus"
+            class="position-relative"
+        >
+            <template #cell(index)="data">
+                {{ data.index + 1 }}
+            </template>
+            <!-- fechas -->
+            <template #cell(fecha)="data">
+                <span class="text-nowrap">
+                    {{ changeDate(data.value) }}
+                </span>
+            </template>
+            <template #cell(fecha_salida)="data">
+                <span class="text-nowrap">
+                    {{ changeDate(data.value) }}
+                </span>
+            </template>
+            <template #cell(fecha_retorno)="data">
+                <span class="text-nowrap">
+                    {{ changeDate(data.value) }}
+                </span>
+            </template>
+            <!-- Column: Id -->
+            <!-- Column: Status -->
+            <template #cell(status)="data">
+                <b-dropdown
+                    toggle-class="p-0"
+                    no-caret
+                    pill
+                    :variant="changeColor(data.item.status)"
+                    class="text-center"
+                >
+                    <template #button-content>
+                        <b-badge pill :variant="changeColor(data.item.status)">
+                            {{ changeStatus(data.item.status) }}
+                        </b-badge>
+                    </template>
 
-                <!-- Column: Actions -->
-                <template #cell(actions)="data">
-                    <b-dropdown
-                        variant="link"
-                        no-caret
-                        :right="$store.state.appConfig.isRTL"
+                    <b-dropdown-item :disabled="data.item.status == 1">
+                        <feather-icon class="text-success" icon="CheckIcon" />
+                        <span
+                            @click="updateStatus(1, data.item.id)"
+                            class="align-middle ml-50"
+                            >Aprobar</span
+                        >
+                    </b-dropdown-item>
+                    <b-dropdown-item :disabled="data.item.status == 0">
+                        <feather-icon
+                            class="text-warning"
+                            icon="PauseCircleIcon"
+                        />
+                        <span
+                            @click="updateStatus(0, data.item.id)"
+                            class="align-middle ml-50"
+                            >Pendiente</span
+                        >
+                    </b-dropdown-item>
+                    <b-dropdown-item :disabled="data.item.status == 2">
+                        <feather-icon
+                            class="text-danger"
+                            icon="AlertTriangleIcon"
+                        />
+                        <span
+                            @click="updateStatus(2, data.item.id)"
+                            class="align-middle ml-50"
+                            >Observar</span
+                        >
+                    </b-dropdown-item>
+                    <b-dropdown-item :disabled="data.item.status == 3">
+                        <feather-icon
+                            class="text-secondary"
+                            icon="DeleteIcon"
+                        />
+                        <span
+                            @click="updateStatus(3, data.item.id)"
+                            class="align-middle ml-50"
+                            >Anular</span
+                        >
+                    </b-dropdown-item>
+                </b-dropdown>
+            </template>
+
+            <!-- Column: Issued Date -->
+            <template #cell(issuedDate)="data">
+                <span class="text-nowrap">
+                    {{ data.value }}
+                </span>
+            </template>
+
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+                <div class="text-nowrap">
+                    <feather-icon
+                        :id="`invoice-row-${data.item.id}-preview-icon`"
+                        icon="EyeIcon"
+                        v-on:click="setModalData(data.item)"
+                        v-b-modal.modal-lg
+                        size="16"
+                        class="cursor-pointer text-info"
+                    />
+                    <b-tooltip
+                        title="Detalles"
+                        :target="`invoice-row-${data.item.id}-preview-icon`"
+                    />
+                    <feather-icon
+                        @click="
+                            $router.push({
+                                name: 'admin-papeleta-edit',
+                                params: { papeletaId: data.item.id },
+                            })
+                        "
+                        :id="`invoice-row-${data.item.id}-edit-icon`"
+                        icon="EditIcon"
+                        class="mx-1 cursor-pointer text-success"
+                        size="16"
+                    />
+
+                    <b-tooltip
+                        title="Editar Papeleta"
+                        class="cursor-pointer"
+                        :target="`invoice-row-${data.item.id}-edit-icon`"
+                    />
+                    <feather-icon
+                        :id="`invoice-row-${data.item.id}-delete-icon`"
+                        icon="Trash2Icon"
+                        class="cursor-pointer text-danger"
+                        size="16"
+                        @click="confirmDelete(data.item.id)"
+                    />
+                    <b-tooltip
+                        title="Eliminar Papeleta"
+                        class="cursor-pointer"
+                        :target="`invoice-row-${data.item.id}-delete-icon`"
+                    />
+                </div>
+            </template>
+        </b-table>
+        <div class="mx-2 mb-2">
+            <b-row>
+                <b-col
+                    cols="12"
+                    sm="6"
+                    class="d-flex align-items-center justify-content-center justify-content-sm-start"
+                >
+                    <span class="text-muted"
+                        >Showing {{ dataMeta.from }} to {{ dataMeta.to }} of
+                        {{ dataMeta.of }} entries</span
                     >
-                        <template #button-content>
-                            <feather-icon
-                                icon="MoreVerticalIcon"
-                                size="16"
-                                class="align-middle text-body"
-                            />
+                </b-col>
+                <!-- Pagination -->
+                <b-col
+                    cols="12"
+                    sm="6"
+                    class="d-flex align-items-center justify-content-center justify-content-sm-end"
+                >
+                    <b-pagination
+                        v-model="currentPage"
+                        :total-rows="totalInvoices"
+                        :per-page="perPage"
+                        first-number
+                        last-number
+                        class="mb-0 mt-1 mt-sm-0"
+                        prev-class="prev-item"
+                        next-class="next-item"
+                    >
+                        <template #prev-text>
+                            <feather-icon icon="ChevronLeftIcon" size="18" />
                         </template>
-                        <b-dropdown-item>
-                            <feather-icon icon="FileTextIcon" />
-                            <span class="align-middle ml-50">Details</span>
-                        </b-dropdown-item>
-
-                        <b-dropdown-item>
-                            <feather-icon icon="EditIcon" />
-                            <span class="align-middle ml-50">Edit</span>
-                        </b-dropdown-item>
-
-                        <b-dropdown-item>
-                            <feather-icon icon="TrashIcon" />
-                            <span class="align-middle ml-50">Delete</span>
-                        </b-dropdown-item>
-                    </b-dropdown>
-                </template>
-            </b-table>
-            <div class="mx-2 mb-2">
-                <b-row>
-                    <b-col
-                        cols="12"
-                        sm="6"
-                        class="d-flex align-items-center justify-content-center justify-content-sm-start"
-                    >
-                        <span class="text-muted"
-                            >Showing {{ dataMeta.from }} to {{ dataMeta.to }} of
-                            {{ dataMeta.of }} entries</span
-                        >
-                    </b-col>
-                    <!-- Pagination -->
-                    <b-col
-                        cols="12"
-                        sm="6"
-                        class="d-flex align-items-center justify-content-center justify-content-sm-end"
-                    >
-                        <b-pagination
-                            v-model="currentPage"
-                            :total-rows="totalUsers"
-                            :per-page="perPage"
-                            first-number
-                            last-number
-                            class="mb-0 mt-1 mt-sm-0"
-                            prev-class="prev-item"
-                            next-class="next-item"
-                        >
-                            <template #prev-text>
-                                <feather-icon
-                                    icon="ChevronLeftIcon"
-                                    size="18"
-                                />
-                            </template>
-                            <template #next-text>
-                                <feather-icon
-                                    icon="ChevronRightIcon"
-                                    size="18"
-                                />
-                            </template>
-                        </b-pagination>
-                    </b-col>
-                </b-row>
-            </div>
-        </b-card>
-    </div>
+                        <template #next-text>
+                            <feather-icon icon="ChevronRightIcon" size="18" />
+                        </template>
+                    </b-pagination>
+                </b-col>
+            </b-row>
+            <b-modal
+                id="modal-lg"
+                centered
+                hide-footer
+                size="lg"
+                :title="'Papeleta número: ' + modalData.nro_papeleta"
+            >
+                <b-card-body>
+                    <p class="text-danger text-center" style="font-weigth: 900">
+                        Recuerde registrar el número de papeleta, en el formato
+                        físico, para su presentación en la oficina de Recursos
+                        Humanos
+                    </p>
+                    <b-row>
+                        <b-col md="6" class="m-0 p-0">
+                            <b-list-group>
+                                <b-list-group-item
+                                    >Número de papeleta</b-list-group-item
+                                >
+                                <b-list-group-item>Nombres</b-list-group-item>
+                                <b-list-group-item
+                                    >Fecha de generación</b-list-group-item
+                                >
+                                <b-list-group-item
+                                    >Tipo de papeleta</b-list-group-item
+                                >
+                                <b-list-group-item
+                                    >Fecha de salida</b-list-group-item
+                                >
+                                <b-list-group-item
+                                    >Hora de salida</b-list-group-item
+                                >
+                                <b-list-group-item
+                                    >Fecha de retorno</b-list-group-item
+                                >
+                                <b-list-group-item
+                                    >Hora de retorno</b-list-group-item
+                                >
+                                <b-list-group-item>Estado</b-list-group-item>
+                                <b-list-group-item
+                                    >Creado por</b-list-group-item
+                                >
+                            </b-list-group>
+                        </b-col>
+                        <b-col md="6" class="m-0 p-0">
+                            <b-list-group>
+                                <b-list-group-item
+                                    ><b-badge variant="secondary"
+                                        >V-{{ modalData.nro_papeleta }}</b-badge
+                                    ></b-list-group-item
+                                >
+                                <b-list-group-item>{{
+                                    modalData.nombres
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.fecha_generacion
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.tipo_papeleta
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.fecha_salida
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.hora_salida
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.fecha_retorno
+                                }}</b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.hora_retorno
+                                }}</b-list-group-item>
+                                <b-list-group-item>
+                                    <b-badge
+                                        :variant="changeColor(modalData.estado)"
+                                        >{{
+                                            changeStatus(modalData.estado)
+                                        }}</b-badge
+                                    >
+                                </b-list-group-item>
+                                <b-list-group-item>{{
+                                    modalData.creado_por
+                                }}</b-list-group-item>
+                            </b-list-group>
+                        </b-col>
+                    </b-row>
+                </b-card-body>
+            </b-modal>
+        </div>
+    </b-card>
 </template>
 
 <script>
@@ -218,21 +358,28 @@ import {
     BDropdown,
     BDropdownItem,
     BPagination,
+    BTooltip,
+    BCardText,
+    BCardBody,
+    BListGroup,
+    BListGroupItem,
 } from "bootstrap-vue";
-import vSelect from "vue-select";
-import store from "@/store";
-import { ref, onUnmounted } from "@vue/composition-api";
+import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import { avatarText } from "@core/utils/filter";
-import UsersListFilters from "./UsersListFilters.vue";
-import useUsersList from "./useUsersList";
-import userStoreModule from "./userStoreModule";
-import UserListAddNew from "./UserListAddNew.vue";
+import vSelect from "vue-select";
+import { onUnmounted } from "@vue/composition-api";
+import store from "@/store";
+import usePapeletaList from "./usePapeletaList";
+import papeletaStoreModule from "./papeletaStoreModule";
+import moment from "moment";
+import Ripple from "vue-ripple-directive";
 
 export default {
     components: {
-        UsersListFilters,
-        UserListAddNew,
-
+        BListGroup,
+        BListGroupItem,
+        BCardText,
+        BCardBody,
         BCard,
         BRow,
         BCol,
@@ -246,103 +393,193 @@ export default {
         BDropdown,
         BDropdownItem,
         BPagination,
+        BTooltip,
 
         vSelect,
     },
+    directives: {
+        Ripple,
+    },
+    data() {
+        return {
+            papeletaID: "",
+            modalData: {
+                nro_papeleta: "",
+                nombres: "",
+                fecha_generacion: "",
+                tipo_papeleta: "",
+                fecha_salida: "",
+                hora_salida: "-",
+                fecha_retorno: "",
+                hora_retorno: "-",
+                estado: "",
+                creado_por: "",
+            },
+        };
+    },
+    mounted() {
+        // Set the initial number of items
+        this.refreshStatus = 1;
+    },
+    methods: {
+        confirmDelete(id) {
+            console.log(id);
+            this.$swal({
+                title: "Estas seguro?",
+                text: "No podras revertir esta accion!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Si, Eliminar",
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-outline-danger ml-1",
+                },
+                buttonsStyling: false,
+            }).then((result) => {
+                if (result.value) {
+                    this.$http
+                        .post("/api/auth/papeleta/delete/" + id)
+                        .then((res) => {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Accion realizada",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Papeleta eliminada correctamente`,
+                                },
+                            });
+                            // console.log(res);
+                            this.refreshStatus = 1;
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+            });
+        },
+        setModalData(data) {
+            this.modalData.nro_papeleta = data.nro_papeleta;
+            this.modalData.nombres = data.nombres;
+            this.modalData.fecha_generacion = data.fecha;
+            this.modalData.tipo_papeleta = data.tipo_permiso;
+            this.modalData.fecha_salida = data.fecha_salida;
+            this.modalData.hora_salida =
+                data.hora_salida != null ? data.hora_salida : "-";
+            this.modalData.fecha_retorno = data.fecha_retorno;
+            this.modalData.hora_retorno =
+                data.hora_retorno != null ? data.hora_retorno : "-";
+            this.modalData.estado = data.status;
+            this.modalData.creado_por = data.nombres;
+        },
+        changeDate(dato) {
+            return moment(String(dato)).format("MM/DD/YYYY");
+        },
+        changeStatus(dato) {
+            if (dato == "0") return "Pendiente";
+            if (dato == "1") return "Aprobado";
+            if (dato == "2") return "Observado";
+            if (dato == "3") return "Anulado";
+        },
+        changeColor(dato) {
+            if (dato == "0") return "warning";
+            if (dato == "1") return "success";
+            if (dato == "2") return "danger";
+            if (dato == "3") return "secondary";
+        },
+        updateStatus(status, id) {
+            this.$http
+                .post("/api/auth/papeleta/updateStatus/" + id, {
+                    status: status,
+                })
+                .then((res) => {
+                    // console.log(res);
+                    this.refreshStatus = 1;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
     setup() {
-        const USER_APP_STORE_MODULE_NAME = "app-user";
+        const PAPELETA_APP_STORE_MODULE_NAME = "app-papeleta";
 
         // Register module
-        if (!store.hasModule(USER_APP_STORE_MODULE_NAME))
-            store.registerModule(USER_APP_STORE_MODULE_NAME, userStoreModule);
-
+        if (!store.hasModule(PAPELETA_APP_STORE_MODULE_NAME))
+            store.registerModule(
+                PAPELETA_APP_STORE_MODULE_NAME,
+                papeletaStoreModule
+            );
         // UnRegister on leave
         onUnmounted(() => {
-            if (store.hasModule(USER_APP_STORE_MODULE_NAME))
-                store.unregisterModule(USER_APP_STORE_MODULE_NAME);
+            if (store.hasModule(PAPELETA_APP_STORE_MODULE_NAME))
+                store.unregisterModule(PAPELETA_APP_STORE_MODULE_NAME);
         });
 
-        const isAddNewUserSidebarActive = ref(false);
-
-        const roleOptions = [
-            { label: "Admin", value: "admin" },
-            { label: "Author", value: "author" },
-            { label: "Editor", value: "editor" },
-            { label: "Maintainer", value: "maintainer" },
-            { label: "Subscriber", value: "subscriber" },
-        ];
-
-        const planOptions = [
-            { label: "Basic", value: "basic" },
-            { label: "Company", value: "company" },
-            { label: "Enterprise", value: "enterprise" },
-            { label: "Team", value: "team" },
-        ];
-
-        const statusOptions = [
-            { label: "Pending", value: "pending" },
-            { label: "Active", value: "active" },
-            { label: "Inactive", value: "inactive" },
+        const statusOptions = ["Pendientes", "Procesados"];
+        const typeOptions = [
+            "PARTICULAR",
+            "COMISION DE SERVICIO",
+            "COMPENSACION HORAS EXTRAS",
+            "A CUENTA DE VACACIONES",
+            "ONOMASTICO",
+            "LUTO",
+            "PATERNIDAD",
+            "OTROS",
         ];
 
         const {
-            fetchUsers,
+            fetchInvoices,
             tableColumns,
             perPage,
             currentPage,
-            totalUsers,
+            totalInvoices,
             dataMeta,
             perPageOptions,
             searchQuery,
             sortBy,
             isSortDirDesc,
-            refUserListTable,
-            refetchData,
+            refInvoiceListTable,
 
-            // UI
-            resolveUserRoleVariant,
-            resolveUserRoleIcon,
-            resolveUserStatusVariant,
-
-            // Extra Filters
-            roleFilter,
-            planFilter,
             statusFilter,
-        } = useUsersList();
+            typeFilter,
+
+            refetchData,
+            refreshStatus,
+
+            resolveInvoiceStatusVariantAndIcon,
+            resolveClientAvatarVariant,
+            resolvePaperStatusVariant,
+        } = usePapeletaList();
 
         return {
-            // Sidebar
-            isAddNewUserSidebarActive,
-
-            fetchUsers,
+            fetchInvoices,
             tableColumns,
             perPage,
             currentPage,
-            totalUsers,
+            totalInvoices,
             dataMeta,
             perPageOptions,
             searchQuery,
             sortBy,
             isSortDirDesc,
-            refUserListTable,
-            refetchData,
+            refInvoiceListTable,
 
-            // Filter
-            avatarText,
+            statusFilter,
+            typeFilter,
 
-            // UI
-            resolveUserRoleVariant,
-            resolveUserRoleIcon,
-            resolveUserStatusVariant,
-
-            roleOptions,
-            planOptions,
+            typeOptions,
             statusOptions,
 
-            // Extra Filters
-            roleFilter,
-            planFilter,
-            statusFilter,
+            refetchData,
+
+            avatarText,
+            resolveInvoiceStatusVariantAndIcon,
+            resolveClientAvatarVariant,
+            resolvePaperStatusVariant,
+
+            refreshStatus,
         };
     },
 };
@@ -352,8 +589,21 @@ export default {
 .per-page-selector {
     width: 90px;
 }
+
+.invoice-filter-select {
+    min-width: 190px;
+
+    ::v-deep .vs__selected-options {
+        flex-wrap: nowrap;
+    }
+
+    ::v-deep .vs__selected {
+        width: 100px;
+    }
+}
 </style>
 
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
+@import "~@core/scss/vue/libs/vue-sweetalert.scss";
 </style>

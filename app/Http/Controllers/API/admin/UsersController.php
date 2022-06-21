@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Persona;
 use App\Models\Supestructura;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,22 @@ class UsersController extends Controller
         // return UserResource::collection($users);
         // $roles = Role::all();
 
+        // return RoleResource::collection($roles);
+    }
+    public function getPluck(Request $request)
+    {
+        // $users = User::all()->pluck('name' . 'last_name', 'id');
+        // $users = DB::table('CONCAT(nombres, apellido_paterno, apellido_materno)', 'dni')->where('status', '!=', 2)->get();
+        $users = DB::select('SELECT CONCAT(nombres, " ",apellido_paterno," ", apellido_materno) as name, dni as id FROM personas');
+        return response()->json($users);
+        // return RoleResource::collection($roles);
+    }
+    public function getTipoPermiso(Request $request)
+    {
+        // $users = User::all()->pluck('name' . 'last_name', 'id');
+        // $users = DB::table('CONCAT(nombres, apellido_paterno, apellido_materno)', 'dni')->where('status', '!=', 2)->get();
+        $permisos = DB::select('SELECT (tipo_permiso) as name, id FROM tipo_permisos');
+        return response()->json($permisos);
         // return RoleResource::collection($roles);
     }
     public function getDetail(Request $request, User $user)
