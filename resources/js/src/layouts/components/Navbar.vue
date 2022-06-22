@@ -95,7 +95,7 @@ export default {
         this.userData = getUserData();
     },
     methods: {
-        async logout() {
+        logout() {
             this.$http
                 .get("/auth/logout")
                 .then((response) => {
