@@ -371,7 +371,7 @@ import { onUnmounted } from "@vue/composition-api";
 import store from "@/store";
 import usePapeletaList from "./usePapeletaList";
 import papeletaStoreModule from "./papeletaStoreModule";
-import moment from "moment";
+// import moment from "moment";
 import Ripple from "vue-ripple-directive";
 
 export default {
@@ -474,7 +474,7 @@ export default {
             this.modalData.creado_por = data.nombres;
         },
         changeDate(dato) {
-            return moment(String(dato)).format("MM/DD/YYYY");
+            console.log("fer");
         },
         changeStatus(dato) {
             if (dato == "0") return "Pendiente";

@@ -41,7 +41,6 @@ router.beforeEach((to, _, next) => {
 
     if (!canNavigate(to)) {
       // Redirect to login if not logged in
-      console.log(!isLoggedIn)
       if (!isLoggedIn) return next({ name: 'auth-login' })
       return next({ name: 'misc-not-authorized' })
       // console.log(canNavigate(to))
