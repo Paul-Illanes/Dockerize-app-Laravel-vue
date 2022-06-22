@@ -335,7 +335,7 @@ export default {
                     console.log(error);
                 });
         },
-        async getRoles() {
+        getRoles() {
             // await axios.get('/sanctum/csrf-cookie')
             this.$http
                 .get("/api/roles")

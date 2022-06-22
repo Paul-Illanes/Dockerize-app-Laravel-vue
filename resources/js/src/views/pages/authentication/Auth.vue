@@ -1,11 +1,5 @@
 <template>
-    <div
-        class="misc-wrapper"
-        :style="{
-            backgroundImage:
-                'url(/images/_/_/_/_/kerp-spa/resources/js/src/assets/images/pages/login/fondo-login.jpg)',
-        }"
-    >
+    <div class="misc-wrapper" :style="{ backgroundImage: `url(${fondoImg})` }">
         <div class="misc-inner p-2 p-sm-3">
             <div class="w-100">
                 <div class="text-center pt-2">
