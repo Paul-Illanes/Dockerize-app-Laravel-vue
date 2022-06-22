@@ -1,5 +1,5 @@
 <template>
-    <div class="misc-wrapper" :style="{ backgroundImage: `url(${fondoImg})` }">
+    <div class="misc-wrapper">
         <div class="misc-inner p-2 p-sm-3">
             <div class="w-100">
                 <div class="text-center pt-2">
