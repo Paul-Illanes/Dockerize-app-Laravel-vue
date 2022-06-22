@@ -392,43 +392,6 @@ export default {
                     console.log(error);
                 });
         },
-        // updateRole() {
-        //     this.$http
-        //         .post("/api/auth/roles/update/" + this.$route.params.roleId, {
-        //             name: this.name,
-        //             permissions: this.selectedPermissions,
-        //         })
-        //         .then(() => {
-        //             this.$toast({
-        //                 component: ToastificationContent,
-        //                 position: "top-right",
-        //                 props: {
-        //                     title: `Success`,
-        //                     icon: "CoffeeIcon",
-        //                     variant: "success",
-        //                     text: `Actualizado correctamente!`,
-        //                 },
-        //             });
-        //             this.$router.push({ name: "admin-roles-list" });
-        //         })
-        //         .catch((error) => {
-        //             console.log(error);
-        //             for (let item in error.response.data.errors) {
-        //                 this.errors.add({
-        //                     scope: null,
-        //                     field: item,
-        //                     rule: "required",
-        //                     msg: error.response.data.errors[item][0],
-        //                 });
-        //             }
-        //             this.$vs.notify({
-        //                 title: "Failed",
-        //                 text: error.response.data.message,
-        //                 position: "top-right",
-        //                 color: "danger",
-        //             });
-        //         });
-        // },
         consoleVal() {
             console.log(this.selectedPermissions);
         },

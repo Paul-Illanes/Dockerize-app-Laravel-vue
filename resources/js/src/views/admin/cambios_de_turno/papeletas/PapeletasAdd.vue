@@ -308,7 +308,7 @@ export default {
             this.$router.back();
         },
 
-        async getRoles() {
+        getRoles() {
             // await axios.get('/sanctum/csrf-cookie')
             this.$http
                 .get("/api/roles")

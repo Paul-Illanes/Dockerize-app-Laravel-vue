@@ -756,7 +756,7 @@ export default {
                 this.selectedSuperstructuras = [];
             }
         },
-        async getRoles() {
+        getRoles() {
             // await axios.get('/sanctum/csrf-cookie')
             this.$http
                 .get("/api/auth/roles/pluck")
