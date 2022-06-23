@@ -101,6 +101,7 @@ export default {
                 .then((response) => {
                     // if (!localStorage.getItem(`userData`)) {
                     window.localStorage.clear();
+                    window.sessionStorage.clear();
                     this.$router.push("/login").catch(() => {});
                     // }
                     // this.$router.push("/login").catch(() => {});

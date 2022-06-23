@@ -285,7 +285,7 @@ export default {
                                 .then((response) => {
                                     const userData = response.data;
 
-                                    localStorage.setItem(
+                                    sessionStorage.setItem(
                                         "userData",
                                         JSON.stringify(response.data)
                                     );

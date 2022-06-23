@@ -80,19 +80,19 @@ export default class JwtService {
   }
 
   getToken() {
-    return localStorage.getItem(this.jwtConfig.storageTokenKeyName)
+    return sessionStorage.getItem(this.jwtConfig.storageTokenKeyName)
   }
 
   getRefreshToken() {
-    return localStorage.getItem(this.jwtConfig.storageRefreshTokenKeyName)
+    return sessionStorage.getItem(this.jwtConfig.storageRefreshTokenKeyName)
   }
 
   setToken(value) {
-    localStorage.setItem(this.jwtConfig.storageTokenKeyName, value)
+    sessionStorage.setItem(this.jwtConfig.storageTokenKeyName, value)
   }
 
   setRefreshToken(value) {
-    localStorage.setItem(this.jwtConfig.storageRefreshTokenKeyName, value)
+    sessionStorage.setItem(this.jwtConfig.storageRefreshTokenKeyName, value)
   }
 
   login(...args) {
