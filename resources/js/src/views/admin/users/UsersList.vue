@@ -150,13 +150,37 @@
             <template #cell(index)="data">
                 {{ data.index + 1 }}
             </template>
-            <template #cell(avatar)="data">
-                <b-avatar :src="data.value" />
-            </template>
-            <template #cell(status)="data">
-                <b-badge :variant="status[1][data.value]">
-                    {{ status[0][data.value] }}
-                </b-badge>
+            <template #cell(action)="data">
+                <div class="text-nowrap">
+                    <feather-icon
+                        :id="`user-row-${data.item.id}-send-icon`"
+                        @click="
+                            $router.push({
+                                name: 'admin-users-edit',
+                                params: { userId: data.item.id },
+                            })
+                        "
+                        icon="EditIcon"
+                        class="cursor-pointer text-primary"
+                        size="16"
+                    />
+                    <b-tooltip
+                        title="Editar Usuario"
+                        class="cursor-pointer"
+                        :target="`user-row-${data.item.id}-send-icon`"
+                    />
+
+                    <feather-icon
+                        :id="`invoice-row-${data.item.id}-preview-icon`"
+                        icon="TrashIcon"
+                        size="16"
+                        class="mx-1 cursor-pointer text-danger"
+                    />
+                    <b-tooltip
+                        title="Eliminar Usuario"
+                        :target="`invoice-row-${data.item.id}-preview-icon`"
+                    />
+                </div>
             </template>
         </b-table>
         <b-overlay :show="show" opacity="0.40" variant="success" blur="2px">
@@ -251,6 +275,7 @@ import {
     BInputGroupAppend,
     BButton,
     BCardBody,
+    BTooltip,
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
@@ -273,6 +298,7 @@ export default {
         BButton,
         BCardBody,
         vSelect,
+        BTooltip,
     },
     directives: {
         Ripple,
@@ -302,6 +328,7 @@ export default {
                 { key: "email", label: "Email", sortable: true },
                 { key: "pin", label: "pin", sortable: true },
                 { key: "roles[0].name", label: "Rol", sortable: true },
+                { key: "action", label: "Action", sortable: true },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,

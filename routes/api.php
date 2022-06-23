@@ -12,6 +12,7 @@ use App\Http\Controllers\API\employee\DirectorioReclamoController;
 use App\Http\Controllers\API\admin\SuperstructuraController;
 use App\Http\Controllers\API\admin\Permission;
 use App\Http\Controllers\API\admin\PapeletaController;
+use App\Http\Controllers\API\ParameterController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,11 +28,13 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::get('/soporte', [DirectorioReclamoController::class, 'getList']);
+
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
 
         Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
+        Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
         //usuarios
         // Route::get('/getUsers', [UsersController::class, 'usersList']);
         //Roles
@@ -76,6 +79,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('create', [PapeletaController::class, 'create']);
             Route::get('detail/{papeleta}', [PapeletaController::class, 'getDetail']);
             Route::post('update/{papeleta}', [PapeletaController::class, 'update']);
+            Route::post('observar', [PapeletaController::class, 'observar']);
             Route::post('updateStatus/{papeleta}', [PapeletaController::class, 'update_estado']);
             Route::post('delete/{papeleta}', [PapeletaController::class, 'delete']);
         });

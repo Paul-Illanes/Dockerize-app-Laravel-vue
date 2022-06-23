@@ -92,7 +92,7 @@
                 <span>&nbsp;Crear cuenta</span>
             </b-link>
         </b-card-text>
-        <!-- <b-card-text class="m-0 bg-light p-2">
+        <b-card-text class="m-0 bg-light p-2">
             <span style="color: #000000; font-size: 18px; font-weight: 500"
                 >SOPORTE
             </span>
@@ -108,7 +108,7 @@
                 <br />
                 Teléfono: {{ item.telefono }}
             </p>
-        </b-card-text> -->
+        </b-card-text>
     </b-card-text>
 </template>
 

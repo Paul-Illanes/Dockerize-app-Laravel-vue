@@ -77,7 +77,6 @@
             show-empty
             empty-text="No matching records found"
             :sort-desc.sync="isSortDirDesc"
-            :refresh="refreshStatus"
             class="position-relative"
         >
             <template #cell(index)="data">
@@ -140,8 +139,9 @@
                             icon="AlertTriangleIcon"
                         />
                         <span
-                            @click="updateStatus(2, data.item.id)"
+                            @click="helper(data.item)"
                             class="align-middle ml-50"
+                            v-b-modal.modal-obs
                             >Observar</span
                         >
                     </b-dropdown-item>
@@ -339,12 +339,103 @@
                     </b-row>
                 </b-card-body>
             </b-modal>
+            <b-modal
+                ref="my-modal-obs"
+                id="modal-obs"
+                centered
+                hide-footer
+                title="Registrar con observacion"
+            >
+                <b-card-body>
+                    <validation-observer ref="observerForm">
+                        <b-form
+                            class="auth-register-form mt-2 ml-2"
+                            @submit.prevent="observar"
+                        >
+                            <div class="col-12">
+                                Nombre:
+                                <strong>{{ modalObserver.nombres }}</strong>
+                                <p>
+                                    Tipo permiso:<strong>
+                                        {{ modalObserver.permiso }}
+                                    </strong>
+                                    <br />
+                                    Dni:
+                                    <strong>
+                                        {{ modalObserver.dni }}
+                                    </strong>
+                                    <br />
+                                    Fecha:
+                                    <strong
+                                        >{{
+                                            changeDate(
+                                                modalObserver.fecha_generacion
+                                            )
+                                        }}
+                                    </strong>
+                                    {{ modalObserver.id }}
+                                </p>
+                            </div>
+                            <b-col md="12">
+                                <b-form-input
+                                    hidden
+                                    v-model="papeletaIdObs"
+                                    name="register-name"
+                                />
+                                <b-form-group>
+                                    <label>Motivo de observacion</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="motivo de observacion"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="parameters"
+                                            v-model="selectedObs"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="12">
+                                <b-form-checkbox
+                                    class="mt-1"
+                                    v-model="emailPersonal"
+                                    v-bind:true-value="1"
+                                    v-bind:false-value="0"
+                                >
+                                    Notificar por email al empleado
+                                </b-form-checkbox>
+                            </b-col>
+                            <hr />
+                            <b-col cols="12" class="mt-2">
+                                <b-button
+                                    variant="primary"
+                                    type="submit"
+                                    @click.prevent="observar"
+                                >
+                                    Registrar
+                                </b-button>
+                            </b-col>
+                        </b-form>
+                    </validation-observer>
+                </b-card-body>
+            </b-modal>
         </div>
     </b-card>
 </template>
 
 <script>
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { required } from "@validations";
 import {
+    BForm,
     BCard,
     BRow,
     BCol,
@@ -362,7 +453,10 @@ import {
     BCardText,
     BCardBody,
     BListGroup,
+    BFormGroup,
     BListGroupItem,
+    BFormCheckboxGroup,
+    BFormCheckbox,
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import { avatarText } from "@core/utils/filter";
@@ -371,11 +465,13 @@ import { onUnmounted } from "@vue/composition-api";
 import store from "@/store";
 import usePapeletaList from "./usePapeletaList";
 import papeletaStoreModule from "./papeletaStoreModule";
-// import moment from "moment";
+import moment from "moment";
 import Ripple from "vue-ripple-directive";
+import { parameter_pluck } from "@/helpers/index.js";
 
 export default {
     components: {
+        BForm,
         BListGroup,
         BListGroupItem,
         BCardText,
@@ -394,15 +490,32 @@ export default {
         BDropdownItem,
         BPagination,
         BTooltip,
-
+        BFormGroup,
         vSelect,
+        BFormCheckboxGroup,
+        BFormCheckbox,
+        ValidationProvider,
+        ValidationObserver,
     },
     directives: {
         Ripple,
     },
     data() {
         return {
+            //observacion
+            selectedObs: "",
+            emailPersonal: "",
+            papeletaIdObs: "",
+            //
             papeletaID: "",
+            parameters: [],
+            modalObserver: {
+                nombres: "",
+                permiso: "",
+                fecha_generacion: "",
+                dni: "",
+                id: "",
+            },
             modalData: {
                 nro_papeleta: "",
                 nombres: "",
@@ -421,7 +534,61 @@ export default {
         // Set the initial number of items
         this.refreshStatus = 1;
     },
+
     methods: {
+        observar() {
+            this.$refs.observerForm.validate().then((success) => {
+                if (success) {
+                    this.$http
+                        .post("/api/auth/papeleta/observar", {
+                            id: this.papeletaIdObs,
+                            observacion_id: this.selectedObs.id,
+                            emailPersonal: this.emailPersonal,
+                        })
+                        .then(() => {
+                            this.refreshStatus = 1;
+
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Registrado Correctamente",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Observacion registrado correctamente`,
+                                },
+                            });
+                            this.$refs["my-modal-obs"].hide();
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            this.$refs.observerForm.setErrors(
+                                error.response.data.errors
+                            );
+                        });
+                }
+            });
+        },
+        helper(data) {
+            this.$http
+                .get("/api/auth/parameter/" + "obs-papeletas")
+                .then((response) => {
+                    console.log(response);
+                    this.parameters = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            // console.log(parameter_pluck("validacion"));
+            // this.parameters = parameter_pluck("validacion");
+            // console.log("abel");
+            // console.log(this.parameters);
+            this.modalObserver.nombres = data.nombres;
+            this.modalObserver.fecha_generacion = data.fecha;
+            this.modalObserver.dni = data.dni;
+            this.modalObserver.permiso = data.tipo_permiso;
+            this.papeletaIdObs = data.id;
+        },
         confirmDelete(id) {
             console.log(id);
             this.$swal({
@@ -474,7 +641,7 @@ export default {
             this.modalData.creado_por = data.nombres;
         },
         changeDate(dato) {
-            console.log("fer");
+            return moment(String(dato)).format("MM/DD/YYYY");
         },
         changeStatus(dato) {
             if (dato == "0") return "Pendiente";

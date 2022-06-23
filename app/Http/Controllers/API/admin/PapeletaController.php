@@ -133,4 +133,31 @@ class PapeletaController extends Controller
     {
         $papeleta->delete();
     }
+    public function observar(Request $request)
+    {
+
+        $status = 2;
+        $papeleta = Papeleta::findorfail($request->id);
+        $parameter = \App\Models\CmsParameter::find($request->observacion_id);
+        $message = 'Observada';
+
+        if ($request->has('emailPersonal')) {
+            $emailPersonal = true;
+        } else {
+            $emailPersonal = false;
+        }
+        $datos = [
+            'observacion_id' => $request->observacion_id,
+            'observacion_text' => $parameter->alias,
+            'email_personal' => $emailPersonal,
+            // 'emailencargado' => $emailEncargado,
+            // 'send_email_personal' => false,
+            // 'send_email_details' => '',
+        ];
+        $obs[0]['nro_id'] = 0;
+        $obs[0]['observacion'] = $datos;
+        $papeleta->status = $status;
+        $papeleta->chk2 = $obs;
+        $papeleta->save();
+    }
 }
