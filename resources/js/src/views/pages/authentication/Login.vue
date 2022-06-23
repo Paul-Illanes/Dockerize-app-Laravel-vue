@@ -26,16 +26,6 @@
                 </b-form-group>
 
                 <b-form-group>
-                    <div class="d-flex justify-content-between">
-                        <label for="login-password">Password</label>
-                        <b-link
-                            :to="{
-                                name: 'auth-forgot-password-v2',
-                            }"
-                        >
-                            <small>Olvidaste tu password?</small>
-                        </b-link>
-                    </div>
                     <validation-provider
                         #default="{ errors }"
                         name="Password"
@@ -65,8 +55,7 @@
                         <small class="text-danger">{{ errors[0] }}</small>
                     </validation-provider>
                 </b-form-group>
-
-                <b-form-group>
+                <div class="d-flex justify-content-between mb-1">
                     <b-form-checkbox
                         id="remember-me"
                         v-model="status"
@@ -74,7 +63,10 @@
                     >
                         recuerdame
                     </b-form-checkbox>
-                </b-form-group>
+                    <b-link>
+                        <small>Olvidaste tu password?</small>
+                    </b-link>
+                </div>
 
                 <b-button
                     type="submit"
