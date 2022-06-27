@@ -8,6 +8,7 @@ use App\Models\Papeleta;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\VacacionesDocumento;
 
 class PapeletaController extends Controller
 {
@@ -33,11 +34,33 @@ class PapeletaController extends Controller
         $papeleta->update([
             'status' => $request->status,
         ]);
+        if ($request->status == 2) {
+            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+            $vacacion_id = $vac[0]->id;
+            $vacacion = VacacionesDocumento::find($vacacion_id);
+            $vacacion->estado_valido = 0;
+            $vacacion->save();
+        }
+        if ($request->status == 1) {
+            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+            $vacacion_id = $vac[0]->id;
+            $vacacion = VacacionesDocumento::find($vacacion_id);
+            $vacacion->estado_valido = 1;
+            $vacacion->save();
+        }
+        if ($request->status == 3) {
+            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+            $vacacion_id = $vac[0]->id;
+            $vacacion = VacacionesDocumento::find($vacacion_id);
+            $vacacion->estado_valido = 0;
+            $vacacion->save();
+        }
         return response()->json(['status' => 200]);
     }
 
     public function create(Request $request)
     {
+        $periodo = $request->periodo;
         $persona = $request->user()->username;
         $id = $request->user()->id;
         $fecha = now();
@@ -84,7 +107,24 @@ class PapeletaController extends Controller
         if (is_null($papeleta->dni))
             $papeleta->dni = $persona;
 
-        $papeleta->save();
+        if ($papeleta->save()) {
+            $this->crearVacacionDocumento($papeleta, $periodo);
+            $papeleta->vacaciones_status = 1;
+            $papeleta->save();
+        }
+    }
+    public function crearVacacionDocumento($papeleta, $periodo)
+    {
+        $vacacion = VacacionesDocumento::create([
+            'periodo' => $periodo,
+            'persona_dni' => $papeleta->dni,
+            'fecha_inicio' => $papeleta->fecha_salida,
+            'fecha_final' => $papeleta->fecha_retorno,
+            'nro_dias' => $papeleta->tdd,
+            'tipo_documento_id' => 1,
+            'papeleta_id' => $papeleta->id,
+            'estado_valido' => 0,
+        ]);
     }
     public function getDetail(Request $request, Papeleta $papeleta)
     {
@@ -158,6 +198,18 @@ class PapeletaController extends Controller
         $obs[0]['observacion'] = $datos;
         $papeleta->status = $status;
         $papeleta->chk2 = $obs;
-        $papeleta->save();
+        if ($papeleta->save()) {
+            if ($papeleta->tipo_permiso_id == 4) {
+                if ($papeleta->vacaciones_status == 1) {
+                    $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+                    $vacacion_id = $vac[0]->id;
+                    $vacacion = VacacionesDocumento::find($vacacion_id);
+                    $vacacion->estado_valido = 0;
+                    $vacacion->save();
+                }
+            } else {
+                return response()->json(['status' => 200]);
+            }
+        }
     }
 }

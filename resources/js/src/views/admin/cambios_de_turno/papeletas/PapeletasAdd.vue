@@ -5,11 +5,11 @@
             <b-col md="12">
                 <validation-observer ref="registerForm" #default="{ invalid }">
                     <b-form
-                        class="auth-register-form mt-2 ml-2"
+                        class="auth-register-form mt-2 ml-2 mr-2"
                         @submit.prevent="register"
                     >
                         <b-row>
-                            <b-col md="4">
+                            <b-col md="6">
                                 <b-form-group>
                                     <label>Solicitante</label>
 
@@ -23,6 +23,7 @@
                                             :options="users"
                                             v-model="selectedUser"
                                             name="users"
+                                            :disabled="SelectedVac != ''"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
@@ -30,7 +31,7 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="4">
+                            <b-col md="6">
                                 <b-form-group>
                                     <label>tipo de Permiso</label>
 
@@ -44,6 +45,7 @@
                                             :options="permisos"
                                             v-model="selectedType"
                                             name="permisos"
+                                            :disabled="SelectedVac != ''"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
@@ -51,7 +53,6 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-
                             <b-col md="12">
                                 <b-form-group>
                                     <b-form-checkbox
@@ -67,12 +68,15 @@
                                         name="check-button"
                                         switch
                                         inline
+                                        :disabled="
+                                            selectedType.name ==
+                                            'A CUENTA DE VACACIONES'
+                                        "
                                     >
                                         Permiso por horas
                                     </b-form-checkbox>
                                 </b-form-group>
                             </b-col>
-
                             <b-col md="3" v-if="dias">
                                 <label>Fecha de salida</label>
                                 <b-input-group class="mb-1">
@@ -83,6 +87,7 @@
                                         placeholder="YYYY-MM-DD"
                                         autocomplete="off"
                                         show-decade-nav
+                                        :disabled="SelectedVac != ''"
                                     />
                                     <b-input-group-append>
                                         <b-form-datepicker
@@ -95,6 +100,7 @@
                                             locale="es-ES"
                                             aria-controls="example-input"
                                             @context="onContext"
+                                            :disabled="SelectedVac != ''"
                                         />
                                     </b-input-group-append>
                                 </b-input-group>
@@ -110,6 +116,7 @@
                                         placeholder="YYYY-MM-DD"
                                         autocomplete="off"
                                         show-decade-nav
+                                        :disabled="SelectedVac != ''"
                                     />
                                     <b-input-group-append>
                                         <b-form-datepicker
@@ -122,12 +129,79 @@
                                             locale="es-ES"
                                             aria-controls="example-input"
                                             @context="onContext"
+                                            :disabled="SelectedVac != ''"
                                         />
                                     </b-input-group-append>
                                 </b-input-group>
                             </b-col>
+                            <b-col
+                                md="12"
+                                v-if="
+                                    show &&
+                                    SelectedVac == '' &&
+                                    vacaciones != 'vacio'
+                                "
+                            >
+                                <b-table
+                                    responsive
+                                    :items="vacaciones"
+                                    :fields="fields"
+                                    class="mb-0"
+                                    v-if="vacaciones.length >= 1"
+                                >
+                                    <template #cell(pend)="data">
+                                        {{
+                                            data.item.dias_pendientes -
+                                            data.item.dias_usados
+                                        }}
+                                    </template>
+                                    <template #cell(action)="data">
+                                        <b-button
+                                            variant="primary"
+                                            size="sm"
+                                            :disabled="
+                                                data.item.pend == 0 ||
+                                                data.item.pend < limitDays
+                                            "
+                                            @click="vacacion(data.item)"
+                                        >
+                                            Elegir
+                                        </b-button>
+                                    </template>
+                                </b-table>
+                                <b-card
+                                    border-variant="danger"
+                                    bg-variant="transparent"
+                                    title="Ocurrio un error"
+                                    class="shadow-none"
+                                    v-if="
+                                        vacaciones.length == 0 &&
+                                        vacaciones != 'vacio'
+                                    "
+                                >
+                                    <b-card-text>
+                                        El solicitante aun no completo un
+                                        periodo laboral, no cuenta con
+                                        vacaciones
+                                    </b-card-text>
+                                </b-card>
+                            </b-col>
 
-                            <b-col md="1" v-if="horas">
+                            <b-col md="12" v-if="SelectedVac">
+                                <b-card
+                                    border-variant="info"
+                                    bg-variant="transparent"
+                                    title="Periodo seleccionado: "
+                                    class="shadow-none"
+                                >
+                                    <b-card-text>
+                                        {{ SelectedVac }}, (dias:
+                                        {{ limitDays }})
+                                    </b-card-text>
+                                </b-card>
+                            </b-col>
+
+                            <b-col md="3" v-if="horas">
                                 <b-form-group>
                                     <label>Hora de salida</label>
                                     <validation-provider
@@ -151,7 +225,7 @@
                                 </b-form-group>
                             </b-col>
 
-                            <b-col md="1" v-if="horas">
+                            <b-col md="3" v-if="horas">
                                 <label>Hora de retorno</label>
                                 <validation-provider
                                     #default="{ errors }"
@@ -172,7 +246,7 @@
                                     }}</small>
                                 </validation-provider>
                             </b-col>
-                            <b-col md="8">
+                            <b-col md="12">
                                 <label>Observacion</label>
                                 <b-form-textarea
                                     id="textarea-default"
@@ -207,6 +281,7 @@ import BCardCode from "@core/components/b-card-code/BCardCode.vue";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import flatPickr from "vue-flatpickr-component";
 import {
+    BCard,
     BRow,
     BCol,
     BButton,
@@ -224,14 +299,20 @@ import {
     BFormCheckboxGroup,
     BFormDatepicker,
     BFormTextarea,
+    BTable,
+    BFormRadioGroup,
+    BFormRadio,
 } from "bootstrap-vue";
 import { required } from "@validations";
 import useJwt from "@/auth/jwt/useJwt";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
+import moment from "moment";
+import "animate.css";
 
 export default {
     components: {
+        BCard,
         BRow,
         BCol,
         BButton,
@@ -255,10 +336,17 @@ export default {
         BFormDatepicker,
         flatPickr,
         BFormTextarea,
+        BTable,
+        BFormRadioGroup,
+        BFormRadio,
     },
 
     data() {
         return {
+            limitDays: "",
+            diasVac: "",
+            show: false,
+            SelectedVac: "",
             formatted: "",
             selected: "",
             descripcion: "",
@@ -274,6 +362,21 @@ export default {
             fecha_retorno: "",
             hora_salida: "",
             hora_retorno: "",
+            vacaciones: [],
+            fields: [
+                "periodo",
+                "dias_pendientes",
+                "dias_usados",
+                "pend",
+                {
+                    key: "pend",
+                    label: "pend",
+                },
+                {
+                    key: "action",
+                    label: "action",
+                },
+            ],
         };
     },
     created() {
@@ -297,7 +400,77 @@ export default {
                 console.log(error);
             });
     },
+    watch: {
+        selectedType: function (val, oldval) {
+            if (
+                val.name == "A CUENTA DE VACACIONES" &&
+                this.selectedUser != ""
+            ) {
+                // this.show = true;
+                console.log("xd");
+                this.$http
+                    .post("/api/auth/vacaciones/report/", {
+                        persona_dni: this.selectedUser.id,
+                    })
+                    .then((response) => {
+                        this.vacaciones = response.data;
+                        console.log(this.vacaciones);
+                        this.show = true;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            } else {
+                this.vacaciones = "vacio";
+            }
+        },
+        selectedUser: function (val, oldval) {
+            if (this.selectedType.name == "A CUENTA DE VACACIONES") {
+                // this.show = true;
+                this.$http
+                    .post("/api/auth/vacaciones/report/", {
+                        persona_dni: this.selectedUser.id,
+                    })
+                    .then((response) => {
+                        this.vacaciones = response.data;
+                        (this.show = true), console.log(response.data);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        },
+        fecha_retorno: function (val, oldval) {
+            var fecha1 = moment(this.fecha_salida);
+            var fecha2 = moment(this.fecha_retorno);
+            this.limitDays = fecha2.diff(fecha1, "days");
+        },
+        fecha_salida: function (val, oldval) {
+            var fecha1 = moment(this.fecha_salida);
+            var fecha2 = moment(this.fecha_retorno);
+            this.limitDays = fecha2.diff(fecha1, "days");
+        },
+    },
     methods: {
+        vacacion(data) {
+            if (!this.fecha_salida || !this.fecha_retorno) {
+                this.$swal({
+                    title: "Primero elije las fechas",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    },
+                    showClass: {
+                        popup: "animate__animated animate__fadeIn",
+                    },
+                    buttonsStyling: false,
+                });
+                this.dias = true;
+            }
+            if (this.fecha_salida && this.fecha_retorno) {
+                this.SelectedVac = data.anio;
+                console.log(data);
+            }
+        },
         onContext(ctx) {
             // The date formatted in the locale, or the `label-no-date-selected` string
             this.formatted = ctx.selectedFormatted;
@@ -324,6 +497,7 @@ export default {
                 if (success) {
                     this.$http
                         .post("/api/auth/papeleta/create", {
+                            periodo: this.SelectedVac,
                             tipo_permiso_id: this.selectedType.id,
                             dni: this.selectedUser.id,
                             fecha_salida: this.fecha_salida,

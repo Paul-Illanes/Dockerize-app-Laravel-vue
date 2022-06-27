@@ -13,6 +13,7 @@ use App\Http\Controllers\API\admin\SuperstructuraController;
 use App\Http\Controllers\API\admin\Permission;
 use App\Http\Controllers\API\admin\PapeletaController;
 use App\Http\Controllers\API\ParameterController;
+use App\Http\Controllers\API\admin\VacacionesDocumentoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -82,6 +83,10 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('observar', [PapeletaController::class, 'observar']);
             Route::post('updateStatus/{papeleta}', [PapeletaController::class, 'update_estado']);
             Route::post('delete/{papeleta}', [PapeletaController::class, 'delete']);
+        });
+        //vacaciones
+        Route::group(['prefix' => 'vacaciones'], function () {
+            Route::post('report', [VacacionesDocumentoController::class, 'report']);
         });
     });
 });
