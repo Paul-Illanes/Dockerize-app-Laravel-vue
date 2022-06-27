@@ -407,12 +407,10 @@ export default {
                 this.selectedUser != ""
             ) {
                 // this.show = true;
-                console.log("xd");
                 this.$http
-                    .post("/api/auth/vacaciones/report/", {
-                        persona_dni: this.selectedUser.id,
-                    })
+                    .get("/api/auth/vacaciones/report/" + this.selectedUser.id)
                     .then((response) => {
+                        console.log(response.data);
                         this.vacaciones = response.data;
                         console.log(this.vacaciones);
                         this.show = true;
@@ -428,9 +426,7 @@ export default {
             if (this.selectedType.name == "A CUENTA DE VACACIONES") {
                 // this.show = true;
                 this.$http
-                    .post("/api/auth/vacaciones/report/", {
-                        persona_dni: this.selectedUser.id,
-                    })
+                    .get("/api/auth/vacaciones/report/" + this.selectedUser.id)
                     .then((response) => {
                         this.vacaciones = response.data;
                         (this.show = true), console.log(response.data);

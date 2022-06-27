@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 
 class VacacionesDocumentoController extends Controller
 {
-    public function report(Request $request)
+    public function report($dni)
     {
-        $persona_dni = $request->persona_dni;
+        $persona_dni = $dni;
         $sql = "SELECT 
         vac.anio,
         vac.periodo,
@@ -32,7 +32,13 @@ class VacacionesDocumentoController extends Controller
         INNER JOIN personas per ON per.dni = vac.dni
         WHERE vac.dni = $persona_dni
         AND vac.status = 1";
-        $vacaciones = DB::select($sql);
-        return response()->json($vacaciones);
+        $vac = DB::select($sql);
+        $vacaciones = (object) $vac;
+        // var_dump(gettype($vacaciones));
+        $data = [
+            'status' => 200,
+            'data' => $vacaciones
+        ];
+        return response()->json($vac);
     }
 }

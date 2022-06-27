@@ -86,7 +86,7 @@ Route::group(['prefix' => 'auth'], function () {
         });
         //vacaciones
         Route::group(['prefix' => 'vacaciones'], function () {
-            Route::post('report', [VacacionesDocumentoController::class, 'report']);
+            Route::get('/report/{dni}', [VacacionesDocumentoController::class, 'report']);
         });
     });
 });
