@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CmsParameter;
-use App\mODELS\CmsParameterGroup;
+use App\Models\CmsParameterGroup;
 
 class ParameterController extends Controller
 {

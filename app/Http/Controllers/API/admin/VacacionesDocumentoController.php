@@ -31,9 +31,7 @@ class VacacionesDocumentoController extends Controller
         RIGHT JOIN vacaciones vac ON vac.dni = tdocumentos.dni AND vac.`anio`=tdocumentos.periodo
         INNER JOIN personas per ON per.dni = vac.dni
         WHERE vac.dni = $persona_dni
-        AND vac.status = 1
-      
-    ";
+        AND vac.status = 1";
         $vacaciones = DB::select($sql);
         return response()->json($vacaciones);
     }
