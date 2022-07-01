@@ -83,7 +83,7 @@ class VacacionesDocumentoController extends Controller
         $papeletas = Papeleta::where('dni', $dni)
             ->where('tipo_permiso_id', 4)
             ->where('status', 1)
-            ->where('vacaciones_status', '!=', 1)
+            ->whereNull('vacaciones_status')
             ->orderBy('id', 'DESC')
             ->get();
         return response()->json($papeletas);
