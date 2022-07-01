@@ -353,11 +353,7 @@
                             @submit.prevent="observar"
                         >
                             <b-col md="12">
-                                <b-form-input
-                                    hidden
-                                    
-                                    name="register-name"
-                                />
+                                <b-form-input hidden name="register-name" />
                                 <b-form-group>
                                     <label>Motivo de observacion</label>
 
@@ -369,7 +365,7 @@
                                         <v-select
                                             label="name"
                                             :options="parameters"
-                                            v-model="vacaciones"
+                                            v-model="selectedObs"
                                             name="users"
                                             placeholder="Seleccione"
                                         />
