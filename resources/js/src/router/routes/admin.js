@@ -113,5 +113,16 @@ export default [
       action: 'papeletas-create',
     },
   },
-
+  // *===============================================---*
+  // *--------- reporte de vacaciones---- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/informacion/reporte_vacaciones/list',
+    name: 'admin-reporte_vacaciones-list',
+    component: () => import('@/views/admin/informacion/reporte_vacaciones/ReporteVacacionesList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'vacaciones_documentos-report',
+    },
+  },
 ]

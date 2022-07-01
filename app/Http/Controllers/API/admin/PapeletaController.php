@@ -38,7 +38,7 @@ class PapeletaController extends Controller
             $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
             $vacacion_id = $vac[0]->id;
             $vacacion = VacacionesDocumento::find($vacacion_id);
-            $vacacion->estado_valido = 0;
+            $vacacion->estado_valido = 4;
             $vacacion->save();
         }
         if ($request->status == 1) {
@@ -52,7 +52,7 @@ class PapeletaController extends Controller
             $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
             $vacacion_id = $vac[0]->id;
             $vacacion = VacacionesDocumento::find($vacacion_id);
-            $vacacion->estado_valido = 0;
+            $vacacion->estado_valido = 4;
             $vacacion->save();
         }
         return response()->json(['status' => 200]);
@@ -121,9 +121,9 @@ class PapeletaController extends Controller
             'fecha_inicio' => $papeleta->fecha_salida,
             'fecha_final' => $papeleta->fecha_retorno,
             'nro_dias' => $papeleta->tdd,
-            'tipo_documento_id' => 1,
+            'tipo_documento_id' => 4,
             'papeleta_id' => $papeleta->id,
-            'estado_valido' => 0,
+            'estado_valido' => 4,
         ]);
     }
     public function getDetail(Request $request, Papeleta $papeleta)
@@ -210,6 +210,30 @@ class PapeletaController extends Controller
             } else {
                 return response()->json(['status' => 200]);
             }
+        }
+    }
+    public function asignar(Request $request)
+    {
+        // var_dump($request->all());
+        $vacaciones = VacacionesDocumento::create([
+            'periodo' => $request->periodo,
+            'persona_dni' => $request->dni,
+            'fecha_inicio' => $request->fecha_inicio,
+            'fecha_final' => $request->fecha_final,
+            'nro_dias' => $request->nro_dias,
+            'tipo_documento_id' => 4,
+            'papeleta_id' => $request->papeleta_id,
+            'estado_valido' => 1,
+        ]);
+        if ($vacaciones->id) {
+            $papeleta_id = $request->papeleta_id;
+            $res = Papeleta::find($papeleta_id);
+            $res->vacaciones_status = 1;
+            if ($res->save()) {
+                return response()->json(['status' => 200]);
+            }
+        } else {
+            return response()->json(['status' => 500, 'msg' => 'no se pudo registrar']);
         }
     }
 }

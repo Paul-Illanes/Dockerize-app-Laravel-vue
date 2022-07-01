@@ -39,7 +39,7 @@ export default [
     ],
   },
   {
-    title: 'Cambios de turno',
+    title: 'Registrar',
     icon: 'BookOpenIcon',
     children: [
       {
@@ -48,6 +48,19 @@ export default [
         resource: 'ACL',
         action: 'papeletas-index',
         icon: 'FileTextIcon',
+      },
+    ],
+  },
+  {
+    title: 'Informacion',
+    icon: 'InfoIcon',
+    children: [
+      {
+        title: 'Reporte Vacaciones',
+        route: 'admin-reporte_vacaciones-list',
+        resource: 'ACL',
+        action: 'vacaciones_documentos-report',
+        icon: 'CalendarIcon',
       },
     ],
   },

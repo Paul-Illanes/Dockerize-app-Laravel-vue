@@ -352,34 +352,10 @@
                             class="auth-register-form mt-2 ml-2"
                             @submit.prevent="observar"
                         >
-                            <div class="col-12">
-                                Nombre:
-                                <strong>{{ modalObserver.nombres }}</strong>
-                                <p>
-                                    Tipo permiso:<strong>
-                                        {{ modalObserver.permiso }}
-                                    </strong>
-                                    <br />
-                                    Dni:
-                                    <strong>
-                                        {{ modalObserver.dni }}
-                                    </strong>
-                                    <br />
-                                    Fecha:
-                                    <strong
-                                        >{{
-                                            changeDate(
-                                                modalObserver.fecha_generacion
-                                            )
-                                        }}
-                                    </strong>
-                                    {{ modalObserver.id }}
-                                </p>
-                            </div>
                             <b-col md="12">
                                 <b-form-input
                                     hidden
-                                    v-model="papeletaIdObs"
+                                    
                                     name="register-name"
                                 />
                                 <b-form-group>
@@ -393,7 +369,7 @@
                                         <v-select
                                             label="name"
                                             :options="parameters"
-                                            v-model="selectedObs"
+                                            v-model="vacaciones"
                                             name="users"
                                             placeholder="Seleccione"
                                         />

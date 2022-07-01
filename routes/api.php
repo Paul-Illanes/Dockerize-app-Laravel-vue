@@ -83,10 +83,15 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('observar', [PapeletaController::class, 'observar']);
             Route::post('updateStatus/{papeleta}', [PapeletaController::class, 'update_estado']);
             Route::post('delete/{papeleta}', [PapeletaController::class, 'delete']);
+            Route::post('/asignar', [PapeletaController::class, 'asignar']);
         });
         //vacaciones
         Route::group(['prefix' => 'vacaciones'], function () {
             Route::get('/report/{dni}', [VacacionesDocumentoController::class, 'report']);
+            Route::get('/report/vacaciones/{dni}', [VacacionesDocumentoController::class, 'vacaciones']);
+            Route::get('/report/documentos/{dni}', [VacacionesDocumentoController::class, 'documentos']);
+            Route::get('/report/papeletas/{dni}', [VacacionesDocumentoController::class, 'papeletas']);
+            Route::get('/report/periodo/{dni}', [VacacionesDocumentoController::class, 'periodo_pluck']);
         });
     });
 });
