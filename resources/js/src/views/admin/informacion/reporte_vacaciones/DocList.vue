@@ -77,6 +77,9 @@
             <template #cell(index)="data">
                 {{ data.index + 1 }}
             </template>
+            <template #cell(es_suspension)="data">
+                {{ changeSuspension(data.item.es_suspension) }}
+            </template>
             <template #cell(fecha_inicio)="data">
                 {{ changeDate(data.item.fecha_inicio) }}
             </template>
@@ -220,6 +223,7 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/documentos/" + val.id)
                 .then((response) => {
+                    console.log(response);
                     this.items = response.data;
                     // this.show = true;
                 })
@@ -243,6 +247,13 @@ export default {
     methods: {
         changeDate(dato) {
             return moment(String(dato)).format("MM/DD/YYYY");
+        },
+        changeSuspension(dato) {
+            if (!dato) {
+                return "USO";
+            } else {
+                return "SUSPENDIDO";
+            }
         },
         changePeriodo(dato) {
             if (dato) {

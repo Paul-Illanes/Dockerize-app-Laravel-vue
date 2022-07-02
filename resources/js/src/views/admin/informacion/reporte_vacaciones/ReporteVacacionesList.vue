@@ -15,6 +15,27 @@
                         />
                     </b-form-group>
                 </b-col>
+                <b-col cols="12" class="mt-1 mb-1" v-if="taskTags">
+                    <b-row>
+                        <b-col cols="4"><b>DNI:</b> {{ persona.dni }} </b-col>
+                        <b-col cols="4"
+                            ><b>Cargo:</b> {{ persona.cargo }}
+                        </b-col>
+                        <b-col cols="4"
+                            ><b>Dependencia:</b> {{ persona.dependencia }}
+                        </b-col>
+                        <b-col cols="4"
+                            ><b>Cod. Planilla :</b> {{ persona.cod_planilla }}
+                        </b-col>
+                        <b-col cols="4"
+                            ><b>Condicion Laboral :</b> {{ persona.c_l }}
+                        </b-col>
+                        <b-col cols="4"
+                            ><b>Fecha Ingreso :</b>
+                            {{ changeDate(fecha) }}
+                        </b-col>
+                    </b-row>
+                </b-col>
             </b-row>
         </b-card-code>
         <b-card-code title="Documentos">
@@ -49,6 +70,7 @@ import vSelect from "vue-select";
 import vacacionList from "./VacList.vue";
 import papeletaList from "./PapList.vue";
 import documentoList from "./DocList.vue";
+import moment from "moment";
 
 export default {
     components: {
@@ -73,20 +95,36 @@ export default {
             isEventHandlerSidebarActive: "",
             show: false,
             users: [],
+            persona: [],
             selected: "",
             taskTags: "",
             changePage: "",
+            fecha: "",
         };
     },
     watch: {
         selected: function (val, oldval) {
+            console.log(val);
             this.taskTags = val;
+            this.$http
+                .get("/api/auth/vacaciones/report/getpersona/" + val.id)
+                .then((response) => {
+                    console.log(response);
+                    this.persona = response.data;
+                    this.fecha = response.data.fecha_ingreso;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
     },
     methods: {
         onClickChild(value) {
             console.log(value); // someValue
             this.taskTags = value;
+        },
+        changeDate(dato) {
+            return moment(String(dato)).format("MM/DD/YYYY");
         },
     },
     created() {

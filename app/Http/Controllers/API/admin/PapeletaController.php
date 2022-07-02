@@ -215,13 +215,14 @@ class PapeletaController extends Controller
     public function asignar(Request $request)
     {
         // var_dump($request->all());
+        //res
         $vacaciones = VacacionesDocumento::create([
             'periodo' => $request->periodo,
             'persona_dni' => $request->dni,
             'fecha_inicio' => $request->fecha_inicio,
-            'fecha_final' => $request->fecha_final,
+            'fecha_final' => $request->fecha_final, //restar 1 dia(por revizar)
             'nro_dias' => $request->nro_dias,
-            'tipo_documento_id' => 4,
+            'tipo_documento_id' => 2,
             'papeleta_id' => $request->papeleta_id,
             'estado_valido' => 1,
         ]);

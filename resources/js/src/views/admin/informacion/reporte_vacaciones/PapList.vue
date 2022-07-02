@@ -171,7 +171,18 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
+                            <b-col md="12" v-if="selectedVac">
+                                <p>
+                                    <b>Dias: </b
+                                    >{{ selectedVac.dias_pendientes }}
+                                </p>
 
+                                <p>
+                                    <b>Usados: </b>{{ selectedVac.dias_usados }}
+                                </p>
+
+                                <p><b>Pendientes: </b>{{ selectedVac.pend }}</p>
+                            </b-col>
                             <b-col cols="12" class="mt-1">
                                 <b-button
                                     variant="primary"

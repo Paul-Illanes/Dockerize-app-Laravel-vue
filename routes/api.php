@@ -92,6 +92,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/report/documentos/{dni}', [VacacionesDocumentoController::class, 'documentos']);
             Route::get('/report/papeletas/{dni}', [VacacionesDocumentoController::class, 'papeletas']);
             Route::get('/report/periodo/{dni}', [VacacionesDocumentoController::class, 'periodo_pluck']);
+            Route::get('/report/getpersona/{dni}', [VacacionesDocumentoController::class, 'getPersona']);
         });
     });
 });

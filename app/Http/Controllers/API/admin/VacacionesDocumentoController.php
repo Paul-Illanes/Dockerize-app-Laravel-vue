@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\VacacionesDocumento;
 use App\Models\Papeleta;
+use App\Models\Persona;
 
 class VacacionesDocumentoController extends Controller
 {
@@ -73,6 +74,7 @@ class VacacionesDocumentoController extends Controller
             ->join('vacaciones_tipo_documentos', 'vacaciones_tipo_documentos.id', 'vacaciones_documentos.tipo_documento_id')
             ->where('persona_dni', $dni)
             ->where('estado_valido', 1)
+            // ->where('es_suspension', '=', 0)
             ->orderBy('vacaciones_documentos.id', 'DESC')
             ->get();
 
@@ -111,8 +113,15 @@ class VacacionesDocumentoController extends Controller
         RIGHT JOIN vacaciones vac ON vac.dni = tdocumentos.dni AND vac.`anio`=tdocumentos.periodo
         INNER JOIN personas per ON per.dni = vac.dni
         WHERE vac.dni = $persona_dni
+        AND tdocumentos.dias_usados < 30
         AND vac.status = 1";
         $vac = DB::select($sql);
         return response()->json($vac);
+    }
+    public function getPersona(Request $request)
+    {
+        $persona = Persona::find($request->dni);
+
+        return response()->json($persona);
     }
 }
