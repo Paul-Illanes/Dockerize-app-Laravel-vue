@@ -562,7 +562,7 @@ export default {
             this.papeletaIdObs = data.id;
         },
         confirmDelete(id) {
-           =
+            console.log(id);
             this.$swal({
                 title: "Estas seguro?",
                 text: "No podras revertir esta accion!",
