@@ -64,4 +64,17 @@ export default [
       },
     ],
   },
+  {
+    title: 'Procesos',
+    icon: 'ListIcon',
+    children: [
+      {
+        title: 'Incorporaciones',
+        route: 'admin-incorporacion-list',
+        resource: 'ACL',
+        action: 'incorporaciones-index',
+        icon: 'PlusIcon',
+      },
+    ],
+  },
 ]

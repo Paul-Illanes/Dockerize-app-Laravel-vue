@@ -14,6 +14,7 @@ use App\Http\Controllers\API\admin\Permission;
 use App\Http\Controllers\API\admin\PapeletaController;
 use App\Http\Controllers\API\ParameterController;
 use App\Http\Controllers\API\admin\VacacionesDocumentoController;
+use App\Http\Controllers\API\admin\IncorporacionesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,6 +37,7 @@ Route::group(['prefix' => 'auth'], function () {
 
         Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
         Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
+        Route::get('/parameter_check/{varia}', [ParameterController::class, 'parameter_check']);
         //usuarios
         // Route::get('/getUsers', [UsersController::class, 'usersList']);
         //Roles
@@ -93,6 +95,14 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/report/papeletas/{dni}', [VacacionesDocumentoController::class, 'papeletas']);
             Route::get('/report/periodo/{dni}', [VacacionesDocumentoController::class, 'periodo_pluck']);
             Route::get('/report/getpersona/{dni}', [VacacionesDocumentoController::class, 'getPersona']);
+        });
+        //vacaciones
+        Route::group(['prefix' => 'incorporaciones'], function () {
+            Route::get('/', [IncorporacionesController::class, 'getList']);
+            Route::post('/create', [IncorporacionesController::class, 'store']);
+            Route::post('/status', [IncorporacionesController::class, 'status']);
+            Route::get('detail/{incorporaciones}', [IncorporacionesController::class, 'getDetail']);
+            Route::post('update/{incorporaciones}', [IncorporacionesController::class, 'update']);
         });
     });
 });

@@ -354,7 +354,7 @@ export default {
         register() {
             this.$refs.registerForm.validate().then((success) => {
                 if (success) {
-                    console.log(this.selectedPermissions);
+                   
                     this.$http
                         .post("/api/auth/roles/create", {
                             name: this.name,

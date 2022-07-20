@@ -125,4 +125,34 @@ export default [
       action: 'vacaciones_documentos-report',
     },
   },
+  // *===============================================---*
+  // *--------- incorporaciones---- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/incorporaciones/list',
+    name: 'admin-incorporacion-list',
+    component: () => import('@/views/admin/incorporaciones/IncorporacionList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-index',
+    },
+  },
+  {
+    path: '/admin/incorporaciones/add',
+    name: 'admin-incorporacion-add',
+    component: () => import('@/views/admin/incorporaciones/IncorporacionAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-create',
+    },
+  },
+  {
+    path: '/admin/incorporaciones/edit/:incorporacionId',
+    name: 'admin-incorporacion-edit',
+    component: () => import('@/views/admin/incorporaciones/IncorporacionEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-edit',
+    },
+  },
 ]

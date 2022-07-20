@@ -23,7 +23,7 @@
                                             id="register-name"
                                             v-model="name"
                                             name="register-name"
-                                            style="text-transform: uppercase"
+                                            style="text-transform: lowercase"
                                             :state="
                                                 errors.length > 0 ? false : null
                                             "
@@ -50,7 +50,7 @@
                                             id="register-descripcion"
                                             v-model="description"
                                             name="register-descripcion"
-                                            style="text-transform: uppercase"
+                                            style="text-transform: lowercase"
                                             :state="
                                                 errors.length > 0 ? false : null
                                             "
