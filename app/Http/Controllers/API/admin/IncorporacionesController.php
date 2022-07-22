@@ -49,6 +49,13 @@ class IncorporacionesController extends Controller
         $data = Incorporaciones::find($id);
         return response()->json($data);
     }
+    public function getMembers(Request $request, $periodo)
+    {
+
+        $data = Incorporaciones::select('dni', 'id')
+            ->where('periodo', '=', $periodo)->get();
+        return response()->json($data);
+    }
     public function update(Request $request, $id)
     {
 
@@ -104,5 +111,20 @@ class IncorporacionesController extends Controller
         $data->cerrado = $request->cerrado;
         $data->periodo = $request->periodo;
         $data->save();
+    }
+    public function validacion(Request $request)
+    {
+        $members = $request->members;
+        $periodo = $request->periodo;
+        $validaciones = $request->validaciones;
+        foreach ($members as $value) {
+            foreach ($validaciones as $val) {
+                $db = new IncorporacionesValidate();
+                $db->incorporacion_id = $value['id'];
+                $db->parameters_id = $val;
+                $db->status = 1;
+                $db->save();
+            }
+        }
     }
 }

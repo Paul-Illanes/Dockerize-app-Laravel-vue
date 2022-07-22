@@ -103,6 +103,8 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('/status', [IncorporacionesController::class, 'status']);
             Route::get('detail/{incorporaciones}', [IncorporacionesController::class, 'getDetail']);
             Route::post('update/{incorporaciones}', [IncorporacionesController::class, 'update']);
+            Route::get('members/{incorporaciones}', [IncorporacionesController::class, 'getMembers']);
+            Route::post('/validation', [IncorporacionesController::class, 'validacion']);
         });
     });
 });

@@ -24,10 +24,14 @@
                         />
                     </b-form-group>
                     <b-button
+                        class="mr-50"
                         variant="primary"
                         :to="{ name: 'admin-incorporacion-add' }"
                     >
                         Agregar
+                    </b-button>
+                    <b-button v-b-modal.modal-obs variant="secondary"
+                        >Validaciones
                     </b-button>
                 </b-col>
 
@@ -190,12 +194,107 @@
                 </b-col>
             </b-row>
         </div>
+        <b-modal
+            ref="my-modal-obs"
+            id="modal-obs"
+            centered
+            hide-footer
+            title="Asignar validaciones"
+        >
+            <b-card-body>
+                <validation-observer ref="observerForm">
+                    <b-form
+                        class="auth-register-form mt-2 ml-2"
+                        @submit.prevent="observar"
+                    >
+                        <b-col md="12">
+                            <b-form-input hidden name="register-name" />
+                            <b-form-group>
+                                <h4>Periodo</h4>
+
+                                <validation-provider
+                                    #default="{ errors }"
+                                    rules="required"
+                                    name="motivo de observacion"
+                                >
+                                    <v-select
+                                        label="name"
+                                        :options="periodoList"
+                                        v-model="periodo"
+                                        placeholder="Seleccione"
+                                    />
+                                    <small class="text-danger">{{
+                                        errors[0]
+                                    }}</small>
+                                </validation-provider>
+                            </b-form-group>
+                        </b-col>
+                        <hr />
+                        <b-col cols="12" class="mt-1">
+                            <b-alert v-if="show" show variant="warning">
+                                <div class="alert-body">
+                                    <feather-icon
+                                        class="mr-25"
+                                        icon="AlertCircleIcon"
+                                    />
+                                    <span class="ml-25"
+                                        >No se encontraron
+                                        incorporaciones.</span
+                                    >
+                                </div>
+                            </b-alert>
+
+                            <div v-if="!show && periodo.id != null">
+                                <h5>
+                                    Total Integrantes : {{ members.length }}
+                                </h5>
+                                <small class="text-muted">
+                                    seleccione las validaciones para el grupo
+                                </small>
+
+                                <b-form-group
+                                    v-for="item in parameterValidate"
+                                    v-bind:data="item"
+                                    v-bind:key="item.id"
+                                >
+                                    <b-form-checkbox
+                                        class="mt-1"
+                                        v-model="validationChecks"
+                                        :value="item.id"
+                                        v-bind:true-value="1"
+                                        v-bind:false-value="0"
+                                    >
+                                        {{ item.name }}
+                                    </b-form-checkbox>
+                                </b-form-group>
+                            </div>
+                        </b-col>
+                        <b-col cols="12" class="mt-2">
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="setValidation"
+                                :disabled="
+                                    members.length == 0 ||
+                                    validationChecks.length == 0
+                                "
+                            >
+                                Registrar
+                            </b-button>
+                        </b-col>
+                    </b-form>
+                </validation-observer>
+            </b-card-body>
+        </b-modal>
     </b-card-code>
 </template>
 
 <script>
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { required, email, length } from "@validations";
 import BCardCode from "@core/components/b-card-code/BCardCode.vue";
 import Ripple from "vue-ripple-directive";
+
 import {
     BRow,
     BCol,
@@ -215,11 +314,20 @@ import {
     BButton,
     BCardBody,
     BTooltip,
+    BForm,
+    BAlert,
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
+import moment from "moment";
+import "moment/locale/es";
+
 export default {
     components: {
+        ValidationProvider,
+        ValidationObserver,
+        BAlert,
+        BForm,
         BRow,
         BCol,
         BCardText,
@@ -246,6 +354,11 @@ export default {
     },
     data() {
         return {
+            show: 0,
+            validationChecks: [],
+            members: [],
+            periodoList: [],
+            periodo: "",
             incorporacionID: "",
             selected: [],
             activo: "",
@@ -290,6 +403,24 @@ export default {
             // codeKitchenSink,
         };
     },
+    watch: {
+        periodo: function (val, oldval) {
+            console.log(this.periodo.id);
+            this.$http
+                .get("/api/auth/incorporaciones/members/" + this.periodo.id)
+                .then((response) => {
+                    this.members = response.data;
+                    if (this.members.length == 0) {
+                        this.show = 1;
+                    } else {
+                        this.show = 0;
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
     computed: {
         sortOptions() {
             // Create an options list from our fields
@@ -305,10 +436,28 @@ export default {
     mounted() {
         this.getList();
         this.getParameter();
+        this.getPeriodo();
         // Set the initial number of items
         this.totalRows = this.items.length;
     },
     methods: {
+        getPeriodo() {
+            moment.locale("es");
+            var minDate = new Date();
+            var sumDate = new Date();
+            var sum = sumDate.setMonth(sumDate.getMonth() + 1);
+            this.periodoList.push({
+                name: moment(sum).format("Y-MMMM"),
+                id: moment(sum).format("Y-MM"),
+            });
+            for (let step = 0; step < 3; step++) {
+                minDate.setMonth(minDate.getMonth() - step);
+                this.periodoList.push({
+                    name: moment(minDate).format("Y-MMMM"),
+                    id: moment(minDate).format("Y-MM"),
+                });
+            }
+        },
         check: function (e, data) {
             this.$http
                 .post("/api/auth/incorporaciones/status", {
@@ -334,11 +483,34 @@ export default {
         },
         getList() {
             this.$http.get("/api/auth/incorporaciones/").then((res) => {
-                console.log(res.data);
                 this.items = res.data.validacion;
                 this.totalRows = this.items.length;
                 this.show = false;
             });
+        },
+        setValidation() {
+            this.$http
+                .post("/api/auth/incorporaciones/validation", {
+                    periodo: this.periodo,
+                    validaciones: this.validationChecks,
+                    members: this.members,
+                })
+                .then(() => {
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: "top-right",
+                        props: {
+                            title: "Registrado Correctamente",
+                            icon: "CoffeeIcon",
+                            variant: "success",
+                        },
+                    });
+                    this.getList();
+                    this.$refs["my-modal-obs"].hide();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
         getParameter() {
             this.$http

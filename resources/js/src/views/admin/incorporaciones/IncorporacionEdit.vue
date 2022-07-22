@@ -705,9 +705,12 @@ export default {
             parameterModalidadContrato: [],
             parameterSituacionProceso: [],
             parameterTipoAusencia: [],
+            //periodos
+            periodoList: [],
         };
     },
     mounted() {
+        this.getPeriodo();
         this.getDetail();
         this.getParameter("incorporacion-select-centro", "centro");
         this.getParameter("incorporacion-select-area", "area");
@@ -739,6 +742,14 @@ export default {
         this.getParameter("incorporacion-select-tipoausencia", "tipoausencia");
     },
     methods: {
+        getPeriodo() {
+            var currentDate = new Date();
+            var expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + 3);
+            console.log(currentDate);
+            // this.periodoList = new Date(now.toJSON().slice(0, 10));
+            // console.log(this.periodoList);
+        },
         getDetail() {
             this.$http
                 .get(

@@ -12,67 +12,92 @@
             @on-complete="formSubmitted"
         >
             <!-- account details tab -->
-            <tab-content title="C. de trabajo" icon="feather icon-file-text">
-                <b-row>
-                    <b-col cols="12" class="mb-2">
-                        <h5 class="mb-0">Centro de trabajo</h5>
-                        <small class="text-muted">
-                            Ingresa la informacion.
-                        </small>
-                    </b-col>
-                    <b-col md="6">
-                        <b-form-group label="Organo" label-for="organo">
-                            <b-form-input
-                                id="organo"
-                                v-model="organo"
-                                placeholder=""
-                            />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="6">
-                        <b-form-group label="Centro" label-for="centro">
-                            <v-select
-                                id="centro"
-                                v-model="centro_select"
-                                :options="parameterCentro"
-                                label="name"
-                                placeholder="seleccione"
-                            />
-                            {{ centro_select }}
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="6">
-                        <b-form-group label="Area" label-for="area">
-                            <v-select
-                                id="area"
-                                v-model="area_select"
-                                :options="parameterArea"
-                                label="name"
-                                placeholder="seleccione"
-                            />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="3">
-                        <b-form-group label="Cod Area" label-for="cod-area">
-                            <b-form-input
-                                id="cod-area"
-                                v-model="cod_area"
-                                type="text"
-                                placeholder=""
-                            />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="3">
-                        <b-form-group label="Plaza" label-for="plaza">
-                            <b-form-input
-                                v-model="plaza"
-                                id="plaza"
-                                type="text"
-                                placeholder=""
-                            />
-                        </b-form-group>
-                    </b-col>
-                </b-row>
+            <tab-content
+                title="C. de trabajo"
+                :before-change="validationPeriodo"
+                icon="feather icon-file-text"
+            >
+                <validation-observer ref="periodoInfo" tag="form">
+                    <b-row>
+                        <b-col cols="12" class="mb-2">
+                            <h5 class="mb-0">Centro de trabajo</h5>
+                            <small class="text-muted">
+                                Ingresa la informacion.
+                            </small>
+                        </b-col>
+                        <b-col md="6">
+                            <b-form-group label="Organo" label-for="organo">
+                                <b-form-input
+                                    id="organo"
+                                    v-model="organo"
+                                    placeholder=""
+                                />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="6">
+                            <b-form-group label="Periodo" label-for="periodo">
+                                <validation-provider
+                                    #default="{ errors }"
+                                    name="periodo"
+                                    rules="required"
+                                >
+                                    <v-select
+                                        id="periodo"
+                                        v-model="periodo_select"
+                                        :options="periodoList"
+                                        label="name"
+                                        placeholder="seleccione"
+                                    />
+                                    <small class="text-danger">{{
+                                        errors[0]
+                                    }}</small>
+                                </validation-provider>
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="6">
+                            <b-form-group label="Centro" label-for="centro">
+                                <v-select
+                                    id="centro"
+                                    v-model="centro_select"
+                                    :options="parameterCentro"
+                                    label="name"
+                                    placeholder="seleccione"
+                                />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="6">
+                            <b-form-group label="Area" label-for="area">
+                                <v-select
+                                    id="area"
+                                    v-model="area_select"
+                                    :options="parameterArea"
+                                    label="name"
+                                    placeholder="seleccione"
+                                />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="3">
+                            <b-form-group label="Cod Area" label-for="cod-area">
+                                <b-form-input
+                                    id="cod-area"
+                                    v-model="cod_area"
+                                    type="text"
+                                    placeholder=""
+                                />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="3">
+                            <b-form-group label="Plaza" label-for="plaza">
+                                <b-form-input
+                                    v-model="plaza"
+                                    id="plaza"
+                                    type="text"
+                                    placeholder=""
+                                />
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </validation-observer>
             </tab-content>
 
             <!-- personal details tab -->
@@ -629,6 +654,8 @@ import vSelect from "vue-select";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
 import { BRow, BCol, BFormGroup, BFormInput } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import moment from "moment";
+import "moment/locale/es";
 
 export default {
     components: {
@@ -648,6 +675,7 @@ export default {
         return {
             required,
             organo: "",
+            periodo_select: "",
             centro_select: "",
             area_select: "",
             cod_area: "",
@@ -706,9 +734,12 @@ export default {
             parameterModalidadContrato: [],
             parameterSituacionProceso: [],
             parameterTipoAusencia: [],
+            //periodo
+            periodoList: [],
         };
     },
     mounted() {
+        this.getPeriodo();
         this.getParameter("incorporacion-select-centro", "centro");
         this.getParameter("incorporacion-select-area", "area");
         this.getParameter("incorporacion-select-genero", "genero");
@@ -739,6 +770,23 @@ export default {
         this.getParameter("incorporacion-select-tipoausencia", "tipoausencia");
     },
     methods: {
+        getPeriodo() {
+            moment.locale("es");
+            var minDate = new Date();
+            var sumDate = new Date();
+            var sum = sumDate.setMonth(sumDate.getMonth() + 1);
+            this.periodoList.push({
+                name: moment(sum).format("Y-MMMM"),
+                id: moment(sum).format("Y-MM"),
+            });
+            for (let step = 0; step < 3; step++) {
+                minDate.setMonth(minDate.getMonth() - step);
+                this.periodoList.push({
+                    name: moment(minDate).format("Y-MMMM"),
+                    id: moment(minDate).format("Y-MM"),
+                });
+            }
+        },
         getParameter(name, model) {
             this.$http
                 .get("/api/auth/parameter/" + name)
@@ -798,12 +846,30 @@ export default {
                 });
             });
         },
+        validationPeriodo() {
+            return new Promise((resolve, reject) => {
+                this.$refs.periodoInfo.validate().then((success) => {
+                    if (success) {
+                        resolve(true);
+                    } else {
+                        reject();
+                    }
+                });
+            });
+        },
         formSubmitted() {
             this.$http
                 .post("/api/auth/incorporaciones/create", {
                     organo: this.organo,
-                    centro: this.centro_select.name,
-                    area: this.area_select.id,
+                    periodo: this.periodo_select.name,
+                    centro:
+                        this.centro_select.name != null
+                            ? this.centro_select.name
+                            : null,
+                    area:
+                        this.area_select.name != null
+                            ? this.area_select.name
+                            : null,
                     cod_area: this.cod_area,
                     plaza: this.plaza,
                     apellido_paterno: this.apellido_paterno,
