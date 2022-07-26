@@ -481,13 +481,6 @@ export default {
             //
             papeletaID: "",
             parameters: [],
-            modalObserver: {
-                nombres: "",
-                permiso: "",
-                fecha_generacion: "",
-                dni: "",
-                id: "",
-            },
             modalData: {
                 nro_papeleta: "",
                 nombres: "",
@@ -545,20 +538,11 @@ export default {
             this.$http
                 .get("/api/auth/parameter/" + "obs-papeletas")
                 .then((response) => {
-                    console.log(response);
                     this.parameters = response.data;
                 })
                 .catch((error) => {
                     console.log(error);
                 });
-            // console.log(parameter_pluck("validacion"));
-            // this.parameters = parameter_pluck("validacion");
-            // console.log("abel");
-            // console.log(this.parameters);
-            this.modalObserver.nombres = data.nombres;
-            this.modalObserver.fecha_generacion = data.fecha;
-            this.modalObserver.dni = data.dni;
-            this.modalObserver.permiso = data.tipo_permiso;
             this.papeletaIdObs = data.id;
         },
         confirmDelete(id) {

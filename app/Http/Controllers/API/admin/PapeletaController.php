@@ -29,33 +29,37 @@ class PapeletaController extends Controller
         ];
         return response()->json($data);
     }
-    public function update_estado(Request $request, Papeleta $papeleta)
+    public function update_estado(Request $request, $id)
     {
-        $papeleta->update([
-            'status' => $request->status,
-        ]);
-        if ($request->status == 2) {
-            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
-            $vacacion_id = $vac[0]->id;
-            $vacacion = VacacionesDocumento::find($vacacion_id);
-            $vacacion->estado_valido = 4;
-            $vacacion->save();
+        $papeleta = Papeleta::FindOrFail($id);
+        if ($papeleta->tipo_permiso == 4) {
+            if ($request->status == 2) {
+                $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+                $vacacion_id = $vac[0]->id;
+                $vacacion = VacacionesDocumento::find($vacacion_id);
+                $vacacion->estado_valido = 4;
+                $vacacion->save();
+            }
+            if ($request->status == 1) {
+                $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+                $vacacion_id = $vac[0]->id;
+                $vacacion = VacacionesDocumento::find($vacacion_id);
+                $vacacion->estado_valido = 1;
+                $vacacion->save();
+            }
+            if ($request->status == 3) {
+                $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
+                $vacacion_id = $vac[0]->id;
+                $vacacion = VacacionesDocumento::find($vacacion_id);
+                $vacacion->estado_valido = 4;
+                $vacacion->save();
+            }
+            return response()->json(['status' => 200]);
+        } else {
+            $papeleta->status = $request->status;
+            $papeleta->save();
+            return response()->json(['status' => 200]);
         }
-        if ($request->status == 1) {
-            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
-            $vacacion_id = $vac[0]->id;
-            $vacacion = VacacionesDocumento::find($vacacion_id);
-            $vacacion->estado_valido = 1;
-            $vacacion->save();
-        }
-        if ($request->status == 3) {
-            $vac = VacacionesDocumento::where('papeleta_id', '=', $papeleta->id)->get();
-            $vacacion_id = $vac[0]->id;
-            $vacacion = VacacionesDocumento::find($vacacion_id);
-            $vacacion->estado_valido = 4;
-            $vacacion->save();
-        }
-        return response()->json(['status' => 200]);
     }
 
     public function create(Request $request)
@@ -190,9 +194,6 @@ class PapeletaController extends Controller
             'observacion_id' => $request->observacion_id,
             'observacion_text' => $parameter->alias,
             'email_personal' => $emailPersonal,
-            // 'emailencargado' => $emailEncargado,
-            // 'send_email_personal' => false,
-            // 'send_email_details' => '',
         ];
         $obs[0]['nro_id'] = 0;
         $obs[0]['observacion'] = $datos;
