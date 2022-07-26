@@ -213,55 +213,62 @@ export default {
                             password: this.password,
                         })
                         .then((response) => {
-                            // const { userData } = response.data
-
-                            useJwt.setToken(response.data.accessToken);
-                            useJwt.setRefreshToken(response.data.refreshToken);
-                            this.$http
-                                .get("/api/auth/user", {
-                                    email: this.userEmail,
-                                    password: this.password,
-                                })
-                                .then((response) => {
-                                    const userData = response.data;
-
-                                    sessionStorage.setItem(
-                                        "userData",
-                                        JSON.stringify(response.data)
-                                    );
-
-                                    this.$ability.update(userData.ability);
-                                    this.$router
-                                        .replace(
-                                            getHomeRouteForLoggedInUser(
-                                                userData.role
-                                            )
-                                        )
-                                        .then(() => {
-                                            this.$toast({
-                                                component:
-                                                    ToastificationContent,
-                                                position: "top-right",
-                                                props: {
-                                                    title: `Bienvenido ${
-                                                        userData.name ||
-                                                        userData.email
-                                                    }`,
-                                                    icon: "CoffeeIcon",
-                                                    variant: "success",
-                                                    text: `Iniciaste session como ${userData.role}.!`,
-                                                },
-                                            });
-                                        });
+                            console.log(response);
+                            if (response.status == 202) {
+                                this.$toast({
+                                    component: ToastificationContent,
+                                    position: "top-right",
+                                    props: {
+                                        title: response.data.message,
+                                        icon: "CoffeeIcon",
+                                        variant: "warning",
+                                    },
                                 });
+                            } else {
+                                useJwt.setToken(response.data.accessToken);
+                                useJwt.setRefreshToken(
+                                    response.data.refreshToken
+                                );
+                                this.$http
+                                    .get("/api/auth/user", {
+                                        email: this.userEmail,
+                                        password: this.password,
+                                    })
+                                    .then((response) => {
+                                        console.log("fer");
 
-                            // this.$ability.update(userData.ability)
+                                        const userData = response.data;
 
-                            // ? This is just for demo purpose as well.
-                            // ? Because we are showing eCommerce app's cart items count in navbar
-                            // this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', userData.extras.eCommerceCartItemsCount)
+                                        sessionStorage.setItem(
+                                            "userData",
+                                            JSON.stringify(response.data)
+                                        );
 
-                            // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
+                                        this.$ability.update(userData.ability);
+                                        this.$router
+                                            .replace(
+                                                getHomeRouteForLoggedInUser(
+                                                    userData.role
+                                                )
+                                            )
+                                            .then(() => {
+                                                this.$toast({
+                                                    component:
+                                                        ToastificationContent,
+                                                    position: "top-right",
+                                                    props: {
+                                                        title: `Bienvenido ${
+                                                            userData.name ||
+                                                            userData.email
+                                                        }`,
+                                                        icon: "CoffeeIcon",
+                                                        variant: "success",
+                                                        text: `Iniciaste session como ${userData.role}.!`,
+                                                    },
+                                                });
+                                            });
+                                    });
+                            }
                         })
                         .catch((error) => {
                             console.log(error);

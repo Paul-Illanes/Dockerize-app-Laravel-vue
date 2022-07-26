@@ -49,6 +49,20 @@ export default [
         action: 'papeletas-index',
         icon: 'FileTextIcon',
       },
+      {
+        title: 'Registrar c. de turno',
+        route: 'admin-turno-add',
+        resource: 'ACL',
+        action: 'papeletas-index',
+        icon: 'PlusIcon',
+      },
+      {
+        title: 'Ver c. de turno',
+        route: 'admin-turno-list',
+        resource: 'ACL',
+        action: 'papeletas-index',
+        icon: 'ListIcon',
+      },
     ],
   },
   {

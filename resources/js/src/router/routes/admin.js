@@ -155,4 +155,34 @@ export default [
       action: 'incorporaciones-edit',
     },
   },
+  // *===============================================---*
+  // *--------- cambio de turno--- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/cambio_de_turno/list',
+    name: 'admin-turno-list',
+    component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-index',
+    },
+  },
+  {
+    path: '/admin/cambio_de_turno/add',
+    name: 'admin-turno-add',
+    component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-create',
+    },
+  },
+  {
+    path: '/admin/cambio_de_turno/edit/:turnoId',
+    name: 'admin-turno-edit',
+    component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-edit',
+    },
+  },
 ]

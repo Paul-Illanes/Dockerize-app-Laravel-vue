@@ -15,6 +15,8 @@ use App\Http\Controllers\API\admin\PapeletaController;
 use App\Http\Controllers\API\ParameterController;
 use App\Http\Controllers\API\admin\VacacionesDocumentoController;
 use App\Http\Controllers\API\admin\IncorporacionesController;
+use App\Http\Controllers\API\admin\CambioTurnoController;
+use App\Http\Controllers\API\admin\PersonaControllers;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,6 +39,7 @@ Route::group(['prefix' => 'auth'], function () {
 
         Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
         Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
+        Route::get('/parameter_turno/{varia}', [ParameterController::class, 'parameter_turno']);
         Route::get('/parameter_check/{varia}', [ParameterController::class, 'parameter_check']);
         //usuarios
         // Route::get('/getUsers', [UsersController::class, 'usersList']);
@@ -45,6 +48,7 @@ Route::group(['prefix' => 'auth'], function () {
         // Route::get('detail/{role}', [RoleController::class, 'getDetail']);
         // Route::get('/getRoles', [RoleController::class, 'getList']);
         //permisos
+        Route::get('getpersonas', [PersonaControllers::class, 'personList']);
         Route::get('permissions', [PermissionController::class, 'getList']);
         //test composition api
         // Route::get('/create', [UsersController::class, 'invoices']);
@@ -105,6 +109,18 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('update/{incorporaciones}', [IncorporacionesController::class, 'update']);
             Route::get('members/{incorporaciones}', [IncorporacionesController::class, 'getMembers']);
             Route::post('/validation', [IncorporacionesController::class, 'validacion']);
+        });
+        //cambios de turno
+        Route::group(['prefix' => 'cambios_turno'], function () {
+            Route::get('/', [CambioTurnoController::class, 'getList']);
+            Route::post('/create', [CambioTurnoController::class, 'store']);
+            Route::get('/verify_solicitante/{dni}', [CambioTurnoController::class, 'verificar_solicitante']);
+            Route::get('/verify_aceptante/{dni}', [CambioTurnoController::class, 'verificar_aceptante']);
+            Route::get('detail/{id}', [CambioTurnoController::class, 'getDetail']);
+            Route::post('update/{id}', [CambioTurnoController::class, 'update']);
+            Route::post('obs/{id}', [CambioTurnoController::class, 'observar']);
+            Route::post('updateStatus/{id}', [CambioTurnoController::class, 'update_estado']);
+            Route::post('delete/{id}', [CambioTurnoController::class, 'delete']);
         });
     });
 });
