@@ -97,6 +97,18 @@
             <template #cell(action)="data">
                 <div class="text-nowrap">
                     <feather-icon
+                        :id="`user-row-${data.item.id}-persona-icon`"
+                        @click="setPersonas(data.item)"
+                        icon="UserIcon"
+                        class="mx-1 cursor-pointer text-info"
+                        size="18"
+                    />
+                    <b-tooltip
+                        title="Asignar persona"
+                        class="cursor-pointer"
+                        :target="`user-row-${data.item.id}-persona-icon`"
+                    />
+                    <feather-icon
                         :id="`user-row-${data.item.id}-send-icon`"
                         @click="
                             $router.push({
@@ -441,6 +453,35 @@ export default {
         this.totalRows = this.items.length;
     },
     methods: {
+        setPersonas(data) {
+            this.$http
+                .post("/api/auth/incorporaciones/personas", {
+                    cargo: data.cargo,
+                    nombres: data.nombres,
+                    apellido_paterno: data.apellido_paterno,
+                    apellido_materno: data.apellido_materno,
+                    cod_cargo: data.cod_cargo,
+                    dni: data.dni,
+                    fecha_nacimiento: data.fecha_nacimiento,
+                    status: data.status,
+                })
+                .then(() => {
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: "top-right",
+                        props: {
+                            title: "Registrado Correctamente",
+                            icon: "CoffeeIcon",
+                            variant: "success",
+                        },
+                    });
+                    this.getList();
+                    this.$refs["my-modal-obs"].hide();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         getPeriodo() {
             moment.locale("es");
             var minDate = new Date();

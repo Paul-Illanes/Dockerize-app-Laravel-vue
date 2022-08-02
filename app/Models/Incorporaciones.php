@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Incorporaciones extends Model
+class Incorporaciones extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     protected $table = 'incorporaciones';
     protected $primaryKey = 'id';
     // protected $primaryKey = 'dni';

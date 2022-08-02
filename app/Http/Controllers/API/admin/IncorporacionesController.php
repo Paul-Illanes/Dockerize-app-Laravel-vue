@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Incorporaciones;
 use App\Models\IncorporacionesValidate;
+use App\Models\Persona;
 
 class IncorporacionesController extends Controller
 {
@@ -55,6 +56,34 @@ class IncorporacionesController extends Controller
         $data = Incorporaciones::select('dni', 'id')
             ->where('periodo', '=', $periodo)->get();
         return response()->json($data);
+    }
+    public function personas(Request $request)
+    {
+        $exist = Persona::FindOrFail($request->dni);
+        if ($exist) {
+            $exist->cargo = $request->cargo;
+            $exist->cod_cargo = $request->cod_cargo;
+            $exist->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
+            $exist->dni = $request->dni;
+            $exist->fecha_nacimiento = $request->fecha_nacimiento;
+            $exist->status = 0;
+            $exist->cod_planilla = 0;
+            $exist->estructura = "-";
+            $exist->save();
+        } else {
+            $persona = new Persona();
+            $persona->cargo = $request->cargo;
+            $persona->cod_cargo = $request->cod_cargo;
+            $persona->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
+            $persona->dni = $request->dni;
+            $persona->fecha_nacimiento = $request->fecha_nacimiento;
+            $persona->status = 0;
+            $persona->cod_planilla = 0;
+            $persona->estructura = "-";
+            $persona->save();
+        }
+
+        return response()->json(['status' => 200]);
     }
     public function update(Request $request, $id)
     {

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CmsParameter;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class IncorporacionesValidate extends Model
+class IncorporacionesValidate extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     protected $table = 'incorporacion_validacion';
     protected $fillable = [
         'incorporacion_id',

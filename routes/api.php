@@ -109,6 +109,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('update/{incorporaciones}', [IncorporacionesController::class, 'update']);
             Route::get('members/{incorporaciones}', [IncorporacionesController::class, 'getMembers']);
             Route::post('/validation', [IncorporacionesController::class, 'validacion']);
+            Route::post('/personas', [IncorporacionesController::class, 'personas']);
         });
         //cambios de turno
         Route::group(['prefix' => 'cambios_turno'], function () {
