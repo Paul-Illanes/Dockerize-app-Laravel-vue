@@ -65,4 +65,12 @@ class User extends Authenticatable implements Auditable
     {
         return $this->belongsToMany('App\Models\Supestructura', 'user_has_supestructura', 'user_id', 'supestructura_id');
     }
+    public function changeStatus($user, bool $status)
+    {
+        // $user_id = auth()->user() ? auth()->user()->id : null;
+        $this::update([
+            'active' => $status,
+            'updated_by' => $user,
+        ]);
+    }
 }

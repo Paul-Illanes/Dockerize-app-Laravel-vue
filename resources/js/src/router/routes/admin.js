@@ -185,4 +185,34 @@ export default [
       action: 'incorporaciones-edit',
     },
   },
+    // *===============================================---*
+  // *--------- baja de personal--- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/baja_de_personal/list',
+    name: 'admin-baja-list',
+    component: () => import('@/views/admin/baja_personal/BajaPersonalList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-index',
+    },
+  },
+  {
+    path: '/admin/baja_de_personal/add',
+    name: 'admin-baja-add',
+    component: () => import('@/views/admin/baja_personal/BajaPersonalAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-create',
+    },
+  },
+  {
+    path: '/admin/baja_personal/edit/:bajaId',
+    name: 'admin-baja-edit',
+    component: () => import('@/views/admin/baja_personal/BajaPersonalEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'incorporaciones-edit',
+    },
+  },
 ]

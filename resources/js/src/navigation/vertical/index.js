@@ -89,6 +89,13 @@ export default [
         action: 'incorporaciones-index',
         icon: 'PlusIcon',
       },
+      {
+        title: 'Baja de personal',
+        route: 'admin-baja-list',
+        resource: 'ACL',
+        action: 'incorporaciones-index',
+        icon: 'UserXIcon',
+      },
     ],
   },
 ]

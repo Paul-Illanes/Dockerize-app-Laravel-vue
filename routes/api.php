@@ -17,6 +17,7 @@ use App\Http\Controllers\API\admin\VacacionesDocumentoController;
 use App\Http\Controllers\API\admin\IncorporacionesController;
 use App\Http\Controllers\API\admin\CambioTurnoController;
 use App\Http\Controllers\API\admin\PersonaControllers;
+use App\Http\Controllers\API\admin\PersonalBajaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,6 +33,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::get('/soporte', [DirectorioReclamoController::class, 'getList']);
+    Route::post('sendfile', [PersonalBajaController::class, 'file']);
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
@@ -122,6 +124,20 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('obs/{id}', [CambioTurnoController::class, 'observar']);
             Route::post('updateStatus/{id}', [CambioTurnoController::class, 'update_estado']);
             Route::post('delete/{id}', [CambioTurnoController::class, 'delete']);
+        });
+        //personal bajas
+        Route::group(['prefix' => 'personal_bajas'], function () {
+            Route::get('/', [PersonalBajaController::class, 'index']);
+            Route::get('select/', [PersonalBajaController::class, 'select']);
+            Route::post('/create', [PersonalBajaController::class, 'create']);
+            Route::post('/create', [PersonalBajaController::class, 'create']);
+            Route::get('file/{name}', [PersonalBajaController::class, 'getfile']);
+            Route::get('detail/{id}', [PersonalBajaController::class, 'getDetail']);
+            Route::post('update/{id}', [PersonalBajaController::class, 'update']);
+            Route::post('modal', [PersonalBajaController::class, 'modal']);
+            Route::post('obs/{id}', [PersonalBajaController::class, 'observar']);
+            Route::post('updateStatus/{id}', [PersonalBajaController::class, 'update_estado']);
+            Route::post('delete/{id}', [PersonalBajaController::class, 'delete']);
         });
     });
 });
