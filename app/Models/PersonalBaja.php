@@ -70,7 +70,7 @@ class PersonalBaja extends Model implements Auditable
 
     public function persona()
     {
-        return $this->hasOne('App\Persona', 'dni', 'dni');
+        return $this->hasOne('App\Models\Persona', 'dni', 'dni');
     }
 
     public function user()

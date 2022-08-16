@@ -145,7 +145,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/', [PersonalInformesCeseController::class, 'index']);
             Route::post('/generar_informe', [PersonalInformesCeseController::class, 'generarInforme']);
             Route::get('file/{name}', [PersonalInformesCeseController::class, 'getfile']);
-            // Route::get('select/', [PersonalBajaController::class, 'select']);
+            Route::get('getuser', [PersonalInformesCeseController::class, 'getusers']);
             Route::post('/create', [PersonalInformesCeseController::class, 'create']);
             // Route::post('/create', [PersonalBajaController::class, 'create']);
             // Route::get('file/{name}', [PersonalBajaController::class, 'getfile']);

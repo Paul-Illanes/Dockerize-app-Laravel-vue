@@ -17,18 +17,26 @@ class PersonalInformesCeseController extends Controller
         return response()->json($data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getusers()
+    {
+        $personalInformesCese = new PersonalInformesCese();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+        // array with DNI for PersonalInformesCeses
+        $array_dni = PersonalInformesCese::pluck('dni');
+
+        // $empleados_query =Persona::where('status',2)->get(); // empleados dados de baja
+        $empleados_query = PersonalBaja::where('status', 1)
+            ->whereNotIn('dni', $array_dni)
+            ->get(); // empleados dados de baja
+
+        $empleados = [];
+        foreach ($empleados_query as $empleado) {
+            $empleados['dni'] = $empleado->persona->username;
+            $empleados['name'] = $empleado->persona->fullname;
+        }
+
+        return response()->json($empleados);
+    }
     public function create(Request $request)
     {
         $user_id = $request->user()->id;

@@ -445,7 +445,7 @@ import vSelect from "vue-select";
 import { onUnmounted } from "@vue/composition-api";
 import store from "@/store";
 import useInformeCeseList from "./useInformeCeseList";
-import informeCeseStoreModule from "./informeCeseStoreModule";
+import informeCeseStoreModule from "./InformeCeseStoreModule";
 import moment from "moment";
 import Ripple from "vue-ripple-directive";
 import { parameter_pluck } from "@/helpers/index.js";
