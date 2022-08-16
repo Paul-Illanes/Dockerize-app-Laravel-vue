@@ -164,7 +164,7 @@ export default [
     component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoList.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-index',
+      action: 'cambio_turnos-index',
     },
   },
   {
@@ -173,7 +173,7 @@ export default [
     component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoAdd.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-create',
+      action: 'cambio_turnos-create',
     },
   },
   {
@@ -182,7 +182,7 @@ export default [
     component: () => import('@/views/admin/cambios_de_turno/cambio_turno/TurnoEdit.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-edit',
+      action: 'cambio_turnos-edit',
     },
   },
     // *===============================================---*
@@ -194,7 +194,7 @@ export default [
     component: () => import('@/views/admin/baja_personal/BajaPersonalList.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-index',
+      action: 'personal_baja-index',
     },
   },
   {
@@ -203,7 +203,7 @@ export default [
     component: () => import('@/views/admin/baja_personal/BajaPersonalAdd.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-create',
+      action: 'personal_baja-create',
     },
   },
   {
@@ -212,7 +212,37 @@ export default [
     component: () => import('@/views/admin/baja_personal/BajaPersonalEdit.vue'),
     meta: {
       resource: 'ACL',
-      action: 'incorporaciones-edit',
+      action: 'personal_baja-edit',
+    },
+  },
+  // *===============================================---*
+  // *--------- control informe de cese--- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/control_informe_cese/list',
+    name: 'admin-informecese-list',
+    component: () => import('@/views/admin/control_informe_cese/InformeCeseList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-index',
+    },
+  },
+  {
+    path: '/admin/control_informe_cese/add',
+    name: 'admin-informecese-add',
+    component: () => import('@/views/admin/control_informe_cese/InformeCeseAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-create',
+    },
+  },
+  {
+    path: '/admin/control_informe_cese/edit/:informeId',
+    name: 'admin-informecese-edit',
+    component: () => import('@/views/admin/control_informe_cese/InformeCeseEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-edit',
     },
   },
 ]

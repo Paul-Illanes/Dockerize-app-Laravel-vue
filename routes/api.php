@@ -18,6 +18,7 @@ use App\Http\Controllers\API\admin\IncorporacionesController;
 use App\Http\Controllers\API\admin\CambioTurnoController;
 use App\Http\Controllers\API\admin\PersonaControllers;
 use App\Http\Controllers\API\admin\PersonalBajaController;
+use App\Http\Controllers\API\admin\PersonalInformesCeseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -138,6 +139,22 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('obs/{id}', [PersonalBajaController::class, 'observar']);
             Route::post('updateStatus/{id}', [PersonalBajaController::class, 'update_estado']);
             Route::post('delete/{id}', [PersonalBajaController::class, 'delete']);
+        });
+        //control informe cese
+        Route::group(['prefix' => 'informe_cese'], function () {
+            Route::get('/', [PersonalInformesCeseController::class, 'index']);
+            Route::post('/generar_informe', [PersonalInformesCeseController::class, 'generarInforme']);
+            Route::get('file/{name}', [PersonalInformesCeseController::class, 'getfile']);
+            // Route::get('select/', [PersonalBajaController::class, 'select']);
+            Route::post('/create', [PersonalInformesCeseController::class, 'create']);
+            // Route::post('/create', [PersonalBajaController::class, 'create']);
+            // Route::get('file/{name}', [PersonalBajaController::class, 'getfile']);
+            Route::get('detail/{id}', [PersonalInformesCeseController::class, 'getDetail']);
+            Route::post('update/{id}', [PersonalInformesCeseController::class, 'update']);
+            // Route::post('modal', [PersonalBajaController::class, 'modal']);
+            // Route::post('obs/{id}', [PersonalBajaController::class, 'observar']);
+            // Route::post('updateStatus/{id}', [PersonalBajaController::class, 'update_estado']);
+            // Route::post('delete/{id}', [PersonalBajaController::class, 'delete']);
         });
     });
 });
