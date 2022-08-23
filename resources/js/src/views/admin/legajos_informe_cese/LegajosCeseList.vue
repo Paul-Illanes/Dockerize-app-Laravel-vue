@@ -20,7 +20,7 @@
                     />
                     <b-button
                         variant="primary"
-                        :to="{ name: 'admin-informecese-add' }"
+                        :to="{ name: 'admin-legajocese-add' }"
                     >
                         Agregar
                     </b-button>
@@ -43,7 +43,7 @@
             select
             striped
             hover
-            ref="refInformeCeseListTable"
+            ref="refLegajosCeseListTable"
             :items="fetchCeses"
             responsive
             :fields="tableColumns"
@@ -58,7 +58,7 @@
                 {{ data.index + 1 }}
             </template>
             <!-- fechas -->
-            <template #cell(fecha_ingreso)="data">
+            <template #cell(ultimo_dia_labor)="data">
                 <span class="text-nowrap">
                     {{ changeDate(data.value) }}
                 </span>
@@ -133,15 +133,15 @@
                         size="16"
                         class="cursor-pointer text-info"
                     />
-                    <b-tooltip
+                    <!-- <b-tooltip
                         title="Detalles"
                         :target="`invoice-row-${data.item.id}-preview-icon`"
-                    />
+                    /> -->
                     <feather-icon
                         @click="
                             $router.push({
-                                name: 'admin-informecese-edit',
-                                params: { informeId: data.item.id },
+                                name: 'admin-legajocese-edit',
+                                params: { legajoId: data.item.id },
                             })
                         "
                         :id="`invoice-row-${data.item.id}-edit-icon`"
@@ -150,11 +150,11 @@
                         size="16"
                     />
 
-                    <b-tooltip
+                    <!-- <b-tooltip
                         title="Editar"
                         class="cursor-pointer"
                         :target="`invoice-row-${data.item.id}-edit-icon`"
-                    />
+                    /> -->
                     <feather-icon
                         :id="`invoice-row-${data.item.id}-delete-icon`"
                         icon="Trash2Icon"
@@ -162,11 +162,11 @@
                         size="16"
                         @click="confirmDelete(data.item.id)"
                     />
-                    <b-tooltip
+                    <!-- <b-tooltip
                         title="Eliminar Papeleta"
                         class="cursor-pointer"
                         :target="`invoice-row-${data.item.id}-delete-icon`"
-                    />
+                    /> -->
                 </div>
             </template>
         </b-table>
@@ -231,11 +231,33 @@
                             </dd>
                         </dl>
                         <dl class="row">
+                            <dt class="col-sm-4 text-right">Codigo planilla</dt>
+                            <dd class="col-sm-8">
+                                {{ modalData.codigo_planilla }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Fecha de nacimiento
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ changeDate(modalData.fecha_nacimiento) }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
                             <dt class="col-sm-4 text-right">
                                 Fecha de ingreso
                             </dt>
                             <dd class="col-sm-8">
                                 {{ changeDate(modalData.fecha_ingreso) }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Ultimo dia labor
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ changeDate(modalData.ultimo_dia_labor) }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -245,15 +267,69 @@
                             </dd>
                         </dl>
                         <dl class="row">
-                            <dt class="col-sm-4 text-right">Faltas</dt>
+                            <dt class="col-sm-4 text-right">Regimen laboral</dt>
                             <dd class="col-sm-8">
-                                {{ modalData.faltas }}
+                                {{ modalData.regimen_laboral }}
                             </dd>
                         </dl>
                         <dl class="row">
-                            <dt class="col-sm-4 text-right">Tardanzas</dt>
+                            <dt class="col-sm-4 text-right">
+                                Grupo Ocupacional
+                            </dt>
                             <dd class="col-sm-8">
-                                {{ modalData.tardanzas }}
+                                {{ grupo_ocupacional }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Numero de documento con el cual se cesa al
+                                trabajador o funcionario
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ modalData.numero_documento_cese }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">Motivo cese</dt>
+                            <dd class="col-sm-8">
+                                {{ modalData.motivo_cese }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Regimen Pensionario
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ regimen_pensionario }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">Linea Carrera</dt>
+                            <dd class="col-sm-8">
+                                {{ linea_carrera }}
+                            </dd>
+                        </dl>
+
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Condicion Laboral
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ condicion_laboral }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                Modalidad Contrato
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ modalidad_contrato }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">Dependencia</dt>
+                            <dd class="col-sm-8">
+                                {{ dependencia }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -261,15 +337,7 @@
                                 Licencias S/G. haber
                             </dt>
                             <dd class="col-sm-8">
-                                {{ modalData.licencias }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">
-                                Permisos Particulares
-                            </dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.permisos_particulares }}
+                                {{ modalData.licencia_sg_haber }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -278,12 +346,6 @@
                             </dt>
                             <dd class="col-sm-8">
                                 {{ modalData.sancion_disciplinaria }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">Huelga</dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.huelga }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -296,69 +358,41 @@
                         </dl>
                         <dl class="row">
                             <dt class="col-sm-4 text-right">
-                                Vacaciones No Gozadas
+                                Permisos Particulares
                             </dt>
                             <dd class="col-sm-8">
-                                {{ modalData.vacaciones_no_gozadas }}
+                                {{ modalData.permisos_particulares }}
+                            </dd>
+                        </dl>
+
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">
+                                A Cuenta Vacaciones
+                            </dt>
+                            <dd class="col-sm-8">
+                                {{ modalData.acuenta_vacaciones }}
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-sm-4 text-right">Tiempo servicio</dt>
+                            <dd class="col-sm-8">
+                                {{ modalData.tiempo_servicio }}
                             </dd>
                         </dl>
                         <dl class="row">
                             <dt class="col-sm-4 text-right">
-                                Periodo de pago BONO de productividad
+                                Total Tpo. Deducible
                             </dt>
                             <dd class="col-sm-8">
-                                {{ modalData.bono_pago }}
+                                {{ modalData.total_tpo_deducible }}
                             </dd>
                         </dl>
                         <dl class="row">
                             <dt class="col-sm-4 text-right">
-                                Descuento de pago BONO de productividad por no
-                                corresponder
+                                Total Tpo. serv. a EsSalud
                             </dt>
                             <dd class="col-sm-8">
-                                {{ modalData.descuento_bono_pago }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">
-                                Guardias hospitalarias
-                            </dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.guardias }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">Horas Extras</dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.horas_extras }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">Horas RPCT</dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.horas_rpct }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">PCT</dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.pct }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">
-                                Notas Adicionales
-                            </dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.notas_adicionales }}
-                            </dd>
-                        </dl>
-                        <dl class="row">
-                            <dt class="col-sm-4 text-right">
-                                Zona Menor Desarrollo
-                            </dt>
-                            <dd class="col-sm-8">
-                                {{ modalData.zona_menor_desarrollo }}
+                                {{ modalData.total_tpo_essalud }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -380,7 +414,7 @@
                             </dd>
                         </dl>
                         <dl class="row">
-                            <dt class="col-sm-4 text-right">Informe PDF</dt>
+                            <dt class="col-sm-4 text-right">Path informe</dt>
                             <dd class="col-sm-8">
                                 {{ modalData.path_informe }}
                             </dd>
@@ -442,8 +476,8 @@ import { avatarText } from "@core/utils/filter";
 import vSelect from "vue-select";
 import { onUnmounted } from "@vue/composition-api";
 import store from "@/store";
-import useInformeCeseList from "./useInformeCeseList";
-import informeCeseStoreModule from "./InformeCeseStoreModule";
+import useLegajosCeseList from "./useLegajosCeseList";
+import legajosCeseStoreModule from "./LegajosCeseStoreModule";
 import moment from "moment";
 import Ripple from "vue-ripple-directive";
 import { parameter_pluck } from "@/helpers/index.js";
@@ -483,7 +517,7 @@ export default {
     data() {
         return {
             archivo: "",
-            informeId: "",
+            legajoId: "",
             //observacion
             selectedObs: "",
             emailPersonal: "",
@@ -497,6 +531,14 @@ export default {
             updated_by: "",
             tipo_documento: "",
             origen_dependencia: "",
+            //variables de modal
+            grupo_ocupacional: "",
+            regimen_laboral: "",
+            regimen_pensionario: "",
+            linea_carrera: "",
+            condicion_laboral: "",
+            modalidad_contrato: "",
+            dependencia: "",
         };
     },
     mounted() {
@@ -508,22 +550,39 @@ export default {
         limpiar_archivo() {
             this.archivo = "";
         },
+        parameterName() {
+            this.$http
+                .get("/api/auth/legajo_cese/parameterName")
+                .then((response) => {
+                    return response.data.value;
+
+                    // this.users = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         getModalDetail(data) {
             this.$http
-                .post("/api/auth/personal_bajas/modal", {
-                    fecha_nacimiento: data.dni,
-                    origen_dependencia_id: data.origen_dependencia_id,
-                    tipo_documento_id: data.tipo_documento_id,
-                    created_by: data.created_by,
-                    updated_by: data.updated_by,
+                .post("/api/auth/legajo_cese/modalName", {
+                    grupo_ocupacional: data.grupo_ocupacional,
+                    regimen_laboral: data.regimen_laboral,
+                    regimen_pensionario: data.regimen_pensionario,
+                    linea_carrera: data.linea_carrera,
+                    condicion_laboral: data.condicion_laboral,
+                    modalidad_contrato: data.modalidad_contrato,
+                    dependencia: data.dependencia,
                 })
                 .then((response) => {
-                    this.fecha_nacimiento = response.data.fecha_nacimiento[0];
-                    this.updated_by = response.data.updated_by[0];
-                    this.created_by = response.data.created_by[0];
-                    this.tipo_documento = response.data.tipo_documento[0];
-                    this.origen_dependencia =
-                        response.data.dependencia_origen[0];
+                    this.grupo_ocupacional = response.data.grupo_ocupacional[0];
+                    this.regimen_laboral = response.data.regimen_laboral[0];
+                    this.regimen_pensionario =
+                        response.data.regimen_pensionario[0];
+                    this.linea_carrera = response.data.linea_carrera[0];
+                    this.condicion_laboral = response.data.condicion_laboral[0];
+                    this.modalidad_contrato =
+                        response.data.modalidad_contrato[0];
+                    this.dependencia = response.data.dependencia[0];
                     console.log(response);
                 })
                 .catch((error) => {
@@ -566,7 +625,7 @@ export default {
 
         generarInforme(data) {
             this.$http
-                .post("/api/auth/informe_cese/generar_informe", {
+                .post("/api/auth/legajo_cese/generar_informe", {
                     informe_id: data.id,
                 })
                 .then((response) => {
@@ -587,7 +646,7 @@ export default {
         },
         verInforme(name) {
             this.$http
-                .get("/api/auth/informe_cese/file/" + name.path_informe, {
+                .get("/api/auth/legajo_cese/file/" + name.path_informe, {
                     responseType: "blob", // important
                 })
                 .then((response) => {
@@ -595,7 +654,7 @@ export default {
                     this.archivo = window.URL.createObjectURL(
                         new Blob([response.data], { type: "application/pdf" })
                     );
-                    console.log(response);
+
                     // window.open(url);
                 })
                 .catch((error) => {
@@ -695,18 +754,18 @@ export default {
         },
     },
     setup() {
-        const CESE_APP_STORE_MODULE_NAME = "app-cese";
+        const LEGAJO_CESE_APP_STORE_MODULE_NAME = "app-legajo-cese";
 
         // Register module
-        if (!store.hasModule(CESE_APP_STORE_MODULE_NAME))
+        if (!store.hasModule(LEGAJO_CESE_APP_STORE_MODULE_NAME))
             store.registerModule(
-                CESE_APP_STORE_MODULE_NAME,
-                informeCeseStoreModule
+                LEGAJO_CESE_APP_STORE_MODULE_NAME,
+                legajosCeseStoreModule
             );
         // UnRegister on leave
         onUnmounted(() => {
-            if (store.hasModule(CESE_APP_STORE_MODULE_NAME))
-                store.unregisterModule(CESE_APP_STORE_MODULE_NAME);
+            if (store.hasModule(LEGAJO_CESE_APP_STORE_MODULE_NAME))
+                store.unregisterModule(LEGAJO_CESE_APP_STORE_MODULE_NAME);
         });
 
         const statusOptions = ["Pendientes", "Procesados"];
@@ -732,7 +791,7 @@ export default {
             searchQuery,
             sortBy,
             isSortDirDesc,
-            refInformeCeseListTable,
+            refLegajosCeseListTable,
 
             statusFilter,
             typeFilter,
@@ -743,7 +802,7 @@ export default {
             resolveInvoiceStatusVariantAndIcon,
             resolveClientAvatarVariant,
             resolvePaperStatusVariant,
-        } = useInformeCeseList();
+        } = useLegajosCeseList();
 
         return {
             fetchCeses,
@@ -756,7 +815,7 @@ export default {
             searchQuery,
             sortBy,
             isSortDirDesc,
-            refInformeCeseListTable,
+            refLegajosCeseListTable,
 
             statusFilter,
             typeFilter,

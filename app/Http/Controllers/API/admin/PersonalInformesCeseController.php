@@ -19,6 +19,23 @@ class PersonalInformesCeseController extends Controller
 
     public function getusers()
     {
+        // // $personalInformesCese = new PersonalInformesCese();
+
+        // // array with DNI for PersonalInformesCeses
+        // $array_dni = PersonalInformesCese::pluck('dni');
+
+        // // $empleados_query =Persona::where('status',2)->get(); // empleados dados de baja
+        // $empleados_query = PersonalBaja::where('status', 1)
+        //     ->whereNotIn('dni', $array_dni)
+        //     ->get(); // empleados dados de baja
+
+        // $empleados = [];
+        // $i = 0;
+        // foreach ($empleados_query as $empleado) {
+        //     $empleados[$i]['dni'] = $empleado->persona->dni;
+        //     $empleados[$i]['name'] = $empleado->persona->fullname;
+        //     $i++;
+        // }
         $personalInformesCese = new PersonalInformesCese();
 
         // array with DNI for PersonalInformesCeses
@@ -29,53 +46,55 @@ class PersonalInformesCeseController extends Controller
             ->whereNotIn('dni', $array_dni)
             ->get(); // empleados dados de baja
 
-        $empleados = [];
+        //list to bajas foreach empleado
+        $baja_empleados = [];
+        $i = 0;
         foreach ($empleados_query as $empleado) {
-            $empleados['dni'] = $empleado->persona->username;
-            $empleados['name'] = $empleado->persona->fullname;
+            $baja_empleados[$i]['id'] = $empleado->id;
+            $baja_empleados[$i]['name'] = $empleado->persona->fullname;
+            $i++;
         }
-
-        return response()->json($empleados);
+        return response()->json($baja_empleados);
     }
     public function create(Request $request)
     {
         $user_id = $request->user()->id;
+        //request()->validate(PersonalInformesCese::$rules);
 
-        $persona = Persona::find($request->dni);
-        $baja = PersonalBaja::where('dni', $request->dni)->first();
+        // $baja = PersonalBaja::where('dni', $request->dni)->first();
+        $baja = PersonalBaja::find($request->baja_id); // id de baja
+        // $persona = Persona::find($request->dni);
+        $persona = Persona::find($baja->dni);
 
         $personalInformesCese = PersonalInformesCese::create(
             [
-                'nombre' => $persona->fullname,
+                'dni'           => $persona->dni,
+                'nombre'        => $persona->fullname,
                 'fecha_ingreso' => $persona->fecha_ingreso,
-                'fecha_cese' => $baja->fecha_cese,
-                'motivo_cese' => $baja->motivoBaja->baja,
-                'created_by' => $user_id,
-                'updated_by' => $user_id,
+                'fecha_cese'    => $baja->fecha_cese,
+                'motivo_cese'   => $baja->motivoBaja->baja,
+                'created_by'    => $user_id,
+                'updated_by'    => $user_id,
             ] + $request->all()
         );
+        // $user_id = $request->user()->id;
+
+        // $persona = Persona::find($request->dni);
+        // $baja = PersonalBaja::where('dni', $request->dni)->first();
+
+        // $personalInformesCese = PersonalInformesCese::create(
+        //     [
+        //         'nombre' => $persona->fullname,
+        //         'fecha_ingreso' => $persona->fecha_ingreso,
+        //         'fecha_cese' => $baja->fecha_cese,
+        //         'motivo_cese' => $baja->motivoBaja->baja,
+        //         'created_by' => $user_id,
+        //         'updated_by' => $user_id,
+        //     ] + $request->all()
+        // );
         return response()->json(['msg' => 'registrado correctamente']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $personalInformesCese = PersonalInformesCese::find($id);
-
-        return view('personal-informes-cese.show', compact('personalInformesCese'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
     public function getDetail($id)
     {
         $informe = PersonalInformesCese::FindOrFail($id);
@@ -93,13 +112,14 @@ class PersonalInformesCeseController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $baja = PersonalBaja::find($request->baja_id); // id de baja
+        $persona = Persona::find($baja->dni);
         $user_id = $request->user()->id;
 
-        $persona = Persona::find($request->dni);
-        $baja = PersonalBaja::where('dni', $request->dni)->first();
         $personalInformesCese = PersonalInformesCese::findOrFail($id);
-        $personalInformesCese->nombre = $request->nombre;
-        $personalInformesCese->dni = $request->dni;
+        $personalInformesCese->baja_id = $request->baja_id;
+        $personalInformesCese->nombre = $persona->fullname;
+        $personalInformesCese->dni = $persona->dni;
         $personalInformesCese->nit = $request->nit;
         $personalInformesCese->numero_informe = $request->numero_informe;
         $personalInformesCese->fecha_informe = $request->fecha_informe;
@@ -125,16 +145,6 @@ class PersonalInformesCeseController extends Controller
         $personalInformesCese->updated_by = $user_id;
         $personalInformesCese->path_informe = "";
         $personalInformesCese->save();
-        // $personalInformesCese->update(
-        //     [
-        //         'nombre' => $persona->fullname,
-        //         'fecha_ingreso' => $persona->fecha_ingreso,
-        //         'fecha_cese' => $baja->fecha_cese,
-        //         'motivo_cese' => $baja->motivoBaja->baja,
-        //         'updated_by' => $user_id,
-        //         'path_informe' => '',
-        //     ] + $request->all()
-        // );
 
         return response()->json(['msg' => 'actualizado correctamente']);
     }
@@ -144,31 +154,31 @@ class PersonalInformesCeseController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function destroy($id)
-    {
-        $personalInformesCese = PersonalInformesCese::find($id)->delete();
+    // public function destroy($id)
+    // {
+    //     $personalInformesCese = PersonalInformesCese::find($id)->delete();
 
-        return redirect()->route('personal-informes-ceses.index')
-            ->with('status', 'PersonalInformesCese eliminado con éxito');
-    }
+    //     return redirect()->route('personal-informes-ceses.index')
+    //         ->with('status', 'PersonalInformesCese eliminado con éxito');
+    // }
 
     /**
      * return data personal
      */
-    public function getPersona(Request $request)
-    {
-        $persona = Persona::find($request->dni);
-        $baja = PersonalBaja::where('dni', $request->dni)->first();
-        // dd($baja);
-        // $motivo_baja = $baja->motivoBaja->baja;
-        $data = [
-            'fecha_ingreso' => $persona->fecha_ingreso,
-            'fecha_cese' => $baja->fecha_cese,
-            'motivo_cese' => $baja->motivoBaja->baja,
+    // public function getPersona(Request $request)
+    // {
+    //     $persona = Persona::find($request->dni);
+    //     $baja = PersonalBaja::where('dni', $request->dni)->first();
+    //     // dd($baja);
+    //     // $motivo_baja = $baja->motivoBaja->baja;
+    //     $data = [
+    //         'fecha_ingreso' => $persona->fecha_ingreso,
+    //         'fecha_cese' => $baja->fecha_cese,
+    //         'motivo_cese' => $baja->motivoBaja->baja,
 
-        ];
-        return response()->json($data);
-    }
+    //     ];
+    //     return response()->json($data);
+    // }
 
     public function generarInforme(Request $request)
     {
@@ -200,58 +210,9 @@ class PersonalInformesCeseController extends Controller
         $file = Storage::path($path);
         return response()->file($file);
     }
-    /**
-     * preview informe pdf file
-     */
-    public function previewInforme($id)
+    public function delete($id)
     {
-        $informe = PersonalInformesCese::find($id);
-        $file = url('storage/' . $informe->path_informe);
-        return view('personal-informes-cese.preview-pdf', compact('file'));
-    }
-    /**
-     * download informe pdf file
-     */
-    public function descargarInforme($id)
-    {
-        $informe = PersonalInformesCese::find($id);
-        $file = public_path('storage/' . $informe->path_informe);
-        return response()->download($file);
-    }
-
-    public function import()
-    {
-
-        return view('personal-informes-cese.import');
-    }
-    public function import_send(Request $request)
-    {
-
-        $import = new InformeCeseImport();
-
-        $data = Excel::import($import, request()->file('file'));
-        // dd($import->getInvalidData());
-        return view('personal-informes-cese.import', ['numRows' => $import->getRowCount(), 'invalidData' => $import->getInvalidData(), 'invalidRows' => $import->getInvalidRows()]);
-    }
-    public function export(Request $request)
-    {
-        // dd($request->all());
-        $data = json_decode($request->verify);
-        // dd($data);
-        // $personas =  PersonalInformesCese::where('dni', '48611353')->get();
-        // $user_id = auth()->user()->id;
-        // $papeletas = Papeleta::select(
-        //     'papeletas.dni',
-        //     'tipo_permiso_id',
-        //     DB::raw("sum(tdd) as total_tdd"),
-        //     DB::raw("sum(tdm) as total_tdm")
-        // )
-        //     ->supestructura($user_id)
-        //     ->where('papeletas.status', 1) // status = 1, activo
-        //     ->orWhere('papeletas.status', 2) // status = 2, observado
-        //     ->groupBy('papeletas.dni', 'tipo_permiso_id')
-        //     ->get();
-        // // dd($papeletas);   
-        return Excel::download(new BladeExport($data, 'personal-informes-cese.import'), 'invalidos' . '.xlsx');
+        $informe = PersonalInformesCese::FindOrFail($id);
+        $informe->delete();
     }
 }

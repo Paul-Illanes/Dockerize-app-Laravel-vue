@@ -1,5 +1,5 @@
 <template>
-    <b-card-code title="Crear Papeleta" no-body>
+    <b-card-code title="Crear Legajos Informe Cese" no-body>
         <!-- form -->
         <b-row>
             <b-col md="12">
@@ -21,7 +21,6 @@
                                             label="name"
                                             :options="users"
                                             v-model="persona"
-                                            name="users"
                                             placeholder="Seleccione"
                                         />
                                         <small class="text-danger">{{
@@ -57,7 +56,7 @@
                                     <validation-provider
                                         #default="{ errors }"
                                         rules="required"
-                                        name="numero informe"
+                                        name="numeroInforme"
                                     >
                                         <b-form-input
                                             id="example-input"
@@ -92,16 +91,16 @@
                             </b-col>
                             <b-col md="4">
                                 <b-form-group>
-                                    <label>Faltas</label>
+                                    <label>Cod. Planilla</label>
 
                                     <validation-provider
                                         #default="{ errors }"
                                         rules=""
-                                        name="Faltas"
+                                        name="codigo planilla"
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="faltas"
+                                            v-model="codPlanilla"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -112,17 +111,190 @@
                             </b-col>
                             <b-col md="4">
                                 <b-form-group>
-                                    <label>Tardanzas</label>
+                                    <label>Fecha nacimiento</label>
 
                                     <validation-provider
                                         #default="{ errors }"
                                         rules=""
-                                        name="tardanzas"
+                                        name="fecha nacimiento"
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="tardanzas"
+                                            v-model="fechaNacimiento"
+                                            type="date"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-group>
+                                    <label>Regimen Laboral</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="regimen laboral"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="regimen"
+                                            v-model="regimenLaboral"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-group>
+                                    <label>Grupo Ocupacional</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="grupo"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="grupo"
+                                            v-model="grupoOcupacional"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Numero Documento Cese</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="numero informe"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="numeroDocumentoCese"
                                             type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Regimen Pensionario</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="regimen pensionario"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="pensionario"
+                                            v-model="regimenPensionario"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Linea Carrera</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="linea carrera"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="linea"
+                                            v-model="lineaCarrera"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Condicion Laboral</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="numero informe"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="condicion"
+                                            v-model="condicionLaboral"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Modalidad Contrato</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="modalidad contrato"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="contrato"
+                                            v-model="modalidadContrato"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Dependencia</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="numero informe"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="dependencias"
+                                            v-model="dependencia"
+                                            name="users"
+                                            placeholder="Seleccione"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
@@ -141,6 +313,45 @@
                                         <b-form-input
                                             id="example-input"
                                             v-model="licencias"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Sancion Disciplinaria</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="numero informe"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="sancionDisciplinaria"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Licencia C/G/H COVID-19</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="licencia covid"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="licenciaCovid"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -171,7 +382,7 @@
                             </b-col>
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Sancion Disciplinaria</label>
+                                    <label>A cuenta de vacaciones</label>
 
                                     <validation-provider
                                         #default="{ errors }"
@@ -180,7 +391,7 @@
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="sancionDisciplinaria"
+                                            v-model="aCuentaVacaciones"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -191,7 +402,7 @@
                             </b-col>
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Huelga</label>
+                                    <label>Tiempo Servicio</label>
                                     <validation-provider
                                         #default="{ errors }"
                                         rules=""
@@ -199,7 +410,7 @@
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="huelga"
+                                            v-model="tiempoServicio"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -208,28 +419,10 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
+
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Licencia C/G/H COVID-19</label>
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules=""
-                                        name="licencia covid"
-                                    >
-                                        <b-form-input
-                                            id="example-input"
-                                            v-model="licenciaCovid"
-                                            type="text"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="3">
-                                <b-form-group>
-                                    <label>Vacaciones no gozadas</label>
+                                    <label>Total Tiempo Deducible</label>
                                     <validation-provider
                                         #default="{ errors }"
                                         rules=""
@@ -237,7 +430,7 @@
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="vacacionesNoGozadas"
+                                            v-model="totalTiempoDeducible"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -247,72 +440,10 @@
                                 </b-form-group>
                             </b-col>
                             <b-col md="6">
-                                <label
-                                    >Periodo de pago BONO de
-                                    productividad</label
-                                >
+                                <label>Total tiempo servicio ESSALUD</label>
                                 <b-form-input
                                     id="example-input"
-                                    v-model="bonoPago"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label
-                                    >Descuento de pago BONO de productividad por
-                                    no corresponder</label
-                                >
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="descuentoBonoPago"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>Guardias hospitalarias</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="guardiasHospitalarias"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>Horas extras</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="horasExtras"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>Horas RPCT</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="horasRpct"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>PCT</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="pct"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>Notas adicionales</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="notasAdicionales"
-                                    type="text"
-                                />
-                            </b-col>
-                            <b-col md="6">
-                                <label>Zona menor desarrollo</label>
-                                <b-form-input
-                                    id="example-input"
-                                    v-model="zonaMenorDesarrollo"
+                                    v-model="essalud"
                                     type="text"
                                 />
                             </b-col>
@@ -412,22 +543,32 @@ export default {
             nit: "",
             numeroInforme: "",
             fechaInforme: "",
-            faltas: "",
-            tardanzas: "",
+            codPlanilla: "",
+            fechaNacimiento: "",
+            regimenLaboral: "",
+            grupoOcupacional: "",
+            numeroDocumentoCese: "",
+            regimenPensionario: "",
+            lineaCarrera: "",
+            condicionLaboral: "",
+            modalidadContrato: "",
+            dependencia: "",
             licencias: "",
-            permisosParticulares: "",
             sancionDisciplinaria: "",
-            huelga: "",
             licenciaCovid: "",
-            vacacionesNoGozadas: "",
-            bonoPago: "",
-            descuentoBonoPago: "",
-            guardiasHospitalarias: "",
-            horasExtras: "",
-            horasRpct: "",
-            pct: "",
-            notasAdicionales: "",
-            zonaMenorDesarrollo: "",
+            permisosParticulares: "",
+            aCuentaVacaciones: "",
+            tiempoServicio: "",
+            totalTiempoDeducible: "",
+            tiempoServicio: "",
+            essalud: "",
+            regimen: [],
+            grupo: [],
+            pensionario: [],
+            linea: [],
+            condicion: [],
+            contrato: [],
+            dependencias: [],
             //selects
             users: [],
         };
@@ -443,6 +584,21 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
+        this.$http
+            .get("/api/auth/legajo_cese/select")
+            .then((response) => {
+                this.regimen = response.data.regimen_laboral;
+                this.grupo = response.data.grupo_ocupacional;
+                this.pensionario = response.data.regimen_pensionario;
+                this.linea = response.data.linea_carrera;
+                this.condicion = response.data.condicion_laboral;
+                this.contrato = response.data.condicion_contrato;
+                this.modalidad = response.data.dependencia;
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     },
     methods: {
         back() {
@@ -452,30 +608,55 @@ export default {
             this.$refs.registerForm.validate().then((success) => {
                 if (success) {
                     this.$http
-                        .post("/api/auth/informe_cese/create", {
+                        .post("/api/auth/legajo_cese/create", {
                             nombre: this.persona.name,
                             baja_id: this.persona.id,
+                            codigo_planilla: this.codPlanilla,
+                            fecha_nacimiento: this.fechaNacimiento,
                             nit: this.nit,
                             numero_informe: this.numeroInforme,
                             fecha_informe: this.fechaInforme,
-                            faltas: this.faltas,
-                            tardanzas: this.tardanzas,
-                            licencias: this.licencias,
-                            permisos_particulares: this.permisosParticulares,
+                            regimen_laboral:
+                                this.regimenLaboral != null
+                                    ? this.regimenLaboral.id
+                                    : "",
+                            grupo_ocupacional:
+                                this.grupoOcupacional != null
+                                    ? this.grupoOcupacional.id
+                                    : "",
+                            numero_documento_cese: this.numeroDocumentoCese,
+                            regimen_pensionario:
+                                this.regimenPensionario != null
+                                    ? this.regimenPensionario.id
+                                    : "",
+                            linea_carrera:
+                                this.lineaCarrera != null
+                                    ? this.lineaCarrera.id
+                                    : "",
+                            condicion_laboral:
+                                this.condicionLaboral != null
+                                    ? this.condicionLaboral.id
+                                    : "",
+                            modalidad_contrato:
+                                this.modalidadContrato != null
+                                    ? this.modalidadContrato.id
+                                    : "",
+                            dependencia:
+                                this.dependencia != null
+                                    ? this.dependencia.id
+                                    : "",
+                            licencia_sg_haber: this.licencias,
                             sancion_disciplinaria: this.sancionDisciplinaria,
-                            huelga: this.huelga,
                             licencia_covid: this.licenciaCovid,
-                            vacaciones_no_gozadas: this.vacacionesNoGozadas,
-                            bono_pago: this.bonoPago,
-                            descuento_bono_pago: this.descuentoBonoPago,
-                            guardias: this.guardiasHospitalarias,
-                            horas_extras: this.horasExtras,
-                            horas_rpct: this.horasRpct,
-                            pct: this.pct,
-                            notas_adicionales: this.notasAdicionales,
-                            zona_menor_desarrollo: this.zonaMenorDesarrollo,
+                            permisos_particulares: this.permisosParticulares,
+                            acuenta_vacaciones: this.aCuentaVacaciones,
+                            tiempo_servicio: this.tiempoServicio,
+                            total_tpo_deducible: this.totalTiempoDeducible,
+                            tiempo_servicio: this.tiempoServicio,
+                            total_tpo_essalud: this.essalud,
                         })
                         .then((res) => {
+                            console.log(res);
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",
@@ -485,7 +666,7 @@ export default {
                                     variant: "success",
                                 },
                             });
-                            this.$router.back();
+                            // this.$router.back();
                         })
                         .catch((error) => {
                             this.$refs.registerForm.setErrors(

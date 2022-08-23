@@ -436,7 +436,7 @@ export default {
         this.getDetail();
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
-            .get("/api/auth/users/pluck")
+            .get("/api/auth/informe_cese/getuser")
             .then((response) => {
                 console.log(response);
                 this.users = response.data;
@@ -456,10 +456,9 @@ export default {
                         this.$route.params.informeId
                 )
                 .then((response) => {
-                    console.log(response);
                     this.persona = {
                         name: response.data.nombre,
-                        id: response.data.dni,
+                        id: response.data.baja_id,
                     };
                     this.nit = response.data.nit;
                     this.numeroInforme = response.data.numero_informe;
@@ -498,7 +497,7 @@ export default {
                                 this.$route.params.informeId,
                             {
                                 nombre: this.persona.name,
-                                dni: this.persona.id,
+                                baja_id: this.persona.id,
                                 nit: this.nit,
                                 numero_informe: this.numeroInforme,
                                 fecha_informe: this.fechaInforme,

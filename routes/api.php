@@ -19,6 +19,7 @@ use App\Http\Controllers\API\admin\CambioTurnoController;
 use App\Http\Controllers\API\admin\PersonaControllers;
 use App\Http\Controllers\API\admin\PersonalBajaController;
 use App\Http\Controllers\API\admin\PersonalInformesCeseController;
+use App\Http\Controllers\API\admin\LegajosInformesCeseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -145,7 +146,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/', [PersonalInformesCeseController::class, 'index']);
             Route::post('/generar_informe', [PersonalInformesCeseController::class, 'generarInforme']);
             Route::get('file/{name}', [PersonalInformesCeseController::class, 'getfile']);
-            Route::get('getuser', [PersonalInformesCeseController::class, 'getusers']);
+            Route::get('/getuser', [PersonalInformesCeseController::class, 'getusers']);
             Route::post('/create', [PersonalInformesCeseController::class, 'create']);
             // Route::post('/create', [PersonalBajaController::class, 'create']);
             // Route::get('file/{name}', [PersonalBajaController::class, 'getfile']);
@@ -154,7 +155,27 @@ Route::group(['prefix' => 'auth'], function () {
             // Route::post('modal', [PersonalBajaController::class, 'modal']);
             // Route::post('obs/{id}', [PersonalBajaController::class, 'observar']);
             // Route::post('updateStatus/{id}', [PersonalBajaController::class, 'update_estado']);
-            // Route::post('delete/{id}', [PersonalBajaController::class, 'delete']);
+            Route::post('delete/{id}', [PersonalInformesCeseController::class, 'delete']);
+            //legajos informe cese
+        });
+        Route::group(['prefix' => 'legajo_cese'], function () {
+            Route::get('/', [LegajosInformesCeseController::class, 'index']);
+            Route::post('/generar_informe', [LegajosInformesCeseController::class, 'generarInforme']);
+            Route::get('file/{name}', [LegajosInformesCeseController::class, 'getfile']);
+            Route::get('/getuser', [LegajosInformesCeseController::class, 'getusers']);
+            Route::post('/create', [LegajosInformesCeseController::class, 'create']);
+            Route::get('select/', [LegajosInformesCeseController::class, 'select']);
+            Route::post('modal', [LegajosInformesCeseController::class, 'modal']);
+            Route::post('modalName', [LegajosInformesCeseController::class, 'modalName']);
+            // Route::get('parameterName/{id}', [LegajosInformesCeseController::class, 'parameterName']);
+            // Route::post('/create', [LegajosBajaController::class, 'create']);
+            // Route::get('file/{name}', [LegajosBajaController::class, 'getfile']);
+            Route::get('detail/{id}', [LegajosInformesCeseController::class, 'getDetail']);
+            Route::post('update/{id}', [LegajosInformesCeseController::class, 'update']);
+            // Route::post('modal', [LegajosBajaController::class, 'modal']);
+            // Route::post('obs/{id}', [LegajosBajaController::class, 'observar']);
+            // Route::post('updateStatus/{id}', [LegajosBajaController::class, 'update_estado']);
+            Route::post('delete/{id}', [LegajosInformesCeseController::class, 'delete']);
         });
     });
 });

@@ -6,14 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class PersonalInformesCese extends Model implements Auditable
+class LegajosInformesCese extends Model implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
-
-    // protected $attributes = [
-    //     'forma_registro' => 'CRUD',
-    // ];
 
     static $rules = [
         'dni' => 'required',
@@ -26,8 +22,7 @@ class PersonalInformesCese extends Model implements Auditable
      *
      * @var array
      */
-    protected $fillable = ['baja_id', 'nombre', 'dni', 'fecha_ingreso', 'fecha_cese', 'motivo_cese', 'faltas', 'tardanzas', 'licencias', 'permisos_particulares', 'sancion_disciplinaria', 'huelga', 'licencia_covid', 'vacaciones_no_gozadas', 'bono_pago', 'descuento_bono_pago', 'guardias', 'horas_extras', 'horas_rpct', 'pct', 'notas_adicionales', 'zona_menor_desarrollo', 'nit', 'numero_informe', 'fecha_informe', 'path_informe', 'forma_registro', 'created_by', 'updated_by'];
-
+    protected $fillable = ['baja_id', 'nombre', 'dni', 'codigo_planilla', 'fecha_nacimiento', 'fecha_ingreso', 'ultimo_dia_labor', 'fecha_cese', 'regimen_laboral', 'grupo_ocupacional', 'numero_documento_cese', 'motivo_cese', 'regimen_pensionario', 'linea_carrera', 'condicion_laboral', 'modalidad_contrato', 'dependencia', 'licencia_sg_haber', 'sancion_disciplinaria', 'licencia_covid', 'permisos_particulares', 'acuenta_vacaciones', 'tiempo_servicio', 'total_tpo_deducible', 'total_tpo_essalud', 'nit', 'numero_informe', 'fecha_informe', 'path_informe', 'status'];
 
     public function persona()
     {

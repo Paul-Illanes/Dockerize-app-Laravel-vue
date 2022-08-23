@@ -245,4 +245,34 @@ export default [
       action: 'personal_baja-edit',
     },
   },
+    // *===============================================---*
+  // *--------- legajos informe de cese--- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/legajos_informe_cese/list',
+    name: 'admin-legajocese-list',
+    component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-index',
+    },
+  },
+  {
+    path: '/admin/legajos_informe_cese/add',
+    name: 'admin-legajocese-add',
+    component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-create',
+    },
+  },
+  {
+    path: '/admin/legajos_informe_cese/edit/:legajoId',
+    name: 'admin-legajocese-edit',
+    component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_baja-edit',
+    },
+  },
 ]

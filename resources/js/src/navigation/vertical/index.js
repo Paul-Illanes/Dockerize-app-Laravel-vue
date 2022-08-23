@@ -103,6 +103,14 @@ export default [
         action: 'incorporaciones-index',
         icon: 'EditIcon',
       },
+      {
+        title: 'Legajos Informe de cese',
+        route: 'admin-legajocese-list',
+        resource: 'ACL',
+        action: 'incorporaciones-index',
+        icon: 'EditIcon',
+      },
+      
     ],
   },
 ]
