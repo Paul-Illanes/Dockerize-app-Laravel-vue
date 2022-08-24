@@ -22,6 +22,7 @@
                             size="sm"
                             inline
                             :options="pageOptions"
+                            class="mr-1"
                         />
                     </b-form-group>
                 </b-col>
@@ -65,7 +66,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="items"
+            :items="papItems"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -76,6 +77,12 @@
         >
             <template #cell(index)="data">
                 {{ data.index + 1 }}
+            </template>
+            <template #cell(fecha_salida)="data">
+                {{ changeDate(data.item.fecha_salida) }}
+            </template>
+            <template #cell(fecha_retorno)="data">
+                {{ changeDate(data.item.fecha_retorno) }}
             </template>
             <template #cell(action)="data">
                 <div class="text-nowrap">
@@ -226,6 +233,8 @@ import {
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
+import moment from "moment";
+
 export default {
     components: {
         BRow,
@@ -262,7 +271,7 @@ export default {
             persistId: "",
             selectedVac: "",
             show: false,
-            items: [],
+            papItems: [],
             vacaciones: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
@@ -304,8 +313,8 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/papeletas/" + val.id)
                 .then((response) => {
-                    console.log(response);
-                    this.items = response.data;
+                    this.papItems = response.data;
+                    this.totalRows = this.papItems.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -323,9 +332,12 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.items.length;
+        this.totalRows = this.papItems.length;
     },
     methods: {
+        changeDate(dato) {
+            return moment(String(dato)).format("MM-DD-YYYY").toString();
+        },
         asignar() {
             this.$refs.asignarForm.validate().then((success) => {
                 if (success) {
@@ -386,7 +398,6 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/periodo/" + data.dni)
                 .then((response) => {
-                    console.log(response.data);
                     this.vacaciones = response.data;
                     // this.show = true;
                 })

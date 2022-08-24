@@ -22,6 +22,7 @@
                             size="sm"
                             inline
                             :options="pageOptions"
+                            class="mr-1"
                         />
                     </b-form-group>
                 </b-col>
@@ -65,7 +66,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="items"
+            :items="docItems"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -189,7 +190,7 @@ export default {
     data() {
         return {
             show: false,
-            items: [],
+            docItems: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
             totalRows: 1,
@@ -219,12 +220,11 @@ export default {
     },
     watch: {
         taskTags: function (val, oldval) {
-            console.log(val.id);
             this.$http
                 .get("/api/auth/vacaciones/report/documentos/" + val.id)
                 .then((response) => {
-                    console.log(response);
-                    this.items = response.data;
+                    this.docItems = response.data;
+                    this.totalRows = this.docItems.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -242,11 +242,11 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.items.length;
+        this.totalRows = this.docItems.length;
     },
     methods: {
         changeDate(dato) {
-            return moment(String(dato)).format("MM/DD/YYYY");
+            return moment(String(dato)).format("MM-DD-YYYY").toString();
         },
         changeSuspension(dato) {
             if (!dato) {

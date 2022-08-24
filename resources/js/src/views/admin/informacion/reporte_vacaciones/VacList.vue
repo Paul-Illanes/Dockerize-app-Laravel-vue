@@ -21,6 +21,7 @@
                             size="sm"
                             inline
                             :options="pageOptions"
+                            class="mr-1"
                         />
                     </b-form-group>
                 </b-col>
@@ -64,7 +65,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="items"
+            :items="vacItems"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -175,7 +176,7 @@ export default {
     data() {
         return {
             show: false,
-            items: [],
+            vacItems: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
             totalRows: 1,
@@ -207,7 +208,8 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/vacaciones/" + val.id)
                 .then((response) => {
-                    this.items = response.data;
+                    this.vacItems = response.data;
+                    this.totalRows = this.vacItems.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -237,7 +239,7 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.items.length;
+        this.totalRows = this.vacItems.length;
     },
     methods: {
         onFiltered(filteredItems) {

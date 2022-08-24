@@ -348,7 +348,6 @@ export default {
     },
     methods: {
         onFiltered(filteredItems) {
-            console.log("fer");
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
@@ -358,7 +357,6 @@ export default {
         this.show = true;
         // this.row = this.tableBasic;
         this.$http.get("/api/auth/users/").then((res) => {
-            console.log(res);
             this.items = res.data.data;
             this.totalRows = this.items.length;
             this.show = false;
