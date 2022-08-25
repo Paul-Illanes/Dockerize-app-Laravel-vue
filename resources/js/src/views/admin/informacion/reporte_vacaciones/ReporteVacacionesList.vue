@@ -138,10 +138,4 @@ export default {
 </script>
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
-hr {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    border: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
 </style>
