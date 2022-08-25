@@ -19,6 +19,7 @@
                         class="per-page-selector d-inline-block ml-50 mr-1"
                     />
                     <b-button
+                        v-if="$can('legajos_informes_cese-create', 'ACL')"
                         variant="primary"
                         :to="{ name: 'admin-legajocese-add' }"
                     >
@@ -138,6 +139,7 @@
                         :target="`invoice-row-${data.item.id}-preview-icon`"
                     /> -->
                     <feather-icon
+                        v-if="$can('legajos_informes_cese-edit', 'ACL')"
                         @click="
                             $router.push({
                                 name: 'admin-legajocese-edit',
@@ -156,6 +158,7 @@
                         :target="`invoice-row-${data.item.id}-edit-icon`"
                     /> -->
                     <feather-icon
+                        v-if="$can('legajos_informes_cese-edit', 'ACL')"
                         :id="`invoice-row-${data.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         class="cursor-pointer text-danger"

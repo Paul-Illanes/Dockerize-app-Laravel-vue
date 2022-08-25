@@ -66,7 +66,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="docItems"
+            :items="items"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -190,7 +190,7 @@ export default {
     data() {
         return {
             show: false,
-            docItems: [],
+            items: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
             totalRows: 1,
@@ -223,8 +223,8 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/documentos/" + val.id)
                 .then((response) => {
-                    this.docItems = response.data;
-                    this.totalRows = this.docItems.length;
+                    this.items = response.data;
+                    this.totalRows = this.items.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -242,11 +242,11 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.docItems.length;
+        this.totalRows = this.items.length;
     },
     methods: {
         changeDate(dato) {
-            return moment(String(dato)).format("MM-DD-YYYY").toString();
+            return moment(String(dato)).format("MM-DD-YYYY");
         },
         changeSuspension(dato) {
             if (!dato) {

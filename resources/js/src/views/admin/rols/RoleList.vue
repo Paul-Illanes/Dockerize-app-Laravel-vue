@@ -84,6 +84,7 @@
         >
             <template #cell(action)="data">
                 <b-badge
+                    v-if="$can('roles-edit', 'ACL')"
                     href="#"
                     variant="primary"
                     :to="{

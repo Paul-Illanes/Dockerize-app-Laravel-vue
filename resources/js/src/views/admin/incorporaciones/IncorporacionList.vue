@@ -24,6 +24,7 @@
                         />
                     </b-form-group>
                     <b-button
+                        v-if="$can('incorporaciones-create', 'ACL')"
                         class="mr-50"
                         variant="primary"
                         :to="{ name: 'admin-incorporacion-add' }"
@@ -109,6 +110,7 @@
                         :target="`user-row-${data.item.id}-persona-icon`"
                     />
                     <feather-icon
+                        v-if="$can('incorporaciones-edit', 'ACL')"
                         :id="`user-row-${data.item.id}-send-icon`"
                         @click="
                             $router.push({
@@ -127,6 +129,7 @@
                     />
 
                     <feather-icon
+                        v-if="$can('incorporaciones-destroy', 'ACL')"
                         :id="`invoice-row-${data.item.id}-preview-icon`"
                         icon="TrashIcon"
                         size="16"

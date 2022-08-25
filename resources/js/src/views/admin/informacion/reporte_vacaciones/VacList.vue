@@ -65,7 +65,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="vacItems"
+            :items="items"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -176,7 +176,7 @@ export default {
     data() {
         return {
             show: false,
-            vacItems: [],
+            items: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
             totalRows: 1,
@@ -208,8 +208,8 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/vacaciones/" + val.id)
                 .then((response) => {
-                    this.vacItems = response.data;
-                    this.totalRows = this.vacItems.length;
+                    this.items = response.data;
+                    this.totalRows = this.items.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -239,11 +239,10 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.vacItems.length;
+        this.totalRows = this.items.length;
     },
     methods: {
         onFiltered(filteredItems) {
-            console.log("fer");
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;

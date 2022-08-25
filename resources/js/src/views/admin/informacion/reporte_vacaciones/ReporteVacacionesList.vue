@@ -104,12 +104,10 @@ export default {
     },
     watch: {
         selected: function (val, oldval) {
-            console.log(val);
             this.taskTags = val;
             this.$http
                 .get("/api/auth/vacaciones/report/getpersona/" + val.id)
                 .then((response) => {
-                    console.log(response);
                     this.persona = response.data;
                     this.fecha = response.data.fecha_ingreso;
                 })
@@ -120,7 +118,6 @@ export default {
     },
     methods: {
         onClickChild(value) {
-            console.log(value); // someValue
             this.taskTags = value;
         },
         changeDate(dato) {

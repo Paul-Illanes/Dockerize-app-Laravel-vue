@@ -34,7 +34,9 @@
                         :clearable="false"
                         class="per-page-selector d-inline-block ml-50 mr-1"
                     />
+
                     <b-button
+                        v-if="$can('papeletas-create', 'ACL')"
                         variant="primary"
                         :to="{ name: 'admin-papeletas-add' }"
                     >
@@ -182,6 +184,7 @@
                         :target="`invoice-row-${data.item.id}-preview-icon`"
                     />
                     <feather-icon
+                        v-if="$can('papeletas-edit', 'ACL')"
                         @click="
                             $router.push({
                                 name: 'admin-papeleta-edit',
@@ -200,6 +203,7 @@
                         :target="`invoice-row-${data.item.id}-edit-icon`"
                     />
                     <feather-icon
+                        v-if="$can('papeletas-destroy', 'ACL')"
                         :id="`invoice-row-${data.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         class="cursor-pointer text-danger"

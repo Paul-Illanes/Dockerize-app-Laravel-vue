@@ -62,7 +62,7 @@ export default [
     component: () => import('@/views/admin/Permissions/PermissionList.vue'),
     meta: {
       resource: 'ACL',
-      action: 'users-index',
+      action: 'permisos-index',
     },
   },
   {
@@ -71,7 +71,7 @@ export default [
     component: () => import('@/views/admin/Permissions/PermissionsEdit.vue'),
     meta: {
       resource: 'ACL',
-      action: 'users-edit',
+      action: 'permisos-edit',
     },
   },
   {
@@ -80,7 +80,7 @@ export default [
     component: () => import('@/views/admin/Permissions/PermissionsAdd.vue'),
     meta: {
       resource: 'ACL',
-      action: 'users-create',
+      action: 'permisos-create',
     },
   },
   // *===============================================---*
@@ -224,7 +224,7 @@ export default [
     component: () => import('@/views/admin/control_informe_cese/InformeCeseList.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-index',
+      action: 'personal_informes_cese-index',
     },
   },
   {
@@ -233,7 +233,7 @@ export default [
     component: () => import('@/views/admin/control_informe_cese/InformeCeseAdd.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-create',
+      action: 'personal_informes_cese-create',
     },
   },
   {
@@ -242,7 +242,7 @@ export default [
     component: () => import('@/views/admin/control_informe_cese/InformeCeseEdit.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-edit',
+      action: 'personal_informes_cese-edit',
     },
   },
     // *===============================================---*
@@ -254,7 +254,7 @@ export default [
     component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseList.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-index',
+      action: 'legajos_informes_cese-index',
     },
   },
   {
@@ -263,7 +263,7 @@ export default [
     component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseAdd.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-create',
+      action: 'legajos_informes_cese-create',
     },
   },
   {
@@ -272,7 +272,7 @@ export default [
     component: () => import('@/views/admin/legajos_informe_cese/LegajosCeseEdit.vue'),
     meta: {
       resource: 'ACL',
-      action: 'personal_baja-edit',
+      action: 'legajos_informes_cese-edit',
     },
   },
 ]

@@ -3,7 +3,7 @@
         <b-card-body>
             <div
                 class="d-flex justify-content-between flex-wrap mb-2"
-                v-if="$can('roles-create', 'ACL')"
+                v-if="$can('permisos-create', 'ACL')"
             >
                 <b-button
                     variant="primary"
@@ -88,6 +88,7 @@
             <template #cell(action)="data">
                 <div class="text-nowrap">
                     <feather-icon
+                        v-if="$can('permisos-edit', 'ACL')"
                         :id="`user-row-${data.item.id}-send-icon`"
                         @click="
                             $router.push({
@@ -107,6 +108,7 @@
                     />
 
                     <feather-icon
+                        v-if="$can('permisos-destroy', 'ACL')"
                         :id="`invoice-row-${data.item.id}-preview-icon`"
                         icon="TrashIcon"
                         size="16"

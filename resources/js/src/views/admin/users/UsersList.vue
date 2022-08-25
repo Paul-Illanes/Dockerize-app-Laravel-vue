@@ -67,12 +67,6 @@
         </b-card-body> -->
 
         <div class="m-2">
-            <b-row>
-                <!-- Per Page --
-
-                <!-- Search -->
-                <b-col cols="12" md="6"> </b-col>
-            </b-row>
             <!-- Table Top -->
             <b-row>
                 <!-- Per Page -->
@@ -97,6 +91,12 @@
                             :options="pageOptions"
                         />
                     </b-form-group>
+                    <b-button
+                        variant="primary"
+                        :to="{ name: 'admin-users-add' }"
+                    >
+                        Agregar Usuario
+                    </b-button>
                 </b-col>
 
                 <!-- Search -->

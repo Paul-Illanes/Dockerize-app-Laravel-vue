@@ -35,6 +35,7 @@
                         class="per-page-selector d-inline-block ml-50 mr-1"
                     />
                     <b-button
+                        v-if="$can('cambio_turnos-create', 'ACL')"
                         variant="primary"
                         :to="{ name: 'admin-turno-add' }"
                     >
@@ -169,6 +170,7 @@
                         :target="`invoice-row-${data.item.id}-preview-icon`"
                     />
                     <feather-icon
+                        v-if="$can('cambio_turnos-edit', 'ACL')"
                         @click="
                             $router.push({
                                 name: 'admin-turno-edit',
@@ -187,6 +189,7 @@
                         :target="`invoice-row-${data.item.id}-edit-icon`"
                     />
                     <feather-icon
+                        v-if="$can('cambio_turnos-destroy', 'ACL')"
                         :id="`invoice-row-${data.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         class="cursor-pointer text-danger"

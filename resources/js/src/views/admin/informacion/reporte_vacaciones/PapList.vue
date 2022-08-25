@@ -66,7 +66,7 @@
             class="position-relative"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="papItems"
+            :items="items"
             :fields="fields"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -271,7 +271,7 @@ export default {
             persistId: "",
             selectedVac: "",
             show: false,
-            papItems: [],
+            items: [],
             vacaciones: [],
             perPage: 5,
             pageOptions: [3, 5, 10, 50],
@@ -313,8 +313,8 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/papeletas/" + val.id)
                 .then((response) => {
-                    this.papItems = response.data;
-                    this.totalRows = this.papItems.length;
+                    this.items = response.data;
+                    this.totalRows = this.items.length;
                     // this.show = true;
                 })
                 .catch((error) => {
@@ -332,11 +332,11 @@ export default {
     },
     mounted() {
         // Set the initial number of items
-        this.totalRows = this.papItems.length;
+        this.totalRows = this.items.length;
     },
     methods: {
         changeDate(dato) {
-            return moment(String(dato)).format("MM-DD-YYYY").toString();
+            return moment(String(dato)).format("MM-DD-YYYY");
         },
         asignar() {
             this.$refs.asignarForm.validate().then((success) => {
