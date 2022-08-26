@@ -241,6 +241,7 @@
                                     <small class="text-danger">{{
                                         errors[0]
                                     }}</small>
+                                    {{ periodo }}
                                 </validation-provider>
                             </b-form-group>
                         </b-col>
@@ -444,7 +445,6 @@ export default {
                 .map((f) => ({ text: f.label, value: f.key }));
         },
         cellAttributes(slot) {
-            console.log("fer");
             return ["#cell(" + slot + ')="data"'];
         },
     },
@@ -492,13 +492,13 @@ export default {
             var sum = sumDate.setMonth(sumDate.getMonth() + 1);
             this.periodoList.push({
                 name: moment(sum).format("Y-MMMM"),
-                id: moment(sum).format("Y-MM"),
+                id: moment(sum).format("YMM"),
             });
             for (let step = 0; step < 3; step++) {
                 minDate.setMonth(minDate.getMonth() - step);
                 this.periodoList.push({
                     name: moment(minDate).format("Y-MMMM"),
-                    id: moment(minDate).format("Y-MM"),
+                    id: moment(minDate).format("YMM"),
                 });
             }
         },
@@ -520,13 +520,13 @@ export default {
             }
         },
         onFiltered(filteredItems) {
-            console.log("fer");
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
         getList() {
             this.$http.get("/api/auth/incorporaciones/").then((res) => {
+                console.log(res.data);
                 this.items = res.data.validacion;
                 this.totalRows = this.items.length;
                 this.show = false;

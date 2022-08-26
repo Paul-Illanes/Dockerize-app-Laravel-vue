@@ -93,7 +93,7 @@ export default [
         title: 'Baja de personal',
         route: 'admin-baja-list',
         resource: 'ACL',
-        action: 'personal_bajas-index',
+        action: 'personal_baja-index',
         icon: 'UserXIcon',
       },
       {

@@ -8,6 +8,35 @@
                         class="auth-register-form mt-2 ml-2 mr-2"
                         @submit.prevent="register"
                     >
+                        <section id="blockquotes" class="p-1" v-if="detail">
+                            <b-row class="p-2 border">
+                                <b-col md="6" class="mb-50">
+                                    <b>Nombre :</b> {{ detail.nombre }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>DNI :</b> {{ detail.dni }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>Cod. Planilla :</b>
+                                    {{ detail.codigo_planilla }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>Fecha Nacimiento :</b>
+                                    {{ detail.fecha_nacimiento }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>Fecha Ingreso :</b>
+                                    {{ detail.fecha_ingreso }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>Cargo :</b> {{ detail.cargo }}
+                                </b-col>
+                                <b-col md="3" class="mb-50">
+                                    <b>Regimen Laboral :</b>
+                                    {{ detail.regimen_laboral }}
+                                </b-col>
+                            </b-row>
+                        </section>
                         <b-row>
                             <b-col md="6">
                                 <b-form-group>
@@ -430,7 +459,22 @@ export default {
             zonaMenorDesarrollo: "",
             //selects
             users: [],
+            detail: "",
         };
+    },
+    watch: {
+        persona: function (val, oldval) {
+            this.$http
+                .get("/api/auth/informe_cese/detalle/" + val.id)
+                .then((response) => {
+                    this.detail = response.data;
+                    console.log(response);
+                    // this.show = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
     },
     created() {
         // await axios.get('/sanctum/csrf-cookie')

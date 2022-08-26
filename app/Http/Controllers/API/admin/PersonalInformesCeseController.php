@@ -149,37 +149,21 @@ class PersonalInformesCeseController extends Controller
         return response()->json(['msg' => 'actualizado correctamente']);
     }
 
-    /**
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Exception
-     */
-    // public function destroy($id)
-    // {
-    //     $personalInformesCese = PersonalInformesCese::find($id)->delete();
-
-    //     return redirect()->route('personal-informes-ceses.index')
-    //         ->with('status', 'PersonalInformesCese eliminado con éxito');
-    // }
-
-    /**
-     * return data personal
-     */
-    // public function getPersona(Request $request)
-    // {
-    //     $persona = Persona::find($request->dni);
-    //     $baja = PersonalBaja::where('dni', $request->dni)->first();
-    //     // dd($baja);
-    //     // $motivo_baja = $baja->motivoBaja->baja;
-    //     $data = [
-    //         'fecha_ingreso' => $persona->fecha_ingreso,
-    //         'fecha_cese' => $baja->fecha_cese,
-    //         'motivo_cese' => $baja->motivoBaja->baja,
-
-    //     ];
-    //     return response()->json($data);
-    // }
-
+    public function detalle($id)
+    {
+        $baja = PersonalBaja::find($id); // id de baja
+        $persona = Persona::find($baja->dni);
+        $data = [
+            'nombre' => $persona->fullname,
+            'dni' => $persona->dni,
+            'codigo_planilla' => $persona->cod_planilla,
+            'fecha_nacimiento' => $persona->fecha_nacimiento,
+            'fecha_ingreso' => $persona->fecha_ingreso,
+            'cargo' => $persona->cargo,
+            'regimen_laboral' => $persona->c_l,
+        ];
+        return response()->json($data, 200);
+    }
     public function generarInforme(Request $request)
     {
         // dd($request->all());

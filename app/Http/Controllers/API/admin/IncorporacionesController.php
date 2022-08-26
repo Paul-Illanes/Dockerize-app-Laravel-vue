@@ -54,7 +54,7 @@ class IncorporacionesController extends Controller
     {
 
         $data = Incorporaciones::select('dni', 'id')
-            ->where('periodo', '=', $periodo)->get();
+            ->where('mes_alta_planilla', '=', $periodo)->get();
         return response()->json($data);
     }
     public function personas(Request $request)
@@ -151,7 +151,7 @@ class IncorporacionesController extends Controller
                 $db = new IncorporacionesValidate();
                 $db->incorporacion_id = $value['id'];
                 $db->parameters_id = $val;
-                $db->status = 1;
+                $db->status = 0;
                 $db->save();
             }
         }

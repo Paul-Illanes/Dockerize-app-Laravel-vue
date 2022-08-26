@@ -150,6 +150,22 @@
             <template #cell(index)="data">
                 {{ data.index + 1 }}
             </template>
+            <template #cell(verified)="data">
+                <div class="text-center">
+                    <b-badge
+                        :variant="data.item.verified ? 'success' : 'warning'"
+                        >{{ verified(data.item.verified) }}</b-badge
+                    >
+                </div>
+            </template>
+            <template #cell(active)="data">
+                <div class="text-center">
+                    <b-badge
+                        :variant="data.item.active ? 'success' : 'warning'"
+                        >{{ verified(data.item.active) }}</b-badge
+                    >
+                </div>
+            </template>
             <template #cell(action)="data">
                 <div class="text-nowrap">
                     <feather-icon
@@ -325,8 +341,11 @@ export default {
 
                 { key: "name", label: "Nombre", sortable: true },
                 { key: "lastname", label: "Apellidos", sortable: true },
+                { key: "username", label: "DNI", sortable: true },
                 { key: "email", label: "Email", sortable: true },
-                { key: "pin", label: "pin", sortable: true },
+                { key: "celular", label: "Celular", sortable: true },
+                { key: "verified", label: "Verificado", sortable: true },
+                { key: "active", label: "Activo", sortable: true },
                 { key: "roles[0].name", label: "Rol", sortable: true },
                 { key: "action", label: "Action", sortable: true },
             ],
@@ -347,6 +366,13 @@ export default {
         this.totalRows = this.items.length;
     },
     methods: {
+        verified(data) {
+            if (data == 1) {
+                return "SI";
+            } else {
+                return "NO";
+            }
+        },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
@@ -357,6 +383,7 @@ export default {
         this.show = true;
         // this.row = this.tableBasic;
         this.$http.get("/api/auth/users/").then((res) => {
+            console.log(res);
             this.items = res.data.data;
             this.totalRows = this.items.length;
             this.show = false;

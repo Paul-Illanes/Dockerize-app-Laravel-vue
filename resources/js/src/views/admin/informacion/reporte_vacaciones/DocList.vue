@@ -223,6 +223,7 @@ export default {
             this.$http
                 .get("/api/auth/vacaciones/report/documentos/" + val.id)
                 .then((response) => {
+                    console.log(response);
                     this.items = response.data;
                     this.totalRows = this.items.length;
                     // this.show = true;
