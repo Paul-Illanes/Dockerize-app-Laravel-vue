@@ -78,7 +78,14 @@ class Incorporaciones extends Model implements Auditable
         'cerrado',
         'periodo'
     ];
-
+    public function setMetadataAttribute($value)
+    {
+        $this->attributes['metadata'] = json_encode($value);
+    }
+    public function getMetadataAttribute($value)
+    {
+        return json_decode($value, true);
+    }
     public function getFullNameAttribute()
     {
         return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";

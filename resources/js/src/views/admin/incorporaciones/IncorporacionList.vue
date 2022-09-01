@@ -141,8 +141,56 @@
                     />
                 </div>
             </template>
-
+            <!-- <template #cell(metadata)="data">
+                <span v-for="sub in data.item.metadata">
+                    <b-form-group>
+                        <b-form-checkbox
+                            text="huellea"
+                            class="custom-control-success"
+                            checked="1"
+                            true-value="1"
+                            false-value="0"
+                            switch
+                            inline
+                            :value="sub.status"
+                            @click.native.prevent="
+                                check($event, sub, data.item.id)
+                            "
+                        >
+                            <p class="text-nowrap">
+                                {{ getNameParameter(sub.parameter_id) }}
+                            </p>
+                        </b-form-checkbox>
+                    </b-form-group>
+                </span>
+            </template> -->
             <template
+                v-for="(field, index) in parameterValidate"
+                #[`cell(${field.name})`]="data"
+            >
+                <span v-for="sub in data.item.metadata">
+                    <b-form-group v-if="sub.parameter_id == field.id">
+                        <b-form-checkbox
+                            class="custom-control-success"
+                            checked="1"
+                            true-value="1"
+                            false-value="0"
+                            switch
+                            inline
+                            :disabled="
+                                $can(field.permiso, 'ACL') ? false : true
+                            "
+                            @click.native.prevent="
+                                check($event, sub, data.item.id)
+                            "
+                            :value="sub.status"
+                        >
+                            {{ checked(sub.status) }}
+                        </b-form-checkbox>
+                    </b-form-group>
+                </span>
+            </template>
+            <!-- <template
                 v-for="(field, index) in parameterValidate"
                 #[`cell(${field.name})`]="data"
             >
@@ -165,7 +213,7 @@
                         </b-form-checkbox>
                     </b-form-group>
                 </span>
-            </template>
+            </template> -->
         </b-table>
 
         <div class="mx-2 mb-2">
@@ -407,12 +455,6 @@ export default {
                     label: "Fecha Nacimiento",
                     sortable: true,
                 },
-                { key: "status", label: "Status", sortable: true },
-                // {
-                //     key: "validation",
-                //     label: "validaciones",
-                //     sortable: true,
-                // },
                 { key: "action", label: "Action", sortable: true },
             ],
             /* eslint-disable global-require */
@@ -425,6 +467,7 @@ export default {
             this.$http
                 .get("/api/auth/incorporaciones/members/" + this.periodo.id)
                 .then((response) => {
+                    console.log(response.data);
                     this.members = response.data;
                     if (this.members.length == 0) {
                         this.show = 1;
@@ -502,11 +545,13 @@ export default {
                 });
             }
         },
-        check: function (e, data) {
+        check: function (e, data, id) {
+            console.log(id);
             this.$http
                 .post("/api/auth/incorporaciones/status", {
-                    id: data.id,
+                    id: id,
                     status: data.status,
+                    parameter_id: data.parameter_id,
                 })
                 .then((res) => {
                     this.getList();
@@ -560,6 +605,7 @@ export default {
             this.$http
                 .get("/api/auth/parameter_check/" + "validacion")
                 .then((response) => {
+                    console.log(response.data);
                     this.parameterValidate = response.data;
                     if (this.parameterValidate.length > 0) {
                         this.fields.pop();
@@ -582,6 +628,13 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+        },
+        getNameParameter(data) {
+            // console.log(data);
+            // console.log(this.solicitante_turno_selected);
+            var dato = this.parameterValidate.find((item) => item.id == data);
+            // console.log(dato.name);
+            if (dato) return dato.name;
         },
     },
     created() {

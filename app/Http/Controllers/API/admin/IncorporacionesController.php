@@ -28,16 +28,40 @@ class IncorporacionesController extends Controller
     {
 
         $id = $request->id;
-        $validate = IncorporacionesValidate::find($id)->get();
-        $incorporacionValidate = $validate[0];
-        if ($request->status == 1) {
-            $incorporacionValidate->status = 0;
+        $parameter_id = $request->parameter_id;
+        $incorporacion = Incorporaciones::find($id);
+        $metadata = $incorporacion->metadata;
+        $status = '';
+        if ($request->status == 0) {
+            $status = 1;
         } else {
-            $incorporacionValidate->status = 1;
+            $status = 0;
         }
+        $i = 0;
+        foreach ($metadata as $val) {
+            if ($parameter_id == $val['parameter_id']) {
+                // var_dump($val);
+                break;
+            }
+            $i++;
+        }
+        $data = [
+            'parameter_id' => $parameter_id,
+            'status' => $status,
+        ];
+        $metadata[$i] = $data;
+        $incorporacion->metadata = $metadata;
+        $incorporacion->save();
 
-        $incorporacionValidate->save();
-        return response()->json(['msg' => 'actualizado correctamente']);
+        // $incorporacionValidate = $validate[0];
+        // if ($request->status == 1) {
+        //     $incorporacionValidate->status = 0;
+        // } else {
+        //     $incorporacionValidate->status = 1;
+        // }
+
+        // $incorporacionValidate->save();
+        // return response()->json(['msg' => 'actualizado correctamente']);
     }
     public function store(Request $request)
     {
@@ -146,14 +170,21 @@ class IncorporacionesController extends Controller
         $members = $request->members;
         $periodo = $request->periodo;
         $validaciones = $request->validaciones;
+        $metadata = [];
+        $i = 0;
+        foreach ($validaciones as $val) {
+            $datos = [
+                'parameter_id' => $val,
+                'status' => 0,
+            ];
+            $metadata[$i] = $datos;
+            $i++;
+        }
         foreach ($members as $value) {
-            foreach ($validaciones as $val) {
-                $db = new IncorporacionesValidate();
-                $db->incorporacion_id = $value['id'];
-                $db->parameters_id = $val;
-                $db->status = 0;
-                $db->save();
-            }
+            $id = $value['id'];
+            $incorporacion = Incorporaciones::find($id);
+            $incorporacion->metadata = $metadata;
+            $incorporacion->save();
         }
     }
 }
