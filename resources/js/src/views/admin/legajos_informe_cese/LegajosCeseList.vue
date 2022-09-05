@@ -586,7 +586,6 @@ export default {
                     this.modalidad_contrato =
                         response.data.modalidad_contrato[0];
                     this.dependencia = response.data.dependencia[0];
-                    console.log(response);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -617,7 +616,6 @@ export default {
                             this.$refs["my-modal-obs"].hide();
                         })
                         .catch((error) => {
-                            console.log(error);
                             this.$refs.observerForm.setErrors(
                                 error.response.data.errors
                             );
@@ -713,7 +711,6 @@ export default {
             this.getModalDetail(data);
             this.modalData = data;
 
-            console.log(this.modalData);
             // this.modalData.nro_papeleta = data.nro_papeleta;
             // this.modalData.nombres = data.nombres;
             // this.modalData.fecha_generacion = data.fecha;

@@ -66,7 +66,7 @@ class IncorporacionesController extends Controller
     public function store(Request $request)
     {
         $incorporaciones = Incorporaciones::create($request->all());
-        return response()->json(['msg' => $request->all()]);
+        return response()->json(200);
     }
     public function getDetail(Request $request, $id)
     {
@@ -83,7 +83,7 @@ class IncorporacionesController extends Controller
     }
     public function personas(Request $request)
     {
-        $exist = Persona::FindOrFail($request->dni);
+        $exist = Persona::Find($request->dni);
         if ($exist) {
             $exist->cargo = $request->cargo;
             $exist->cod_cargo = $request->cod_cargo;

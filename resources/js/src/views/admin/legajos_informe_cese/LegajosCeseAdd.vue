@@ -5,6 +5,8 @@
             <b-col md="12">
                 <validation-observer ref="registerForm" #default="{ invalid }">
                     <b-form
+                        ref="form"
+                        :style="{ height: trHeight }"
                         class="auth-register-form mt-2 ml-2 mr-2"
                         @submit.prevent="register"
                     >
@@ -286,7 +288,7 @@
 
                                     <validation-provider
                                         #default="{ errors }"
-                                        rules="required"
+                                        rules=""
                                         name="numero informe"
                                     >
                                         <v-select
@@ -302,7 +304,7 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="4">
+                            <!-- <b-col md="4">
                                 <b-form-group>
                                     <label>Licencia S/G. Haber</label>
                                     <validation-provider
@@ -399,7 +401,7 @@
                                         }}</small>
                                     </validation-provider>
                                 </b-form-group>
-                            </b-col>
+                            </b-col> -->
                             <b-col md="3">
                                 <b-form-group>
                                     <label>Tiempo Servicio</label>
@@ -439,7 +441,7 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="6">
+                            <b-col md="3">
                                 <label>Total tiempo servicio ESSALUD</label>
                                 <b-form-input
                                     id="example-input"
@@ -448,19 +450,125 @@
                                 />
                             </b-col>
 
-                            <b-col cols="12" class="mt-2 mb-5">
+                            <!-- <b-col cols="12" class="">
                                 <b-button
+                                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                                     variant="primary"
-                                    type="submit"
-                                    @click.prevent="register"
+                                    @click="repeateAgain"
+                                    class="pr-1"
                                 >
-                                    Registrar
+                                    <feather-icon icon="PlusIcon" />
+                                    <span>Agregar</span>
                                 </b-button>
-                                <b-button variant="danger" @click="back()">
-                                    Volver
-                                </b-button>
+                            </b-col> -->
+                        </b-row>
+                        <!-- Row Loop -->
+                        <b-row
+                            v-for="(item, index) in items"
+                            :id="item.id"
+                            :key="item.id"
+                            ref="row"
+                            class="mt-1"
+                        >
+                            <b-col md="12">
+                                <b-row>
+                                    <!-- Item Name -->
+                                    <b-col md="4">
+                                        <b-form-group
+                                            label="Tipo de licencia"
+                                            label-for="item-name"
+                                        >
+                                            <validation-provider
+                                                #default="{ errors }"
+                                                rules=""
+                                                name="licencia"
+                                            >
+                                                <v-select
+                                                    label="name"
+                                                    :options="licenciaSelect"
+                                                    v-model="item.licencia"
+                                                    name="licencia"
+                                                    placeholder="Seleccione"
+                                                />
+                                                <small class="text-danger">{{
+                                                    errors[0]
+                                                }}</small>
+                                            </validation-provider>
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <!-- Cost -->
+                                    <b-col md="3">
+                                        <b-form-group
+                                            label="Fecha Inicio"
+                                            label-for="fecha_inicio"
+                                        >
+                                            <b-form-input
+                                                id="fecha_inicio"
+                                                type="date"
+                                                v-model="item.fecha_inicio"
+                                            />
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <!-- Quantity -->
+                                    <b-col md="3">
+                                        <b-form-group
+                                            label="Fecha Termino"
+                                            label-for="fecha_termino"
+                                        >
+                                            <b-form-input
+                                                id="fecha_termino"
+                                                type="date"
+                                                v-model="item.fecha_termino"
+                                            />
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <!-- Remove Button -->
+                                    <b-col lg="2" md="12" class="mb-50">
+                                        <b-button
+                                            v-ripple.400="
+                                                'rgba(234, 84, 85, 0.15)'
+                                            "
+                                            variant="outline-danger"
+                                            class="mt-0 mt-md-2"
+                                            @click="removeItem(index)"
+                                        >
+                                            <feather-icon
+                                                icon="XIcon"
+                                                class="mr-25"
+                                            />
+                                            <span>Eliminar</span>
+                                        </b-button>
+                                    </b-col>
+                                    <b-col cols="12">
+                                        <hr />
+                                    </b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
+                        <b-col cols="12" class="mb-5 pb-2">
+                            <b-button
+                                v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                                variant="primary"
+                                @click="repeateAgain"
+                                class=""
+                            >
+                                <feather-icon icon="PlusIcon" />
+                                <span>Agregar</span>
+                            </b-button>
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="register"
+                            >
+                                Registrar
+                            </b-button>
+                            <b-button variant="danger" @click="back()">
+                                Volver
+                            </b-button>
+                        </b-col>
                     </b-form>
                 </validation-observer>
             </b-col>
@@ -502,10 +610,16 @@ import ToastificationContent from "@core/components/toastification/Toastificatio
 import vSelect from "vue-select";
 import moment from "moment";
 import "animate.css";
+import Ripple from "vue-ripple-directive";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
+import { heightTransition } from "@core/mixins/ui/transition";
 
 export default {
+    directives: {
+        Ripple,
+    },
+    mixins: [heightTransition],
     components: {
         vueDropzone: vue2Dropzone,
         BCard,
@@ -539,6 +653,16 @@ export default {
 
     data() {
         return {
+            nextTodoId: 1,
+            items: [
+                {
+                    id: 1,
+                    licencia: "",
+                    fecha_inicio: "",
+                    fecha_termino: "",
+                },
+            ],
+            licenciaSelect: [],
             persona: "",
             nit: "",
             numeroInforme: "",
@@ -573,7 +697,14 @@ export default {
             users: [],
         };
     },
+    mounted() {
+        this.initTrHeight();
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.initTrHeight);
+    },
     created() {
+        window.addEventListener("resize", this.initTrHeight);
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
             .get("/api/auth/informe_cese/getuser")
@@ -599,8 +730,39 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
+        this.getParameter();
     },
     methods: {
+        getParameter() {
+            this.$http
+                .get("/api/auth/parameter/" + "legajos_licencias")
+                .then((response) => {
+                    this.licenciaSelect = response.data;
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        repeateAgain() {
+            this.items.push({
+                id: (this.nextTodoId += this.nextTodoId),
+            });
+
+            this.$nextTick(() => {
+                this.trAddHeight(this.$refs.row[0].offsetHeight);
+            });
+        },
+        removeItem(index) {
+            this.items.splice(index, 1);
+            this.trTrimHeight(this.$refs.row[0].offsetHeight);
+        },
+        initTrHeight() {
+            this.trSetHeight(null);
+            this.$nextTick(() => {
+                this.trSetHeight(this.$refs.form.scrollHeight);
+            });
+        },
         back() {
             this.$router.back();
         },
@@ -609,6 +771,7 @@ export default {
                 if (success) {
                     this.$http
                         .post("/api/auth/legajo_cese/create", {
+                            lincencia_array: this.items,
                             nombre: this.persona.name,
                             baja_id: this.persona.id,
                             codigo_planilla: this.codPlanilla,
@@ -645,11 +808,11 @@ export default {
                                 this.dependencia != null
                                     ? this.dependencia.id
                                     : "",
-                            licencia_sg_haber: this.licencias,
-                            sancion_disciplinaria: this.sancionDisciplinaria,
-                            licencia_covid: this.licenciaCovid,
-                            permisos_particulares: this.permisosParticulares,
-                            acuenta_vacaciones: this.aCuentaVacaciones,
+                            // licencia_sg_haber: this.licencias,
+                            // sancion_disciplinaria: this.sancionDisciplinaria,
+                            // licencia_covid: this.licenciaCovid,
+                            // permisos_particulares: this.permisosParticulares,
+                            // acuenta_vacaciones: this.aCuentaVacaciones,
                             tiempo_servicio: this.tiempoServicio,
                             total_tpo_deducible: this.totalTiempoDeducible,
                             tiempo_servicio: this.tiempoServicio,

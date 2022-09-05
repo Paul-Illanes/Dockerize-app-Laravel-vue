@@ -10,6 +10,7 @@ use App\Models\PersonalBaja;
 use App\Models\CmsParameter;
 use App\Models\CmsParameterGroup;
 use Illuminate\Support\Facades\Storage;
+use App\Models\LegajosLicencias;
 
 class LegajosInformesCeseController extends Controller
 {
@@ -101,15 +102,31 @@ class LegajosInformesCeseController extends Controller
                 'updated_by' => $user_id,
             ] + $request->all()
         );
-        return response()->json(['msg' => 'registrao correctamente']);
+        $id = $legajoInformesCese->id;
+        $motivo = $request->lincencia_array;
+        foreach ($motivo as $val) {
+            $licencias = new LegajosLicencias();
+            $licencias->legajos_informe_cese_id = $id;
+            $licencias->parameter_id = $val['licencia']['id'];
+            $licencias->fecha_inicio = $val['fecha_inicio'];
+            $licencias->fecha_termino = $val['fecha_termino'];
+            $licencias->save();
+        }
+
+        return response()->json(200);
     }
 
     public function getDetail($id)
     {
-        $informe = LegajosInformesCese::FindOrFail($id);
+        $legajo = LegajosInformesCese::FindOrFail($id);
+        $licencias = LegajosLicencias::where('legajos_informe_cese_id', '=', $id)->get();
         // $persona = Persona::select('nombres')->where('dni', '=', $informe->dni)->get();
         // $informe->nombres = $persona[0]->nombres;
-        return response()->json($informe);
+        $data = [
+            'legajo' => $legajo,
+            'licen' => $licencias
+        ];
+        return response()->json($data);
     }
     public function modal(Request $request)
     {
@@ -195,7 +212,27 @@ class LegajosInformesCeseController extends Controller
         $legajoInformesCese->path_informe = "";
         $legajoInformesCese->updated_by = $user_id;
         $legajoInformesCese->save();
-
+        //licencias
+        // var_dump($request->lincencia_array);
+        $id = $legajoInformesCese->id;
+        $motivo = $request->lincencia_array;
+        foreach ($motivo as $val) {
+            $licencias = LegajosLicencias::find($val['id']);
+            if ($licencias) {
+                $licencias->legajos_informe_cese_id = $id;
+                $licencias->parameter_id = $val['licencia']['id'];
+                $licencias->fecha_inicio = $val['fecha_inicio'];
+                $licencias->fecha_termino = $val['fecha_termino'];
+                $licencias->save();
+            } else {
+                $licencias = new LegajosLicencias();
+                $licencias->legajos_informe_cese_id = $id;
+                $licencias->parameter_id = $val['licencia']['id'];
+                $licencias->fecha_inicio = $val['fecha_inicio'];
+                $licencias->fecha_termino = $val['fecha_termino'];
+                $licencias->save();
+            }
+        }
         return response()->json(['msg' => 'actualizado correctamente']);
     }
 
@@ -250,5 +287,10 @@ class LegajosInformesCeseController extends Controller
     {
         $informe = LegajosInformesCese::FindOrFail($id);
         $informe->delete();
+    }
+    public function delete_licencia($id)
+    {
+        $licencia = LegajosLicencias::FindOrFail($id);
+        $licencia->delete();
     }
 }

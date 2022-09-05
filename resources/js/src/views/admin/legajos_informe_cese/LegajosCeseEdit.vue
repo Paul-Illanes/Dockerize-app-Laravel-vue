@@ -5,6 +5,8 @@
             <b-col md="12">
                 <validation-observer ref="registerForm" #default="{ invalid }">
                     <b-form
+                        ref="form"
+                        :style="{ height: trHeight }"
                         class="auth-register-form mt-2 ml-2 mr-2"
                         @submit.prevent="register"
                     >
@@ -286,7 +288,7 @@
 
                                     <validation-provider
                                         #default="{ errors }"
-                                        rules="required"
+                                        rules=""
                                         name="numero informe"
                                     >
                                         <v-select
@@ -302,7 +304,7 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="4">
+                            <!-- <b-col md="4">
                                 <b-form-group>
                                     <label>Licencia S/G. Haber</label>
                                     <validation-provider
@@ -399,7 +401,7 @@
                                         }}</small>
                                     </validation-provider>
                                 </b-form-group>
-                            </b-col>
+                            </b-col> -->
                             <b-col md="3">
                                 <b-form-group>
                                     <label>Tiempo Servicio</label>
@@ -447,20 +449,113 @@
                                     type="text"
                                 />
                             </b-col>
+                        </b-row>
+                        <b-row
+                            v-for="(item, index) in items"
+                            :id="item.id"
+                            :key="item.id"
+                            ref="row"
+                            class="mt-1"
+                        >
+                            <b-col md="12">
+                                <b-row>
+                                    <!-- Item Name -->
+                                    <b-col md="4">
+                                        <b-form-group
+                                            label="Tipo de licencia"
+                                            label-for="item-name"
+                                        >
+                                            <validation-provider
+                                                #default="{ errors }"
+                                                rules=""
+                                                name="licencia"
+                                            >
+                                                <v-select
+                                                    label="name"
+                                                    :options="licenciaSelect"
+                                                    v-model="item.licencia"
+                                                    name="licencia"
+                                                    placeholder="Seleccione"
+                                                />
+                                                <small class="text-danger">{{
+                                                    errors[0]
+                                                }}</small>
+                                            </validation-provider>
+                                        </b-form-group>
+                                    </b-col>
 
-                            <b-col cols="12" class="mt-2 mb-5">
-                                <b-button
-                                    variant="primary"
-                                    type="submit"
-                                    @click.prevent="register"
-                                >
-                                    Actualizar
-                                </b-button>
-                                <b-button variant="danger" @click="back()">
-                                    Volver
-                                </b-button>
+                                    <!-- Cost -->
+                                    <b-col md="3">
+                                        <b-form-group
+                                            label="Fecha Inicio"
+                                            label-for="fecha_inicio"
+                                        >
+                                            <b-form-input
+                                                id="fecha_inicio"
+                                                type="date"
+                                                v-model="item.fecha_inicio"
+                                            />
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <!-- Quantity -->
+                                    <b-col md="3">
+                                        <b-form-group
+                                            label="Fecha Termino"
+                                            label-for="fecha_termino"
+                                        >
+                                            <b-form-input
+                                                id="fecha_termino"
+                                                type="date"
+                                                v-model="item.fecha_termino"
+                                            />
+                                        </b-form-group>
+                                    </b-col>
+
+                                    <!-- Remove Button -->
+                                    <b-col lg="2" md="12" class="mb-50">
+                                        <b-button
+                                            v-ripple.400="
+                                                'rgba(234, 84, 85, 0.15)'
+                                            "
+                                            variant="outline-danger"
+                                            class="mt-0 mt-md-2"
+                                            @click="removeItem(item.id, index)"
+                                        >
+                                            <feather-icon
+                                                icon="XIcon"
+                                                class="mr-25"
+                                            />
+                                            <span>Eliminar</span>
+                                        </b-button>
+                                    </b-col>
+                                    <b-col cols="12">
+                                        <hr />
+                                    </b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
+                        <b-col cols="12" class="mt-2 pb-2">
+                            <b-button
+                                v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                                variant="primary"
+                                @click="repeateAgain"
+                                class=""
+                            >
+                                <feather-icon icon="PlusIcon" />
+                                <span>Agregar</span>
+                            </b-button>
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="register"
+                            >
+                                Actualizar
+                            </b-button>
+                            <b-button variant="danger" @click="back()">
+                                Volver
+                            </b-button>
+                        </b-col>
                     </b-form>
                 </validation-observer>
             </b-col>
@@ -504,8 +599,14 @@ import moment from "moment";
 import "animate.css";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
+import Ripple from "vue-ripple-directive";
+import { heightTransition } from "@core/mixins/ui/transition";
 
 export default {
+    directives: {
+        Ripple,
+    },
+    mixins: [heightTransition],
     components: {
         vueDropzone: vue2Dropzone,
         BCard,
@@ -539,6 +640,9 @@ export default {
 
     data() {
         return {
+            nextTodoId: 1,
+            items: [],
+            licenciaSelect: [],
             persona: "",
             nit: "",
             numeroInforme: "",
@@ -581,7 +685,11 @@ export default {
             dependencia_name: "",
         };
     },
+    destroyed() {
+        window.removeEventListener("resize", this.initTrHeight);
+    },
     created() {
+        this.getParameter();
         this.getDetail();
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
@@ -606,8 +714,65 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
+        window.addEventListener("resize", this.initTrHeight);
+        // this.initTrHeight();
     },
     methods: {
+        getParameter() {
+            this.$http
+                .get("/api/auth/parameter/" + "legajos_licencias")
+                .then((response) => {
+                    this.licenciaSelect = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        getName(data) {
+            // console.log(this.solicitante_turno_selected);
+            var dato = this.licenciaSelect.find((item) => item.id == data);
+            return {
+                name: dato.name,
+                id: dato.id,
+            };
+        },
+        repeateAgain() {
+            this.items.push({
+                id: (this.nextTodoId += this.nextTodoId),
+            });
+
+            this.$nextTick(() => {
+                this.trAddHeight(this.$refs.row[0].offsetHeight);
+            });
+        },
+        removeItem(id, index) {
+            this.$http
+                .post("/api/auth/legajo_cese/licencia/delete/" + id)
+                .then((res) => {
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: "top-right",
+                        props: {
+                            icon: "CoffeeIcon",
+                            variant: "success",
+                            text: `Registro de licencia eliminado correctamente`,
+                        },
+                    });
+                    // console.log(res);
+                    this.refreshStatus = 1;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            this.items.splice(index, 1);
+            this.trTrimHeight(this.$refs.row[0].offsetHeight);
+        },
+        initTrHeight() {
+            this.trSetHeight(null);
+            this.$nextTick(() => {
+                this.trSetHeight(this.$refs.form.scrollHeight);
+            });
+        },
         back() {
             this.$router.back();
         },
@@ -618,38 +783,54 @@ export default {
                         this.$route.params.legajoId
                 )
                 .then((response) => {
-                    this.getModalDetail(response.data);
+                    this.getModalDetail(response.data.legajo);
+                    response.data.licen.forEach((item, index) => {
+                        this.items.push({
+                            id: item.id,
+                            licencia: this.getName(item.parameter_id),
+                            fecha_inicio: item.fecha_inicio,
+                            fecha_termino: item.fecha_termino,
+                        });
+                    });
+
                     this.persona = {
-                        name: response.data.nombre,
-                        id: response.data.baja_id,
+                        name: response.data.legajo.nombre,
+                        id: response.data.legajo.baja_id,
                     };
-                    this.nit = response.data.nit;
-                    this.numeroInforme = response.data.numero_informe;
-                    this.fechaInforme = response.data.fecha_informe;
-                    this.codPlanilla = response.data.codigo_planilla;
-                    this.fechaNacimiento = response.data.fecha_nacimiento;
-                    this.regimenLaboral = response.data.regimen_laboral;
-                    this.grupoOcupacional = response.data.grupo_ocupacional;
+                    this.nit = response.data.legajo.nit;
+                    this.numeroInforme = response.data.legajo.numero_informe;
+                    this.fechaInforme = response.data.legajo.fecha_informe;
+                    this.codPlanilla = response.data.legajo.codigo_planilla;
+                    this.fechaNacimiento =
+                        response.data.legajo.fecha_nacimiento;
+                    this.regimenLaboral = response.data.legajo.regimen_laboral;
+                    this.grupoOcupacional =
+                        response.data.legajo.grupo_ocupacional;
 
                     this.numeroDocumentoCese =
-                        response.data.numero_documento_cese;
-                    this.regimenPensionario = response.data.regimen_pensionario;
-                    this.lineaCarrera = response.data.linea_carrera;
-                    this.condicionLaboral = response.data.condicion_laboral;
-                    this.modalidadContrato = response.data.modalidad_contrato;
-                    this.dependencia = response.data.dependencia;
-                    this.licencias = response.data.licencia_sg_haber;
+                        response.data.legajo.numero_documento_cese;
+                    this.regimenPensionario =
+                        response.data.legajo.regimen_pensionario;
+                    this.lineaCarrera = response.data.legajo.linea_carrera;
+                    this.condicionLaboral =
+                        response.data.legajo.condicion_laboral;
+                    this.modalidadContrato =
+                        response.data.legajo.modalidad_contrato;
+                    this.dependencia = response.data.legajo.dependencia;
+                    this.licencias = response.data.legajo.licencia_sg_haber;
                     this.sancionDisciplinaria =
-                        response.data.sancion_disciplinaria;
-                    this.licenciaCovid = response.data.licencia_covid;
+                        response.data.legajo.sancion_disciplinaria;
+                    this.licenciaCovid = response.data.legajo.licencia_covid;
                     this.permisosParticulares =
-                        response.data.permisos_particulares;
-                    this.aCuentaVacaciones = response.data.acuenta_vacaciones;
-                    this.tiempoServicio = response.data.tiempo_servicio;
+                        response.data.legajo.permisos_particulares;
+                    this.aCuentaVacaciones =
+                        response.data.legajo.acuenta_vacaciones;
+                    this.tiempoServicio = response.data.legajo.tiempo_servicio;
                     this.totalTiempoDeducible =
-                        response.data.total_tpo_deducible;
-                    this.tiempoServicio = response.data.tiempo_servicio;
-                    this.essalud = response.data.total_tpo_essalud;
+                        response.data.legajo.total_tpo_deducible;
+                    this.tiempoServicio = response.data.legajo.tiempo_servicio;
+                    this.essalud = response.data.legajo.total_tpo_essalud;
+                    this.initTrHeight();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -667,7 +848,6 @@ export default {
                     dependencia: data.dependencia,
                 })
                 .then((response) => {
-                    console.log(response);
                     this.grupoOcupacional = {
                         name: response.data.grupo_ocupacional[0].name,
                         id: response.data.grupo_ocupacional[0].id,
@@ -718,6 +898,7 @@ export default {
                             "/api/auth/legajo_cese/update/" +
                                 this.$route.params.legajoId,
                             {
+                                lincencia_array: this.items,
                                 nombre: this.persona.name,
                                 baja_id: this.persona.id,
                                 codigo_planilla: this.codPlanilla,
@@ -768,7 +949,6 @@ export default {
                             }
                         )
                         .then((res) => {
-                            console.log(res);
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",

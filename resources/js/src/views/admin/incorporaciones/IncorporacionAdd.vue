@@ -34,7 +34,7 @@
                                 />
                             </b-form-group>
                         </b-col>
-                        <b-col md="6">
+                        <!-- <b-col md="6">
                             <b-form-group label="Periodo" label-for="periodo">
                                 <validation-provider
                                     #default="{ errors }"
@@ -53,7 +53,7 @@
                                     }}</small>
                                 </validation-provider>
                             </b-form-group>
-                        </b-col>
+                        </b-col> -->
                         <b-col md="6">
                             <b-form-group label="Centro" label-for="centro">
                                 <v-select
@@ -861,7 +861,7 @@ export default {
             this.$http
                 .post("/api/auth/incorporaciones/create", {
                     organo: this.organo,
-                    periodo: this.periodo_select.name,
+                    // periodo: this.periodo_select.name,
                     centro:
                         this.centro_select.name != null
                             ? this.centro_select.name

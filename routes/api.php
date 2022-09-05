@@ -176,6 +176,7 @@ Route::group(['prefix' => 'auth'], function () {
             // Route::post('obs/{id}', [LegajosBajaController::class, 'observar']);
             // Route::post('updateStatus/{id}', [LegajosBajaController::class, 'update_estado']);
             Route::post('delete/{id}', [LegajosInformesCeseController::class, 'delete']);
+            Route::post('licencia/delete/{id}', [LegajosInformesCeseController::class, 'delete_licencia']);
         });
     });
 });
