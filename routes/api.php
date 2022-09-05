@@ -178,5 +178,10 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('delete/{id}', [LegajosInformesCeseController::class, 'delete']);
             Route::post('licencia/delete/{id}', [LegajosInformesCeseController::class, 'delete_licencia']);
         });
+        Route::group(['prefix' => 'persona'], function () {
+            Route::get('/', [PersonaControllers::class, 'index']);
+            Route::get('/estructura', [PersonaControllers::class, 'estructura']);
+            Route::post('/create', [PersonaControllers::class, 'create']);
+        });
     });
 });

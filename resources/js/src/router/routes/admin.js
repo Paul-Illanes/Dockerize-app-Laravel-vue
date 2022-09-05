@@ -275,4 +275,34 @@ export default [
       action: 'legajos_informes_cese-edit',
     },
   },
+      // *===============================================---*
+  // *--------- persona-- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/persona/list',
+    name: 'admin-personas-list',
+    component: () => import('@/views/admin/persona/PersonaList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personas-index',
+    },
+  },
+  {
+    path: '/admin/persona/add',
+    name: 'admin-personas-add',
+    component: () => import('@/views/admin/persona/PersonaAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personas-create',
+    },
+  },
+  {
+    path: '/admin/persona/edit/:legajoId',
+    name: 'admin-personas-edit',
+    component: () => import('@/views/admin/persona/PersonaEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personas-edit',
+    },
+  },
 ]

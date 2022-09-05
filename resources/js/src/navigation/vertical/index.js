@@ -36,6 +36,13 @@ export default [
         action: 'permisos-index',
         icon: 'UserXIcon',
       },
+      {
+        title: 'Personas',
+        route: 'admin-personas-list',
+        resource: 'ACL',
+        action: 'personas-index',
+        icon: 'UserXIcon',
+      },
     ],
   },
   {
