@@ -509,6 +509,7 @@ export default {
                     cod_cargo: data.cod_cargo,
                     dni: data.dni,
                     fecha_nacimiento: data.fecha_nacimiento,
+                    fecha_ingreso: data.fecha_inicio,
                     status: data.status,
                 })
                 .then(() => {

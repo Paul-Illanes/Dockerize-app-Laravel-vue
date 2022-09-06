@@ -90,6 +90,7 @@ class IncorporacionesController extends Controller
             $exist->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
             $exist->dni = $request->dni;
             $exist->fecha_nacimiento = $request->fecha_nacimiento;
+            $exist->fecha_ingreso = $request->fecha_ingreso;
             $exist->status = 0;
             $exist->cod_planilla = 0;
             $exist->estructura = "-";
@@ -103,6 +104,7 @@ class IncorporacionesController extends Controller
             $persona->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
             $persona->dni = $request->dni;
             $persona->fecha_nacimiento = $request->fecha_nacimiento;
+            $persona->fecha_ingreso = $request->fecha_ingreso;
             $persona->status = 0;
             $persona->cod_planilla = 0;
             $persona->estructura = "-";
