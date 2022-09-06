@@ -180,8 +180,12 @@ Route::group(['prefix' => 'auth'], function () {
         });
         Route::group(['prefix' => 'persona'], function () {
             Route::get('/', [PersonaControllers::class, 'index']);
-            Route::get('/estructura', [PersonaControllers::class, 'estructura']);
+            Route::get('estructura', [PersonaControllers::class, 'estructura']);
             Route::post('/create', [PersonaControllers::class, 'create']);
+            Route::get('detail/{id}', [PersonaControllers::class, 'getDetail']);
+            Route::post('update/{id}', [PersonaControllers::class, 'update']);
+            Route::post('updateStatus/{id}', [PersonaControllers::class, 'update_estado']);
+            Route::post('delete/{id}', [PersonaControllers::class, 'delete']);
         });
     });
 });

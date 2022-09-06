@@ -85,7 +85,7 @@ class IncorporacionesController extends Controller
     {
         $exist = Persona::Find($request->dni);
         if ($exist) {
-            $exist->cargo = $request->cargo;
+            $exist->cargo = $request->cargo ? $request->cargo : '-';
             $exist->cod_cargo = $request->cod_cargo;
             $exist->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
             $exist->dni = $request->dni;
@@ -93,11 +93,12 @@ class IncorporacionesController extends Controller
             $exist->status = 0;
             $exist->cod_planilla = 0;
             $exist->estructura = "-";
+            $exist->sub_estructura = 'C010';
             $exist->save();
             return response()->json(['msg' => 'actualizado'], 200);
         } else {
             $persona = new Persona();
-            $persona->cargo = $request->cargo;
+            $persona->cargo = $request->cargo ? $request->cargo : '-';
             $persona->cod_cargo = $request->cod_cargo;
             $persona->nombres = $request->apellido_paterno . ' ' . $request->apellido_materno . ' ' . $request->nombres;
             $persona->dni = $request->dni;
@@ -105,6 +106,7 @@ class IncorporacionesController extends Controller
             $persona->status = 0;
             $persona->cod_planilla = 0;
             $persona->estructura = "-";
+            $persona->sub_estructura = 'C010';
             $persona->save();
             return response()->json(['msg' => 'nuevo'], 200);
         }

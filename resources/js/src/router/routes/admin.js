@@ -297,7 +297,7 @@ export default [
     },
   },
   {
-    path: '/admin/persona/edit/:legajoId',
+    path: '/admin/persona/edit/:personaId',
     name: 'admin-personas-edit',
     component: () => import('@/views/admin/persona/PersonaEdit.vue'),
     meta: {

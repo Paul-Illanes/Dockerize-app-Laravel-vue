@@ -18,13 +18,12 @@ export default {
             axios
               .get('/api/auth/persona/')
               .then(response => {
-                console.log(response.data.data);
                 sessionStorage.setItem(
                   "persona",
                   JSON.stringify(response.data)
               );
               
-              const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status = "", type = null } = queryParams
+              const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status = "" } = queryParams
               /* eslint-enable */
            
               const queryLowered = q.toLowerCase();
@@ -69,8 +68,7 @@ export default {
               .catch(error => reject(error))
           } else {
             const dato = JSON.parse(sessionStorage.getItem('persona'));
-             console.log(dato);
-            const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status = "", type = null } = queryParams
+            const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status = "" } = queryParams
             /* eslint-enable */
             const queryLowered = q.toLowerCase();
 

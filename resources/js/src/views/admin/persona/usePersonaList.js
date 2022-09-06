@@ -33,7 +33,6 @@ export default function usePersonaList() {
   const sortBy = ref('id')
   const isSortDirDesc = ref(true)
   const statusFilter = ref('Pendientes')
-  const typeFilter = ref(null)
   const refreshStatus = ref(0)
 
   const dataMeta = computed(() => {
@@ -50,7 +49,7 @@ export default function usePersonaList() {
     
   }
 
-  watch([currentPage, perPage, searchQuery, statusFilter, typeFilter,refreshStatus], () => {
+  watch([currentPage, perPage, searchQuery, statusFilter, refreshStatus], () => {
     refetchData()
   })
 
@@ -63,7 +62,6 @@ export default function usePersonaList() {
         sortBy: sortBy.value,
         sortDesc: isSortDirDesc.value,
         status: statusFilter.value,
-        type: typeFilter.value,
         refreshStatus: refreshStatus.value,
       })
       .then(response => {
@@ -129,7 +127,6 @@ export default function usePersonaList() {
     refPersonaListTable,
 
     statusFilter,
-    typeFilter,
 
     resolveInvoiceStatusVariantAndIcon,
     resolveClientAvatarVariant,

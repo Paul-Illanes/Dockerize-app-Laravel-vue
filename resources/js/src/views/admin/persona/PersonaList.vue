@@ -52,18 +52,6 @@
                             class="d-inline-block mr-1"
                             placeholder="Buscar por nombres o dni..."
                         />
-                        <v-select
-                            v-model="typeFilter"
-                            :options="typeOptions"
-                            class="invoice-filter-select d-inline-block ml-50 w-100"
-                            placeholder="Filtrar por Tipo de permiso"
-                        >
-                            <template #selected-option="{ label }">
-                                <span class="text-truncate overflow-hidden">
-                                    {{ label }}
-                                </span>
-                            </template>
-                        </v-select>
                     </div>
                 </b-col>
             </b-row>
@@ -119,7 +107,7 @@
                     <b-dropdown-item :disabled="data.item.status == 1">
                         <feather-icon class="text-success" icon="CheckIcon" />
                         <span
-                            @click="updateStatus(1, data.item.id)"
+                            @click="updateStatus(1, data.item.dni)"
                             class="align-middle ml-50"
                             >Aprobar</span
                         >
@@ -130,7 +118,7 @@
                             icon="PauseCircleIcon"
                         />
                         <span
-                            @click="updateStatus(0, data.item.id)"
+                            @click="updateStatus(0, data.item.dni)"
                             class="align-middle ml-50"
                             >Pendiente</span
                         >
@@ -153,7 +141,7 @@
                             icon="DeleteIcon"
                         />
                         <span
-                            @click="updateStatus(3, data.item.id)"
+                            @click="updateStatus(3, data.item.dni)"
                             class="align-middle ml-50"
                             >Anular</span
                         >
@@ -171,8 +159,8 @@
             <!-- Column: Actions -->
             <template #cell(actions)="data">
                 <div class="text-nowrap">
-                    <feather-icon
-                        :id="`invoice-row-${data.item.id}-preview-icon`"
+                    <!-- <feather-icon
+                        :id="`invoice-row-${data.item.dni}-preview-icon`"
                         icon="EyeIcon"
                         v-on:click="setModalData(data.item)"
                         v-b-modal.modal-lg
@@ -181,39 +169,39 @@
                     />
                     <b-tooltip
                         title="Detalles"
-                        :target="`invoice-row-${data.item.id}-preview-icon`"
-                    />
+                        :target="`invoice-row-${data.item.dni}-preview-icon`"
+                    /> -->
                     <feather-icon
                         v-if="$can('personas-edit', 'ACL')"
                         @click="
                             $router.push({
                                 name: 'admin-personas-edit',
-                                params: { personaId: data.item.id },
+                                params: { personaId: data.item.dni },
                             })
                         "
-                        :id="`invoice-row-${data.item.id}-edit-icon`"
+                        :id="`invoice-row-${data.item.dni}-edit-icon`"
                         icon="EditIcon"
                         class="mx-1 cursor-pointer text-success"
                         size="16"
                     />
 
                     <b-tooltip
-                        title="Editar Papeleta"
+                        title="Editar Persona"
                         class="cursor-pointer"
-                        :target="`invoice-row-${data.item.id}-edit-icon`"
+                        :target="`invoice-row-${data.item.dni}-edit-icon`"
                     />
                     <feather-icon
-                        v-if="$can('papeletas-destroy', 'ACL')"
-                        :id="`invoice-row-${data.item.id}-delete-icon`"
+                        v-if="$can('personas-destroy', 'ACL')"
+                        :id="`invoice-row-${data.item.dni}-delete-icon`"
                         icon="Trash2Icon"
                         class="cursor-pointer text-danger"
                         size="16"
-                        @click="confirmDelete(data.item.id)"
+                        @click="confirmDelete(data.item.dni)"
                     />
                     <b-tooltip
-                        title="Eliminar Papeleta"
+                        title="Eliminar Persona"
                         class="cursor-pointer"
-                        :target="`invoice-row-${data.item.id}-delete-icon`"
+                        :target="`invoice-row-${data.item.dni}-delete-icon`"
                     />
                 </div>
             </template>
@@ -255,7 +243,7 @@
                     </b-pagination>
                 </b-col>
             </b-row>
-            <b-modal
+            <!-- <b-modal
                 id="modal-lg"
                 centered
                 hide-footer
@@ -402,7 +390,7 @@
                         </b-form>
                     </validation-observer>
                 </b-card-body>
-            </b-modal>
+            </b-modal> -->
         </div>
     </b-card>
 </template>
@@ -538,19 +526,8 @@ export default {
                 }
             });
         },
-        helper(data) {
-            this.$http
-                .get("/api/auth/parameter/" + "obs-papeletas")
-                .then((response) => {
-                    this.parameters = response.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-            this.papeletaIdObs = data.id;
-        },
+
         confirmDelete(id) {
-            console.log(id);
             this.$swal({
                 title: "Estas seguro?",
                 text: "No podras revertir esta accion!",
@@ -565,7 +542,7 @@ export default {
             }).then((result) => {
                 if (result.value) {
                     this.$http
-                        .post("/api/auth/papeleta/delete/" + id)
+                        .post("/api/auth/persona/delete/" + id)
                         .then((res) => {
                             this.$toast({
                                 component: ToastificationContent,
@@ -574,7 +551,7 @@ export default {
                                     title: "Accion realizada",
                                     icon: "CoffeeIcon",
                                     variant: "success",
-                                    text: `Papeleta eliminada correctamente`,
+                                    text: `Persona eliminada correctamente`,
                                 },
                             });
                             // console.log(res);
@@ -617,7 +594,7 @@ export default {
         },
         updateStatus(status, id) {
             this.$http
-                .post("/api/auth/papeleta/updateStatus/" + id, {
+                .post("/api/auth/persona/updateStatus/" + id, {
                     status: status,
                 })
                 .then((res) => {
@@ -670,7 +647,6 @@ export default {
             refPersonaListTable,
 
             statusFilter,
-            typeFilter,
 
             refetchData,
             refreshStatus,
@@ -694,8 +670,6 @@ export default {
             refPersonaListTable,
 
             statusFilter,
-            typeFilter,
-
             typeOptions,
             statusOptions,
 

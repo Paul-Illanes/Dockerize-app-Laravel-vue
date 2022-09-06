@@ -9,20 +9,19 @@
                         @submit.prevent="register"
                     >
                         <b-row>
-                            <b-col md="4">
+                            <b-col md="3">
                                 <b-form-group>
-                                    <label>Solicitante</label>
+                                    <label>Codigo Planilla</label>
 
                                     <validation-provider
                                         #default="{ errors }"
                                         rules="required"
-                                        name="selectedUser"
+                                        name="codigo_planilla"
                                     >
-                                        <v-select
-                                            label="name"
-                                            :options="users"
-                                            v-model="selectedUser"
-                                            name="users"
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="codigo_planilla"
+                                            type="text"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
@@ -30,156 +29,139 @@
                                     </validation-provider>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="4">
+                            <b-col md="6">
                                 <b-form-group>
-                                    <label>tipo de Permiso</label>
+                                    <label>Superstructura</label>
 
                                     <validation-provider
                                         #default="{ errors }"
                                         rules="required"
-                                        name="selectedType"
+                                        name="superstructura"
                                     >
                                         <v-select
                                             label="name"
-                                            :options="permisos"
-                                            v-model="selectedType"
-                                            name="permisos"
+                                            :options="substructura"
+                                            v-model="superstructura"
+                                            name="superstructura"
                                         />
+
                                         <small class="text-danger">{{
                                             errors[0]
                                         }}</small>
                                     </validation-provider>
                                 </b-form-group>
-                            </b-col>
-
-                            <b-col md="12">
-                                <b-form-group>
-                                    <b-form-checkbox
-                                        v-model="dias"
-                                        name="check-button"
-                                        switch
-                                        inline
-                                    >
-                                        Permiso por dias
-                                    </b-form-checkbox>
-                                    <b-form-checkbox
-                                        v-model="horas"
-                                        name="check-button"
-                                        switch
-                                        inline
-                                    >
-                                        Permiso por horas
-                                    </b-form-checkbox>
-                                </b-form-group>
-                            </b-col>
-
-                            <b-col md="3" v-if="dias">
-                                <label>Fecha de salida</label>
-                                <b-input-group class="mb-1">
-                                    <b-form-input
-                                        id="example-input"
-                                        v-model="fecha_salida"
-                                        type="text"
-                                        placeholder="YYYY-MM-DD"
-                                        autocomplete="off"
-                                        show-decade-nav
-                                    />
-                                    <b-input-group-append>
-                                        <b-form-datepicker
-                                            v-model="fecha_salida"
-                                            show-decade-nav
-                                            button-only
-                                            button-variant="outline-primary"
-                                            right
-                                            size="sm"
-                                            locale="es-ES"
-                                            aria-controls="example-input"
-                                            @context="onContext"
-                                        />
-                                    </b-input-group-append>
-                                </b-input-group>
-                            </b-col>
-
-                            <b-col md="3" v-if="dias">
-                                <label>Fecha de retorno</label>
-                                <b-input-group class="mb-1">
-                                    <b-form-input
-                                        id="example-input"
-                                        v-model="fecha_retorno"
-                                        type="text"
-                                        placeholder="YYYY-MM-DD"
-                                        autocomplete="off"
-                                        show-decade-nav
-                                    />
-                                    <b-input-group-append>
-                                        <b-form-datepicker
-                                            v-model="fecha_retorno"
-                                            show-decade-nav
-                                            button-only
-                                            button-variant="outline-primary"
-                                            right
-                                            size="sm"
-                                            locale="es-ES"
-                                            aria-controls="example-input"
-                                            @context="onContext"
-                                        />
-                                    </b-input-group-append>
-                                </b-input-group>
-                            </b-col>
-
-                            <b-col md="1" v-if="horas">
-                                <b-form-group>
-                                    <label>Hora de salida</label>
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules=""
-                                        name="hora_salida"
-                                    >
-                                        <flat-pickr
-                                            v-model="hora_salida"
-                                            class="form-control"
-                                            :config="{
-                                                enableTime: true,
-                                                noCalendar: true,
-                                                dateFormat: 'H:i',
-                                            }"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-
-                            <b-col md="1" v-if="horas">
-                                <label>Hora de retorno</label>
-                                <validation-provider
-                                    #default="{ errors }"
-                                    rules=""
-                                    name="hora_retorno"
-                                >
-                                    <flat-pickr
-                                        v-model="hora_retorno"
-                                        class="form-control"
-                                        :config="{
-                                            enableTime: true,
-                                            noCalendar: true,
-                                            dateFormat: 'H:i',
-                                        }"
-                                    />
-                                    <small class="text-danger">{{
-                                        errors[0]
-                                    }}</small>
-                                </validation-provider>
                             </b-col>
                             <b-col md="8">
-                                <label>Observacion</label>
-                                <b-form-textarea
-                                    id="textarea-default"
-                                    placeholder="......"
-                                    rows="3"
-                                    v-model="observacion"
-                                />
+                                <b-form-group>
+                                    <label>Apellidos y Nombres</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="nombres"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="nombres"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-group>
+                                    <label>DNI</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="dni"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="dni"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Estructura</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="estructura"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="estructura"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Cargo</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="cargo"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="cargo"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Fecha de ingreso</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="fecha_ingreso"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="fecha_ingreso"
+                                            type="date"
+                                        />
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Fecha de nacimiento</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="fecha_nacimiento"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="fecha_nacimiento"
+                                            type="date"
+                                        />
+                                    </validation-provider>
+                                </b-form-group>
                             </b-col>
                             <b-col cols="12" class="mt-2 mb-5">
                                 <b-button
@@ -259,39 +241,23 @@ export default {
 
     data() {
         return {
-            formatted: "",
-            selected: "",
-            descripcion: "",
-            selectedUser: {},
-            users: [],
-            permisos: [],
-            observacion: "",
-            selectedType: {},
-            activo: "",
-            horas: true,
-            dias: true,
-            fecha_salida: "",
-            fecha_retorno: "",
-            hora_salida: "",
-            hora_retorno: "",
+            codigo_planilla: "",
+            superstructura: "",
+            nombres: "",
+            dni: "",
+            estructura: "",
+            cargo: "",
+            fecha_ingreso: "",
+            fecha_nacimiento: "",
+            substructura: [],
         };
     },
     created() {
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
-            .get("/api/auth/users/pluck")
+            .get("/api/auth/persona/estructura")
             .then((response) => {
-                console.log(response);
-                this.users = response.data;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        this.$http
-            .get("/api/auth/users/tipo_permisos")
-            .then((response) => {
-                console.log(response);
-                this.permisos = response.data;
+                this.substructura = response.data;
             })
             .catch((error) => {
                 console.log(error);
@@ -301,66 +267,53 @@ export default {
         this.getDetail();
     },
     methods: {
-        onContext(ctx) {
-            // The date formatted in the locale, or the `label-no-date-selected` string
-            this.formatted = ctx.selectedFormatted;
-            // The following will be an empty string until a valid date is entered
-            this.selected = ctx.selectedYMD;
+        getName(data) {
+            // console.log(this.solicitante_turno_selected);
+            var dato = this.substructura.find((item) => item.id == data);
+            return {
+                name: dato.name,
+                id: dato.id,
+            };
         },
         back() {
             this.$router.back();
         },
         getDetail() {
             this.$http
-                .get(
-                    "/api/auth/papeleta/detail/" + this.$route.params.papeletaId
-                )
+                .get("/api/auth/persona/detail/" + this.$route.params.personaId)
                 .then((response) => {
-                    console.log(response.data);
-                    this.selectedUser = {
-                        name: response.data.user.name,
-                        id: response.data.user.id,
-                    };
-                    this.selectedType = {
-                        name: response.data.type.name,
-                        id: response.data.type.id,
-                    };
-                    this.fecha_salida = response.data.papeleta.fecha_salida;
-                    this.fecha_retorno = response.data.papeleta.fecha_retorno;
-                    this.hora_salida = response.data.papeleta.hora_salida;
-                    this.hora_retorno = response.data.papeleta.hora_retorno;
-                    this.observacion = response.data.papeleta.observacion;
+                    this.codigo_planilla = response.data.cod_planilla;
+                    this.nombres = response.data.nombres;
+                    this.dni = response.data.dni;
+                    this.estructura = response.data.estructura;
+                    this.cargo = response.data.cargo;
+                    this.fecha_ingreso = response.data.fecha_ingreso;
+                    this.fecha_nacimiento = response.data.fecha_nacimiento;
+                    this.superstructura = this.getName(
+                        response.data.sub_estructura
+                    );
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         },
-        getRoles() {
-            // await axios.get('/sanctum/csrf-cookie')
-            this.$http
-                .get("/api/roles")
-                .then((response) => {
-                    this.roles = response.data.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
+
         register() {
             this.$refs.registerForm.validate().then((success) => {
                 if (success) {
                     this.$http
                         .post(
-                            "/api/auth/papeleta/update/" +
-                                this.$route.params.papeletaId,
+                            "/api/auth/persona/update/" +
+                                this.$route.params.personaId,
                             {
-                                tipo_permiso_id: this.selectedType.id,
-                                dni: this.selectedUser.id,
-                                fecha_salida: this.fecha_salida,
-                                fecha_retorno: this.fecha_retorno,
-                                hora_salida: this.hora_salida,
-                                hora_retorno: this.hora_retorno,
-                                observacion: this.observacion,
+                                cod_planilla: this.codigo_planilla,
+                                sub_estructura: this.superstructura.id,
+                                nombres: this.nombres,
+                                dni: this.dni,
+                                estructura: this.estructura,
+                                cargo: this.cargo,
+                                fecha_ingreso: this.fecha_ingreso,
+                                fecha_nacimiento: this.fecha_nacimiento,
                             }
                         )
                         .then(() => {

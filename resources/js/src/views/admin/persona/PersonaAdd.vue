@@ -265,7 +265,7 @@ export default {
     created() {
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
-            .get("/api/auth/persona/superstructura")
+            .get("/api/auth/persona/estructura")
             .then((response) => {
                 this.substructura = response.data;
             })
@@ -283,10 +283,10 @@ export default {
                     this.$http
                         .post("/api/auth/persona/create", {
                             cod_planilla: this.codigo_planilla,
-                            sub_structura: this.superstructura.id,
+                            sub_estructura: this.superstructura.id,
                             nombres: this.nombres,
                             dni: this.dni,
-                            estrucura: this.estructura,
+                            estructura: this.estructura,
                             cargo: this.cargo,
                             fecha_ingreso: this.fecha_ingreso,
                             fecha_nacimiento: this.fecha_nacimiento,
