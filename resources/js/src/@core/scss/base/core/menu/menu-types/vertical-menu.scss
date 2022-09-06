@@ -72,6 +72,8 @@
             }
           }
           li {
+            font-size: 13px;
+            font-weight: 400;
             @include vertical-menu-has-sub-arrow($font-size-base + 0.1);
           }
         }
@@ -153,6 +155,8 @@
               }
             }
             li {
+              font-size: 13px;
+              font-weight: 400;
               @include vertical-menu-has-sub-arrow(1rem);
             }
           }
