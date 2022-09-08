@@ -581,16 +581,14 @@ export default {
             return moment(String(dato)).format("MM/DD/YYYY");
         },
         changeStatus(dato) {
-            if (dato == "0") return "Pendiente";
-            if (dato == "1") return "Aprobado";
-            if (dato == "2") return "Observado";
-            if (dato == "3") return "Anulado";
+            if (dato == "0") return "Nuevos";
+            if (dato == "1") return "Activos";
+            if (dato == "2") return "Baja";
         },
         changeColor(dato) {
-            if (dato == "0") return "warning";
+            if (dato == "0") return "primary";
             if (dato == "1") return "success";
-            if (dato == "2") return "danger";
-            if (dato == "3") return "secondary";
+            if (dato == "2") return "secondary";
         },
         updateStatus(status, id) {
             this.$http
@@ -621,17 +619,7 @@ export default {
                 store.unregisterModule(PERSONA_APP_STORE_MODULE_NAME);
         });
 
-        const statusOptions = ["Pendientes", "Procesados"];
-        const typeOptions = [
-            "PARTICULAR",
-            "COMISION DE SERVICIO",
-            "COMPENSACION HORAS EXTRAS",
-            "A CUENTA DE VACACIONES",
-            "ONOMASTICO",
-            "LUTO",
-            "PATERNIDAD",
-            "OTROS",
-        ];
+        const statusOptions = ["Todos", "Nuevos", "Activos", "Baja"];
 
         const {
             fetchPersona,
@@ -652,7 +640,6 @@ export default {
             refreshStatus,
 
             resolveInvoiceStatusVariantAndIcon,
-            resolveClientAvatarVariant,
             resolvePaperStatusVariant,
         } = usePersonaList();
 
@@ -670,14 +657,12 @@ export default {
             refPersonaListTable,
 
             statusFilter,
-            typeOptions,
             statusOptions,
 
             refetchData,
 
             avatarText,
             resolveInvoiceStatusVariantAndIcon,
-            resolveClientAvatarVariant,
             resolvePaperStatusVariant,
 
             refreshStatus,

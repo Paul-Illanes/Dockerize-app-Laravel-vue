@@ -32,7 +32,7 @@ export default function usePersonaList() {
   const searchQuery = ref('')
   const sortBy = ref('id')
   const isSortDirDesc = ref(true)
-  const statusFilter = ref('Pendientes')
+  const statusFilter = ref("Todos")
   const refreshStatus = ref(0)
 
   const dataMeta = computed(() => {
@@ -89,10 +89,9 @@ export default function usePersonaList() {
   // *===============================================---*
 
   const resolvePaperStatusVariant = status => {
-    if (status === 0) return 'warning'
+    if (status === 0) return 'wprimary'
     if (status === 1) return 'success'
-    if (status === 2) return 'danger'
-    if (status === 3) return 'secondary'
+    if (status === 2) return 'secondary'
     return 'danger'
   }
 
@@ -103,15 +102,15 @@ export default function usePersonaList() {
     return { variant: 'secondary', icon: 'XIcon', label: 'fer' }
   }
 
-  const resolveClientAvatarVariant = status => {
-    if (status === 'Partial Payment') return 'primary'
-    if (status === 'Paid') return 'danger'
-    if (status === 'Downloaded') return 'secondary'
-    if (status === 'Draft') return 'warning'
-    if (status === 'Sent') return 'info'
-    if (status === 'Past Due') return 'success'
-    return 'primary'
-  }
+  // const resolveClientAvatarVariant = status => {
+  //   if (status === 'Partial Payment') return 'primary'
+  //   if (status === 'Paid') return 'danger'
+  //   if (status === 'Downloaded') return 'secondary'
+  //   if (status === 'Draft') return 'warning'
+  //   if (status === 'Sent') return 'info'
+  //   if (status === 'Past Due') return 'success'
+  //   return 'primary'
+  // }
 
   return {
     fetchPersona,
@@ -129,7 +128,6 @@ export default function usePersonaList() {
     statusFilter,
 
     resolveInvoiceStatusVariantAndIcon,
-    resolveClientAvatarVariant,
     resolvePaperStatusVariant,
     refetchData,
     refreshStatus
