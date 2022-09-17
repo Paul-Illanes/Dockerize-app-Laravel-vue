@@ -254,6 +254,7 @@
                                     rows="3"
                                     v-model="observacion"
                                 />
+                                {{ SelectedVac }}
                             </b-col>
                             <b-col cols="12" class="mt-2 mb-5">
                                 <b-button
@@ -491,35 +492,119 @@ export default {
         register() {
             this.$refs.registerForm.validate().then((success) => {
                 if (success) {
-                    this.$http
-                        .post("/api/auth/papeleta/create", {
-                            periodo: this.SelectedVac,
-                            tipo_permiso_id: this.selectedType.id,
-                            dni: this.selectedUser.id,
-                            fecha_salida: this.fecha_salida,
-                            fecha_retorno: this.fecha_retorno,
-                            hora_salida: this.hora_salida,
-                            hora_retorno: this.hora_retorno,
-                            observacion: this.observacion,
-                        })
-                        .then(() => {
+                    if (this.selectedType.id == 4) {
+                        if (this.SelectedVac) {
+                            this.$http
+                                .post("/api/auth/papeleta/create", {
+                                    periodo: this.SelectedVac,
+                                    tipo_permiso_id: this.selectedType.id,
+                                    dni: this.selectedUser.id,
+                                    fecha_salida: this.fecha_salida,
+                                    fecha_retorno: this.fecha_retorno,
+                                    hora_salida: this.hora_salida,
+                                    hora_retorno: this.hora_retorno,
+                                    observacion: this.observacion,
+                                })
+                                .then((res) => {
+                                    if (res.status == 202) {
+                                        this.$toast({
+                                            component: ToastificationContent,
+                                            position: "top-right",
+                                            props: {
+                                                title: "Ocurrio un error",
+                                                icon: "CoffeeIcon",
+                                                variant: "danger",
+                                                text: `No se encontro el contrato de personal`,
+                                            },
+                                        });
+                                    } else {
+                                        this.$toast({
+                                            component: ToastificationContent,
+                                            position: "top-right",
+                                            props: {
+                                                title: "Registrado Correctamente",
+                                                icon: "CoffeeIcon",
+                                                variant: "success",
+                                                text: `Papeleta registrado correctamente`,
+                                            },
+                                        });
+                                    }
+
+                                    // this.$router.back();
+                                })
+                                .catch((error) => {
+                                    this.$refs.registerForm.setErrors(
+                                        error.response.data.errors
+                                    );
+                                });
+                        } else if (this.vacaciones.length == 0) {
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",
                                 props: {
-                                    title: "Registrado Correctamente",
+                                    title: "Ocurrio un error",
                                     icon: "CoffeeIcon",
-                                    variant: "success",
-                                    text: `Papeleta registrado correctamente`,
+                                    variant: "danger",
+                                    text: `El personal elegido no puede generar a cuenta de vacaciones`,
                                 },
                             });
-                            this.$router.back();
-                        })
-                        .catch((error) => {
-                            this.$refs.registerForm.setErrors(
-                                error.response.data.errors
-                            );
-                        });
+                        } else {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Ocurrio un error",
+                                    icon: "CoffeeIcon",
+                                    variant: "danger",
+                                    text: `Elija un periodo`,
+                                },
+                            });
+                        }
+                    } else {
+                        this.$http
+                            .post("/api/auth/papeleta/create", {
+                                periodo: this.SelectedVac,
+                                tipo_permiso_id: this.selectedType.id,
+                                dni: this.selectedUser.id,
+                                fecha_salida: this.fecha_salida,
+                                fecha_retorno: this.fecha_retorno,
+                                hora_salida: this.hora_salida,
+                                hora_retorno: this.hora_retorno,
+                                observacion: this.observacion,
+                            })
+                            .then((res) => {
+                                if (res.status == 202) {
+                                    this.$toast({
+                                        component: ToastificationContent,
+                                        position: "top-right",
+                                        props: {
+                                            title: "Ocurrio un error",
+                                            icon: "CoffeeIcon",
+                                            variant: "danger",
+                                            text: `No se encontro el contrato de personal`,
+                                        },
+                                    });
+                                } else {
+                                    this.$toast({
+                                        component: ToastificationContent,
+                                        position: "top-right",
+                                        props: {
+                                            title: "Registrado Correctamente",
+                                            icon: "CoffeeIcon",
+                                            variant: "success",
+                                            text: `Papeleta registrado correctamente`,
+                                        },
+                                    });
+                                }
+
+                                // this.$router.back();
+                            })
+                            .catch((error) => {
+                                this.$refs.registerForm.setErrors(
+                                    error.response.data.errors
+                                );
+                            });
+                    }
                 }
             });
         },

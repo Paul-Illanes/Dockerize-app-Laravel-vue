@@ -46,11 +46,14 @@ class CambioTurnoController extends Controller
         $nroPapeleta = is_null($ultimaPapeleta) ? 0 : $ultimaPapeleta->nro_papeleta;
         $nroPapeleta++;
 
+        $dni = $request->solicitante_id;
+        $vinculo_laboral = get_vinculo_laboral($dni);
         $cambioTurno = CambioTurno::create([
             'anio' => $year,
             'fecha' => $fecha,
             'nro_papeleta' => $nroPapeleta,
-            'created_by' => $request->user()->id
+            'created_by' => $request->user()->id,
+            'vinculo_laboral' => $vinculo_laboral
 
         ] + $request->all());
 

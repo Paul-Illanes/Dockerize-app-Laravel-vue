@@ -1,5 +1,5 @@
 <template>
-    <b-card-code title="Crear Papeleta" no-body>
+    <b-card-code title="Crear Contrato" no-body>
         <!-- form -->
         <b-row>
             <b-col md="12">
@@ -20,7 +20,29 @@
                                         <v-select
                                             label="name"
                                             :options="users"
-                                            v-model="selectedPersona"
+                                            v-model="persona"
+                                            name="users"
+                                            placeholder="Seleccione"
+                                        />
+
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Tipo de contrato</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="tipoContrato"
+                                    >
+                                        <v-select
+                                            label="name"
+                                            :options="tipo_contrato"
+                                            v-model="tipoContrato"
                                             name="users"
                                             placeholder="Seleccione"
                                         />
@@ -32,163 +54,15 @@
                             </b-col>
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Periodo</label>
-
+                                    <label>Regimen Laboral</label>
                                     <validation-provider
                                         #default="{ errors }"
                                         rules="required"
-                                        name="Periodo"
-                                    >
-                                        <v-select
-                                            label="name"
-                                            :options="periodos"
-                                            v-model="selectedPeriodo"
-                                            name="permisos"
-                                            placeholder="Seleccione"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="3">
-                                <b-form-group>
-                                    <label>Motivo de baja</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="motivo de baja"
-                                    >
-                                        <v-select
-                                            label="name"
-                                            :options="motivo"
-                                            v-model="selectedMotivoBaja"
-                                            name="permisos"
-                                            placeholder="Seleccione"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="4">
-                                <b-form-group>
-                                    <label>NIT</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="NIT"
+                                        name="regimenLaboral"
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="nit"
-                                            type="text"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="4">
-                                <b-form-group>
-                                    <label>Fecha ultimo dia</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="Fecha ultimo dia"
-                                    >
-                                        <b-form-input
-                                            id="example-input"
-                                            v-model="fecha_ultimo_dia"
-                                            type="date"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="4">
-                                <b-form-group>
-                                    <label>Fecha cese</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="fecha cese"
-                                    >
-                                        <b-form-input
-                                            id="example-input"
-                                            v-model="fecha_cese"
-                                            type="date"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="4">
-                                <b-form-group>
-                                    <label>Tipo documento</label>
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="Tipo documento"
-                                    >
-                                        <v-select
-                                            label="name"
-                                            :options="documentos"
-                                            v-model="selectedTipoDocumento"
-                                            name="permisos"
-                                            placeholder="Seleccione"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="5">
-                                <b-form-group>
-                                    <label>Origen documento</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="Dependencia"
-                                    >
-                                        <v-select
-                                            label="name"
-                                            :options="dependencia"
-                                            v-model="selectedOrigenDocumento"
-                                            name="permisos"
-                                            placeholder="Seleccione"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="3">
-                                <b-form-group>
-                                    <label>Numero documento</label>
-
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="numero documento"
-                                    >
-                                        <b-form-input
-                                            id="example-input"
-                                            v-model="numero_documento"
+                                            v-model="regimenLaboral"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -199,34 +73,16 @@
                             </b-col>
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Fecha documento sustento</label>
+                                    <label>DNI</label>
+
                                     <validation-provider
                                         #default="{ errors }"
                                         rules="required"
-                                        name="documento sustento"
+                                        name="empleado_dni"
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="fecha_documento_sustento"
-                                            type="date"
-                                        />
-                                        <small class="text-danger">{{
-                                            errors[0]
-                                        }}</small>
-                                    </validation-provider>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="3">
-                                <b-form-group>
-                                    <label>posicion</label>
-                                    <validation-provider
-                                        #default="{ errors }"
-                                        rules="required"
-                                        name="selectedType"
-                                    >
-                                        <b-form-input
-                                            id="example-input"
-                                            v-model="posicion"
+                                            v-model="empleadoDni"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -237,15 +93,16 @@
                             </b-col>
                             <b-col md="3">
                                 <b-form-group>
-                                    <label>Plaza</label>
+                                    <label>Ruc</label>
+
                                     <validation-provider
                                         #default="{ errors }"
-                                        rules="required"
-                                        name="selectedType"
+                                        rules=""
+                                        name="empleado_ruc"
                                     >
                                         <b-form-input
                                             id="example-input"
-                                            v-model="plaza"
+                                            v-model="empleadoRuc"
                                             type="text"
                                         />
                                         <small class="text-danger">{{
@@ -255,33 +112,131 @@
                                 </b-form-group>
                             </b-col>
                             <b-col md="6">
-                                <label>Motivo</label>
-                                <b-form-textarea
-                                    id="textarea-default"
-                                    placeholder="......"
-                                    rows="4"
-                                    v-model="observacion"
-                                />
+                                <b-form-group>
+                                    <label>Direccion</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules=""
+                                        name="direccion"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="direccion"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
                             </b-col>
-                            <b-col md="6">
-                                <label>Archivo adjunto</label>
-                                <vue-dropzone
-                                    ref="myVueDropzone"
-                                    id="dropzone"
-                                    :useCustomSlot="true"
-                                    :options="dropzoneOptions"
-                                    @vdropzone-sending-multiple="sendMessage"
-                                    v-on:vdropzone-success="uploadSuccess"
-                                >
-                                    <div class="dropzone-custom-content">
-                                        <h3 class="dropzone-custom-title">
-                                            Adjunte archivo
-                                        </h3>
-                                        <div class="subtitle">
-                                            Suelte o arrastre
-                                        </div>
-                                    </div>
-                                </vue-dropzone>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Cargo/Puesto</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="cargo"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="cargo"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Prestacion Servicio</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="prestacionServicio"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="prestacionServicio"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Remuneracion</label>
+
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="remuneracion"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="remuneracion"
+                                            type="text"
+                                        />
+                                        <small class="text-danger">{{
+                                            errors[0]
+                                        }}</small>
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Fecha de inicio</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="fecha_inicio"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="fecha_inicio"
+                                            type="date"
+                                        />
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Fecha de termino</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="fecha_termino"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="fecha_termino"
+                                            type="date"
+                                        />
+                                    </validation-provider>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="3">
+                                <b-form-group>
+                                    <label>Fecha firma de contrato</label>
+                                    <validation-provider
+                                        #default="{ errors }"
+                                        rules="required"
+                                        name="fecha_firma"
+                                    >
+                                        <b-form-input
+                                            id="example-input"
+                                            v-model="fecha_firma"
+                                            type="date"
+                                        />
+                                    </validation-provider>
+                                </b-form-group>
                             </b-col>
 
                             <b-col cols="12" class="mt-2 mb-5">
@@ -290,7 +245,7 @@
                                     type="submit"
                                     @click.prevent="register"
                                 >
-                                    Registrar
+                                    Actualizar
                                 </b-button>
                                 <b-button variant="danger" @click="back()">
                                     Volver
@@ -338,12 +293,9 @@ import ToastificationContent from "@core/components/toastification/Toastificatio
 import vSelect from "vue-select";
 import moment from "moment";
 import "animate.css";
-import vue2Dropzone from "vue2-dropzone";
-import "vue2-dropzone/dist/vue2Dropzone.min.css";
 
 export default {
     components: {
-        vueDropzone: vue2Dropzone,
         BCard,
         BRow,
         BCol,
@@ -375,73 +327,44 @@ export default {
 
     data() {
         return {
-            id: "",
-            token: sessionStorage.getItem("accessToken"),
-            // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
-            dropzoneOptions: {
-                // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
-                url: "/api/auth/sendfile",
-                thumbnailWidth: 150,
-                acceptedFiles: ".pdf",
-                maxFilesize: 0.5,
-                maxFilesize: 1,
-                maxFiles: 1,
-                init: function () {
-                    this.on("maxfilesexceeded", function (file) {
-                        this.removeAllFiles();
-                        this.addFile(file);
-                    });
-                },
-                dictRemoveFile: "Eliminar archivo",
-                addRemoveLinks: true,
-                parallelUploads: 3,
-                autoProcessQueue: false,
-                withCredentials: true,
-                uploadMultiple: true,
-                // headers: { Authorization: "Bearer " + this.token },
-                headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
-            },
-            selectedPersona: "",
-            selectedPeriodo: "",
-            selectedMotivoBaja: "",
-            nit: "",
-            fecha_ultimo_dia: "",
-            fecha_cese: "",
-            selectedTipoDocumento: "",
-            selectedOrigenDocumento: "",
-            numero_documento: "",
-            fecha_documento_sustento: "",
-            posicion: "",
-            plaza: "",
-            observacion: "",
-            users: [],
-            periodos: [],
-            dependencia: [],
-            motivo: [],
-            documentos: [],
-
-            fields: [
-                "periodo",
-                "dias_pendientes",
-                "dias_usados",
-                "pend",
-                {
-                    key: "pend",
-                    label: "pend",
-                },
-                {
-                    key: "action",
-                    label: "action",
-                },
+            tipo_contrato: [
+                { id: "PRIMIGENIO", name: "PRIMIGENIO" },
+                { id: "RENOVACION", name: "RENOVACION" },
+                { id: "PRORROGA", name: "PRORROGA" },
             ],
+            users: [],
+            persona: "",
+            tipoContrato: "",
+            regimenLaboral: "",
+            empleadoDni: "",
+            cargo: "",
+            prestacionServicio: "",
+            direccion: "",
+            empleadoRuc: "",
+            remuneracion: "",
+            fecha_inicio: "",
+            fecha_termino: "",
+            fecha_firma: "",
         };
     },
+    watch: {
+        persona: function (val, oldval) {
+            this.$http
+                .get("/api/auth/contrato/getpersona/" + val.id)
+                .then((response) => {
+                    console.log("fer");
+                    this.regimenLaboral = response.data.c_l;
+                    this.empleadoDni = response.data.dni;
+                    this.cargo = response.data.cargo;
+                    this.prestacionServicio = response.data.dependencia;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
     created() {
-        // await axios.get('/sanctum/csrf-cookie')
+        this.getDetail();
         this.$http
             .get("/api/auth/users/pluck")
             .then((response) => {
@@ -450,67 +373,61 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
-        this.$http
-            .get("/api/auth/personal_bajas/select")
-            .then((response) => {
-                this.periodos = response.data.periodos;
-                this.dependencia = response.data.dependencia_origen;
-                this.motivo = response.data.motivo_baja;
-                this.documentos = response.data.tipo_documento;
-                console.log(this.periodos);
-                console.log(this.dependencia);
-                console.log(this.motivo);
-                console.log(this.documentos);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
     },
     methods: {
-        uploadSuccess: async function (file, response) {
-            this.$toast({
-                component: ToastificationContent,
-                position: "top-right",
-                props: {
-                    title: "Archivo subido correctamente",
-                    icon: "CoffeeIcon",
-                    variant: "info",
-                },
-            });
-        },
-        shootMessage: async function () {
-            this.$refs.myVueDropzone.processQueue();
-        },
-        sendMessage: async function (files, xhr, formData) {
-            formData.append("id", this.id);
-        },
         back() {
             this.$router.back();
+        },
+        getDetail() {
+            this.$http
+                .get(
+                    "/api/auth/contrato/detail/" + this.$route.params.contratoId
+                )
+                .then((response) => {
+                    this.persona = {
+                        name: response.data.nombres,
+                        id: response.data.empleado_dni,
+                    };
+                    this.tipoContrato = response.data.tipo_contrato;
+                    this.regimenLaboral = response.data.regimen_laboral;
+                    this.empleadoDni = response.data.empleado_dni;
+                    this.cargo = response.data.cargo;
+                    this.prestacionServicio =
+                        response.data.lugar_prestacion_servicio;
+                    this.direccion = response.data.empleado_direccion;
+                    this.empleadoRuc = response.data.empleado_ruc;
+                    this.remuneracion = response.data.remuneracion;
+                    this.fecha_inicio = response.data.fecha_inicio;
+                    this.fecha_termino = response.data.fecha_termino;
+                    this.fecha_firma = response.data.fecha_firma_contrato;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
         register() {
             this.$refs.registerForm.validate().then((success) => {
                 if (success) {
                     this.$http
-                        .post("/api/auth/personal_bajas/create", {
-                            dni: this.selectedPersona.id,
-                            periodo: this.selectedPeriodo.id,
-                            motivo_baja_id: this.selectedMotivoBaja.id,
-                            nit: this.nit,
-                            fecha_ultimo_dia: this.fecha_ultimo_dia,
-                            fecha_cese: this.fecha_cese,
-                            tipo_documento_id: this.selectedTipoDocumento.id,
-                            origen_dependencia_id:
-                                this.selectedOrigenDocumento.id,
-                            numero_documento: this.numero_documento,
-                            fecha_documento_sustento:
-                                this.fecha_documento_sustento,
-                            posicion: this.posicion,
-                            plaza: this.plaza,
-                            observacion: this.observacion,
-                        })
-                        .then((res) => {
-                            this.id = res.data.id;
-                            this.shootMessage();
+                        .post(
+                            "/api/auth/contrato/update/" +
+                                this.$route.params.contratoId,
+                            {
+                                tipo_contrato: this.tipoContrato.id,
+                                regimen_laboral: this.regimenLaboral,
+                                empleado_dni: this.empleadoDni,
+                                cargo: this.cargo,
+                                lugar_prestacion_servicio:
+                                    this.prestacionServicio,
+                                empleado_direccion: this.direccion,
+                                empleado_ruc: this.empleadoRuc,
+                                remuneracion: this.remuneracion,
+                                fecha_inicio: this.fecha_inicio,
+                                fecha_termino: this.fecha_termino,
+                                fecha_firma_contrato: this.fecha_firma,
+                            }
+                        )
+                        .then(() => {
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",
@@ -518,6 +435,7 @@ export default {
                                     title: "Registrado Correctamente",
                                     icon: "CoffeeIcon",
                                     variant: "success",
+                                    text: `Papeleta registrado correctamente`,
                                 },
                             });
                             this.$router.back();
@@ -538,44 +456,4 @@ export default {
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
 @import "~@core/scss/vue/libs/vue-flatpicker.scss";
-#customdropzone {
-    font-family: "Arial", sans-serif;
-    letter-spacing: 0.2px;
-    color: #777;
-    transition: background-color 0.2s linear;
-    height: 115px;
-    padding: 40px;
-    border: 1px solid #000000;
-}
-
-#customdropzone .dz-preview {
-    width: 160px;
-    display: inline-block;
-}
-#customdropzone .dz-preview .dz-image {
-    width: 80px;
-    height: 80px;
-    margin-left: 40px;
-    margin-bottom: 10px;
-}
-#customdropzone .dz-preview .dz-image > div {
-    width: inherit;
-    height: inherit;
-    border-radius: 50%;
-    background-size: contain;
-}
-#customdropzone .dz-preview .dz-image > img {
-    width: 100%;
-}
-
-#customdropzone .dz-preview .dz-details {
-    color: white;
-    transition: opacity 0.2s linear;
-    text-align: center;
-}
-#customdropzone .dz-success-mark,
-.dz-error-mark,
-.dz-remove {
-    display: none;
-}
 </style>

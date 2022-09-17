@@ -20,6 +20,7 @@ use App\Http\Controllers\API\admin\PersonaControllers;
 use App\Http\Controllers\API\admin\PersonalBajaController;
 use App\Http\Controllers\API\admin\PersonalInformesCeseController;
 use App\Http\Controllers\API\admin\LegajosInformesCeseController;
+use App\Http\Controllers\API\admin\ContratosController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -186,6 +187,16 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('update/{id}', [PersonaControllers::class, 'update']);
             Route::post('updateStatus/{id}', [PersonaControllers::class, 'update_estado']);
             Route::post('delete/{id}', [PersonaControllers::class, 'delete']);
+        });
+        Route::group(['prefix' => 'contrato'], function () {
+            Route::get('/', [ContratosController::class, 'index']);
+            Route::post('/create', [ContratosController::class, 'create']);
+            Route::get('detail/{id}', [ContratosController::class, 'getDetail']);
+            Route::post('update/{id}', [ContratosController::class, 'update']);
+            Route::post('statusfirma/{id}', [ContratosController::class, 'status_firma']);
+            Route::post('statuscontrato/{id}', [ContratosController::class, 'status_contrato']);
+            Route::post('delete/{id}', [ContratosController::class, 'delete']);
+            Route::get('getpersona/{id}', [ContratosController::class, 'getPersona']);
         });
     });
 });

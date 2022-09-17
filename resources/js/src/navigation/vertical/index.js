@@ -83,6 +83,13 @@ export default [
         action: 'vacaciones_documentos-report',
         icon: 'CalendarIcon',
       },
+      {
+        title: 'Contratos',
+        route: 'admin-contratos-list',
+        resource: 'ACL',
+        action: 'contrato-index',
+        icon: 'FileTextIcon',
+      },
     ],
   },
   {

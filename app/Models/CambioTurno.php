@@ -41,6 +41,7 @@ class CambioTurno extends Model implements Auditable
         'updated_by',
         'created_at',
         'updated_at',
+        'vinculo_laboral'
     ];
 
     public function user()

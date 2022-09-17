@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\VacacionesDocumento;
+use App\Models\Contratos;
 
 class PapeletaController extends Controller
 {
@@ -74,7 +75,6 @@ class PapeletaController extends Controller
             ->orderBy('nro_papeleta', 'desc')
             ->first();
 
-        // validando si la papaleta es null
         $nroPapeleta = is_null($ultimaPapeleta) ? 0 : $ultimaPapeleta->nro_papeleta;
         $nroPapeleta++;
 
@@ -83,18 +83,19 @@ class PapeletaController extends Controller
 
         $hora_salida = is_null($request->hora_salida) ? Carbon::now() : Carbon::parse($request->hora_salida);
         $hora_retorno = is_null($request->hora_retorno) ? Carbon::now() : Carbon::parse($request->hora_retorno);
-        // dd($hora_salida);
-        // dd($hora_retorno);
-        // dd($fecha_salida);
-        //obtener dias /horas
+
 
         $nro_dias = $fecha_retorno->diffInDays($fecha_salida);
 
         $nro_minutos = $hora_retorno->diffInMinutes($hora_salida);
-        // dd($dias);
-        // dd($nro_minutos);
 
+        $dni = $request->dni;
+        $vinculo_laboral = get_vinculo_laboral($dni);
+        // $vinculo_laboral = Contratos::select('id')->where('empleado_dni', '=', '001307427')->get();
 
+        // if ($vinculo_laboral == 'error') {
+        //     return response()->json(['msg' => 'ocurrio un error al buscar el contrato'], 202);
+        // } else {
         $papeleta = Papeleta::create([
             'anio' => $year,
             'fecha' => $fecha,
@@ -104,21 +105,27 @@ class PapeletaController extends Controller
             'tdd' => $nro_dias,
             'status' => 0,
             'nro_papeleta' => $nroPapeleta,
-            'created_by' => $id
-
+            'created_by' => $id,
+            'vinculo_laboral' => $vinculo_laboral
         ] + $request->all());
 
         if (is_null($papeleta->dni))
             $papeleta->dni = $persona;
 
         if ($papeleta->save()) {
-            $this->crearVacacionDocumento($papeleta, $periodo);
-            $papeleta->vacaciones_status = 1;
-            $papeleta->save();
+            if ($papeleta->tipo_permiso_id == 4) {
+                $this->crearVacacionDocumento($papeleta, $periodo);
+                $papeleta->vacaciones_status = 1;
+                $papeleta->save();
+            }
+            return response()->json(200);
         }
+        // }
     }
     public function crearVacacionDocumento($papeleta, $periodo)
     {
+        $dni = $papeleta->dni;
+        $vinculo_laboral = get_vinculo_laboral($dni);
         $vacacion = VacacionesDocumento::create([
             'periodo' => $periodo,
             'persona_dni' => $papeleta->dni,
@@ -128,7 +135,9 @@ class PapeletaController extends Controller
             'tipo_documento_id' => 4,
             'papeleta_id' => $papeleta->id,
             'estado_valido' => 4,
+            'vinculo_laboral' => $vinculo_laboral
         ]);
+        $vacacion->save();
     }
     public function getDetail(Request $request, Papeleta $papeleta)
     {

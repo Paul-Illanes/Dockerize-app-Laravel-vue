@@ -305,4 +305,34 @@ export default [
       action: 'personas-edit',
     },
   },
+        // *===============================================---*
+  // *--------- persona-- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/contratos/list',
+    name: 'admin-contratos-list',
+    component: () => import('@/views/admin/informacion/contratos/ContratoList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'contrato-index',
+    },
+  },
+  {
+    path: '/admin/contratos/add',
+    name: 'admin-contratos-add',
+    component: () => import('@/views/admin/informacion/contratos/ContratoAdd.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'contrato-create',
+    },
+  },
+  {
+    path: '/admin/contratos/edit/:contratoId',
+    name: 'admin-contratos-edit',
+    component: () => import('@/views/admin/informacion/contratos/ContratoEdit.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'contrato-edit',
+    },
+  },
 ]

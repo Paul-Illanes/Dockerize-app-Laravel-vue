@@ -296,3 +296,22 @@ if (!function_exists('parameter_single_value')) {
         return $data;
     }
 }
+if (!function_exists('get_vinculo_laboral')) {
+    /**
+     * Retun a single value from parameter by ID
+     */
+    function get_vinculo_laboral($dni)
+    {
+        // $contrato = App\Models\Contratos::select('id')->where('empleado_dni', '=', $dni);
+        $contrato = App\Models\Contratos::select('id')->where('empleado_dni', '=', $dni)->get();
+        if (isset($contrato[0]->id)) {
+            $id = $contrato[0]->id;
+            $vinculo_laboral = App\Models\VinculoLaboral::where('contrato_id', '=', $id)->get();
+            if (isset($vinculo_laboral[0]->id)) {
+                return $vinculo_laboral[0]->id;
+            }
+        } else {
+            return null;
+        }
+    }
+}
