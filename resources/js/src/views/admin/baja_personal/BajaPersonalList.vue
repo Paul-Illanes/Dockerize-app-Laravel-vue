@@ -103,6 +103,19 @@
                                 </b-button>
                                 {{ row.item.path_documento }}
                             </b-list-group-item>
+                            <b-list-group-item v-if="row.item.archivo_id"
+                                >Archivo de anulacion : <br />
+
+                                <b-button
+                                    v-ripple.400="'rgba(40, 199, 111, 0.15)'"
+                                    variant="flat-success"
+                                    class="btn-icon"
+                                    @click="getArchivo(row.item.archivo_id)"
+                                >
+                                    <feather-icon icon="FileIcon" />
+                                </b-button>
+                                previsualizar
+                            </b-list-group-item>
                         </b-list-group>
                     </b-row>
                 </b-card>
@@ -177,8 +190,9 @@
                             icon="DeleteIcon"
                         />
                         <span
-                            @click="updateStatus(3, data.item.id)"
                             class="align-middle ml-50"
+                            @click="personalBajaId = data.item.id"
+                            v-b-modal.modal-anular
                             >Anular</span
                         >
                     </b-dropdown-item>
@@ -247,7 +261,7 @@
                         @click="confirmDelete(data.item.id)"
                     />
                     <b-tooltip
-                        title="Eliminar Papeleta"
+                        title="Eliminar Baja"
                         class="cursor-pointer"
                         :target="`invoice-row-${data.item.id}-delete-icon`"
                     />
@@ -574,6 +588,56 @@
                 </validation-observer>
             </b-card-body>
         </b-modal>
+        <b-modal
+            ref="my-modal-anular"
+            id="modal-anular"
+            centered
+            hide-footer
+            title="Anular baja de personal"
+        >
+            <b-card-body>
+                <validation-observer ref="anularForm">
+                    <b-form
+                        class="auth-register-form mt-2 ml-2"
+                        @submit.prevent="anular"
+                    >
+                        <b-col md="12">
+                            <b-form-input hidden name="register-name" />
+                            <b-form-group>
+                                <label>Archivo adjunto</label>
+                                <vue-dropzone
+                                    ref="myVueDropzone"
+                                    id="dropzone"
+                                    :useCustomSlot="true"
+                                    :options="dropzoneOptions"
+                                    @vdropzone-sending-multiple="sendMessage"
+                                    v-on:vdropzone-success="uploadSuccess"
+                                >
+                                    <div class="dropzone-custom-content">
+                                        <h3 class="dropzone-custom-title">
+                                            Adjunte archivo
+                                        </h3>
+                                        <div class="subtitle">
+                                            Suelte o arrastre
+                                        </div>
+                                    </div>
+                                </vue-dropzone>
+                            </b-form-group>
+                        </b-col>
+                        <hr />
+                        <b-col cols="12" class="mt-2">
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="shootMessage"
+                            >
+                                Registrar
+                            </b-button>
+                        </b-col>
+                    </b-form>
+                </validation-observer>
+            </b-card-body>
+        </b-modal>
     </b-card>
 </template>
 
@@ -615,8 +679,12 @@ import moment from "moment";
 import Ripple from "vue-ripple-directive";
 import { parameter_pluck } from "@/helpers/index.js";
 import axios from "axios";
+import vue2Dropzone from "vue2-dropzone";
+import "vue2-dropzone/dist/vue2Dropzone.min.css";
+
 export default {
     components: {
+        vueDropzone: vue2Dropzone,
         BForm,
         BListGroup,
         BListGroupItem,
@@ -648,6 +716,34 @@ export default {
     },
     data() {
         return {
+            personalBajaId: "",
+            dropzoneOptions: {
+                // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
+                url: "/api/auth/personal_bajas/anular",
+                thumbnailWidth: 150,
+                acceptedFiles: ".pdf",
+                maxFilesize: 0.5,
+                maxFilesize: 1,
+                maxFiles: 1,
+                init: function () {
+                    this.on("maxfilesexceeded", function (file) {
+                        this.removeAllFiles();
+                        this.addFile(file);
+                    });
+                },
+                dictRemoveFile: "Eliminar archivo",
+                addRemoveLinks: true,
+                parallelUploads: 3,
+                autoProcessQueue: false,
+                withCredentials: true,
+                uploadMultiple: true,
+                // headers: { Authorization: "Bearer " + this.token },
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+            },
             bajaId: "",
             //observacion
             selectedObs: "",
@@ -670,6 +766,25 @@ export default {
     },
 
     methods: {
+        uploadSuccess: async function (file, response) {
+            this.$toast({
+                component: ToastificationContent,
+                position: "top-right",
+                props: {
+                    title: "Archivo subido correctamente",
+                    icon: "CoffeeIcon",
+                    variant: "info",
+                },
+            });
+            this.$refs["my-modal-anular"].hide();
+            this.refreshStatus = 1;
+        },
+        shootMessage: async function () {
+            this.$refs.myVueDropzone.processQueue();
+        },
+        sendMessage: async function (files, xhr, formData) {
+            formData.append("id", this.personalBajaId);
+        },
         getModalDetail(data) {
             this.$http
                 .post("/api/auth/personal_bajas/modal", {
@@ -686,7 +801,6 @@ export default {
                     this.tipo_documento = response.data.tipo_documento[0];
                     this.origen_dependencia =
                         response.data.dependencia_origen[0];
-                    console.log(response);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -760,8 +874,31 @@ export default {
                     });
                 });
         },
+        getArchivo(id) {
+            this.$http
+                .get("/api/auth/archivos/" + id, {
+                    responseType: "blob", // important
+                })
+                .then((response) => {
+                    // Service that handles ajax call
+                    const url = window.URL.createObjectURL(
+                        new Blob([response.data], { type: "application/pdf" })
+                    );
+                    window.open(url);
+                })
+                .catch((error) => {
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: "top-right",
+                        props: {
+                            title: "No se encontro el archivo",
+                            icon: "CoffeeIcon",
+                            variant: "danger",
+                        },
+                    });
+                });
+        },
         confirmDelete(id) {
-            console.log(id);
             this.$swal({
                 title: "Estas seguro?",
                 text: "No podras revertir esta accion!",
@@ -800,20 +937,6 @@ export default {
         setModalData(data) {
             this.getModalDetail(data);
             this.modalData = data;
-
-            console.log(this.modalData);
-            // this.modalData.nro_papeleta = data.nro_papeleta;
-            // this.modalData.nombres = data.nombres;
-            // this.modalData.fecha_generacion = data.fecha;
-            // this.modalData.tipo_papeleta = data.tipo_permiso;
-            // this.modalData.fecha_salida = data.fecha_salida;
-            // this.modalData.hora_salida =
-            //     data.hora_salida != null ? data.hora_salida : "-";
-            // this.modalData.fecha_retorno = data.fecha_retorno;
-            // this.modalData.hora_retorno =
-            //     data.hora_retorno != null ? data.hora_retorno : "-";
-            // this.modalData.estado = data.status;
-            // this.modalData.creado_por = data.nombres;
         },
         changeDate(dato) {
             return moment(String(dato)).format("DD/MM/YYYY");
@@ -948,4 +1071,44 @@ export default {
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
 @import "~@core/scss/vue/libs/vue-sweetalert.scss";
+#customdropzone {
+    font-family: "Arial", sans-serif;
+    letter-spacing: 0.2px;
+    color: #777;
+    transition: background-color 0.2s linear;
+    height: 115px;
+    padding: 40px;
+    border: 1px solid #000000;
+}
+
+#customdropzone .dz-preview {
+    width: 160px;
+    display: inline-block;
+}
+#customdropzone .dz-preview .dz-image {
+    width: 80px;
+    height: 80px;
+    margin-left: 40px;
+    margin-bottom: 10px;
+}
+#customdropzone .dz-preview .dz-image > div {
+    width: inherit;
+    height: inherit;
+    border-radius: 50%;
+    background-size: contain;
+}
+#customdropzone .dz-preview .dz-image > img {
+    width: 100%;
+}
+
+#customdropzone .dz-preview .dz-details {
+    color: white;
+    transition: opacity 0.2s linear;
+    text-align: center;
+}
+#customdropzone .dz-success-mark,
+.dz-error-mark,
+.dz-remove {
+    display: none;
+}
 </style>

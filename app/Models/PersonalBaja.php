@@ -47,8 +47,11 @@ class PersonalBaja extends Model implements Auditable
         'fecha_documento_sustento',
         'periodo',
         'status',
+        'obs',
+        'archivo_id',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'vinculo_laboral'
     ];
 
 

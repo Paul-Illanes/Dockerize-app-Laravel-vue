@@ -21,6 +21,7 @@ use App\Http\Controllers\API\admin\PersonalBajaController;
 use App\Http\Controllers\API\admin\PersonalInformesCeseController;
 use App\Http\Controllers\API\admin\LegajosInformesCeseController;
 use App\Http\Controllers\API\admin\ContratosController;
+use App\Http\Controllers\API\ArchivoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,18 +47,11 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
         Route::get('/parameter_turno/{varia}', [ParameterController::class, 'parameter_turno']);
         Route::get('/parameter_check/{varia}', [ParameterController::class, 'parameter_check']);
-        //usuarios
-        // Route::get('/getUsers', [UsersController::class, 'usersList']);
-        //Roles
-        // Route::get('/getRoles', [RoleController::class, 'getList']);
-        // Route::get('detail/{role}', [RoleController::class, 'getDetail']);
-        // Route::get('/getRoles', [RoleController::class, 'getList']);
+        Route::get('/archivos/{id}', [ArchivoController::class, 'file']);
         //permisos
         Route::get('getpersonas', [PersonaControllers::class, 'personList']);
         Route::get('permissions', [PermissionController::class, 'getList']);
-        //test composition api
-        // Route::get('/create', [UsersController::class, 'invoices']);
-        //users
+
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [UsersController::class, 'usersList']);
             Route::post('create', [UsersController::class, 'create']);
@@ -141,6 +135,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('obs/{id}', [PersonalBajaController::class, 'observar']);
             Route::post('updateStatus/{id}', [PersonalBajaController::class, 'update_estado']);
             Route::post('delete/{id}', [PersonalBajaController::class, 'delete']);
+            Route::post('anular', [PersonalBajaController::class, 'anular']);
         });
         //control informe cese
         Route::group(['prefix' => 'informe_cese'], function () {

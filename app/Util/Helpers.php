@@ -315,3 +315,49 @@ if (!function_exists('get_vinculo_laboral')) {
         }
     }
 }
+if (!function_exists('status_vinculo_laboral')) {
+    /**
+     * Retun a single value from parameter by ID
+     */
+    function status_vinculo_laboral($dni)
+    {
+        // $contrato = App\Models\Contratos::select('id')->where('empleado_dni', '=', $dni);
+        $contrato = App\Models\Contratos::select('id')->where('empleado_dni', '=', $dni)->get();
+        if (isset($contrato[0]->id)) {
+            $id = $contrato[0]->id;
+            $cont = App\Models\Contratos::find($id);
+            $cont->status_contrato = 0;
+            $cont->save();
+            $vinculo_laboral = App\Models\VinculoLaboral::where('contrato_id', '=', $id)->get();
+            if (isset($vinculo_laboral[0]->id)) {
+                $idvl = $vinculo_laboral[0]->id;
+                $vl = App\Models\VinculoLaboral::find($idvl);
+                $vl->status = 0;
+                $vl->save();
+                return $idvl;
+            }
+        } else {
+            return null;
+        }
+    }
+}
+if (!function_exists('upload_archive')) {
+    /**
+     * Retun a single value from parameter by ID
+     */
+    function upload_archive($file, $filename, $ruta, $modulo)
+    {
+        $path = $file->storeAs($ruta, $filename);
+        if ($path) {
+            $archivo = App\Models\Archivos::create(
+                [
+                    'ruta' => $ruta,
+                    'nombre' => $filename,
+                    'modulo' => $modulo,
+                ]
+            );
+            $archivo->save();
+            return $archivo->id;
+        }
+    }
+}

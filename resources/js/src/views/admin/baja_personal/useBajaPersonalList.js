@@ -66,7 +66,6 @@ export default function useBajaPersonalList() {
         refreshStatus: refreshStatus.value,
       })
       .then(response => {
-        console.log(response[0])
         const { invoices, total } = response[0]
 
         callback(invoices)

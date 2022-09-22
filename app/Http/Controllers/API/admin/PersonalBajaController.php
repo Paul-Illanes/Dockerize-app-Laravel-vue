@@ -83,6 +83,8 @@ class PersonalBajaController extends Controller
         $sustento = new PersonalBaja();
         $documento_sustento = $sustento->DocumentoSustento($request);
 
+        $dni = $request->dni;
+        $vinculo_laboral = get_vinculo_laboral($dni);
         // record baja
         $personalBaja = PersonalBaja::create([
             'regimen_laboral' => $persona->c_l,
@@ -96,10 +98,12 @@ class PersonalBajaController extends Controller
             'status' => 0,
             'created_by' => $user_id,
             'updated_by' => $user_id,
+            'vinculo_laboral' => $vinculo_laboral
 
         ] + $request->all());
         $baja_id = $personalBaja->id; // id del registro personal baja
         if ($request->fecha_ultimo_dia <= now()) {
+            status_vinculo_laboral($dni);
             $persona->changeStatus(2); //2=baja
             // usuario -- disable user
             if ($user) {
@@ -119,7 +123,6 @@ class PersonalBajaController extends Controller
     }
     public function update(Request $request, $id)
     {
-        //  dd($request->all());
         request()->validate(PersonalBaja::$rules);
 
         $user_id = $request->user()->id;
@@ -130,13 +133,6 @@ class PersonalBajaController extends Controller
         $documento_sustento = $sustento->DocumentoSustento($request);
 
         $personalBaja = new PersonalBaja();
-        // $personalBaja->update([
-        //     'documento_sustento' => $documento_sustento,
-        //     'fecha_registro' => now(),
-        //     'numero_documento' => $request->numero_documento,
-        //     'status' => 0,
-        //     'updated_by' => $user_id,
-        // ] + $request->all());
 
         $personalBaja->documento_sustento = $documento_sustento;
         $personalBaja->fecha_registro = now();
@@ -156,11 +152,6 @@ class PersonalBajaController extends Controller
         $personalBaja->updated_by = $user_id;
         $personalBaja->status = 0;
         $personalBaja->save();
-        // $baja_id = $personalBaja->id;
-        // $persona = $personalBaja->persona;
-
-        // $file_name = "baja_$request->dni" . "_$persona->condicion_laboral_id" . "_$periodo" . "_1";
-
         // update person to set baja
         $persona = Persona::find($request->dni);
         $persona->update([
@@ -171,7 +162,6 @@ class PersonalBajaController extends Controller
 
         if ($request->fecha_ultimo_dia <= now()) {
             $persona->changeStatus(2); //2=baja
-            // usuario -- disable user
             if ($user) {
                 $user->changeStatus($user, false);
             }
@@ -206,6 +196,24 @@ class PersonalBajaController extends Controller
     {
         $baja = PersonalBaja::FindOrFail($id);
         $baja->status_baja = $request->status;
+        $baja->save();
+    }
+    public function anular(Request $request)
+    {
+
+        $data = $request->all();
+        $id = $data['id'];
+        $baja = PersonalBaja::FindOrFail($id);
+        $files = $request->file('file');
+        if (!is_array($files)) {
+            $files = [$files];
+        }
+        $file = $files[0];
+        $filename = 'baja_' . $baja->dni . '_' . $baja->motivo_baja_id . '_' . $baja->periodo . '.pdf';
+
+        $archivo_id = upload_archive($file, $filename, 'bajas', 'baja de personal');
+        $baja->archivo_id = $archivo_id;
+        $baja->status_baja = 3;
         $baja->save();
     }
     public function delete($id)

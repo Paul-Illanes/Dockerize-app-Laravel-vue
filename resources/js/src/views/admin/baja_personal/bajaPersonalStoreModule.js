@@ -18,7 +18,7 @@ export default {
             axios
               .get('/api/auth/personal_bajas/')
               .then(response => {
- console.log(response.data)
+
                 sessionStorage.setItem(
                   "bajapersonal",
                   JSON.stringify(response.data)

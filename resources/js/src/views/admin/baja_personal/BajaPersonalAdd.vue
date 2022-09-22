@@ -1,5 +1,5 @@
 <template>
-    <b-card-code title="Crear Papeleta" no-body>
+    <b-card-code title="Crear Personal Baja" no-body>
         <!-- form -->
         <b-row>
             <b-col md="12">
@@ -457,10 +457,6 @@ export default {
                 this.dependencia = response.data.dependencia_origen;
                 this.motivo = response.data.motivo_baja;
                 this.documentos = response.data.tipo_documento;
-                console.log(this.periodos);
-                console.log(this.dependencia);
-                console.log(this.motivo);
-                console.log(this.documentos);
             })
             .catch((error) => {
                 console.log(error);
