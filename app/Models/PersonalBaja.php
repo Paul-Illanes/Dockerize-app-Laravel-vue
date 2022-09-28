@@ -49,6 +49,7 @@ class PersonalBaja extends Model implements Auditable
         'status',
         'obs',
         'archivo_id',
+        'motivo_anulacion_id',
         'created_by',
         'updated_by',
         'vinculo_laboral'

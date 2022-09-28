@@ -604,6 +604,28 @@
                         <b-col md="12">
                             <b-form-input hidden name="register-name" />
                             <b-form-group>
+                                <label>Motivo de Anulacion</label>
+
+                                <validation-provider
+                                    #default="{ errors }"
+                                    rules="required"
+                                    name="motivo Anulacion"
+                                >
+                                    <v-select
+                                        label="name"
+                                        :options="parameterAnulacion"
+                                        v-model="selectedAnulacion"
+                                        placeholder="Seleccione"
+                                    />
+                                    <small class="text-danger">{{
+                                        errors[0]
+                                    }}</small>
+                                </validation-provider>
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="12">
+                            <b-form-input hidden name="register-name" />
+                            <b-form-group>
                                 <label>Archivo adjunto</label>
                                 <vue-dropzone
                                     ref="myVueDropzone"
@@ -752,6 +774,8 @@ export default {
             //
             file: "",
             parameters: [],
+            parameterAnulacion: [],
+            selectedAnulacion: "",
             modalData: "",
             fecha_nacimiento: "",
             created_by: "",
@@ -764,7 +788,16 @@ export default {
         // Set the initial number of items
         this.refreshStatus = 1;
     },
-
+    created() {
+        this.$http
+            .get("/api/auth/parameter/" + "anulacion_baja")
+            .then((response) => {
+                this.parameterAnulacion = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    },
     methods: {
         uploadSuccess: async function (file, response) {
             this.$toast({
@@ -780,10 +813,43 @@ export default {
             this.refreshStatus = 1;
         },
         shootMessage: async function () {
-            this.$refs.myVueDropzone.processQueue();
+            this.$refs.anularForm.validate().then((success) => {
+                if (success) {
+                    if (this.$refs.myVueDropzone.processQueue()) {
+                        console.log("fer");
+                    } else {
+                        this.$http
+                            .post("/api/auth/personal_bajas/anular", {
+                                id: this.personalBajaId,
+                                motivo: this.selectedAnulacion.id,
+                            })
+                            .then(() => {
+                                this.refreshStatus = 1;
+                                this.$toast({
+                                    component: ToastificationContent,
+                                    position: "top-right",
+                                    props: {
+                                        title: "Anulacion registrado correctamente",
+                                        icon: "CoffeeIcon",
+                                        variant: "success",
+                                    },
+                                });
+                                
+                                this.$refs["my-modal-anular"].hide();
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                this.$refs.anularForm.setErrors(
+                                    error.response.data.errors
+                                );
+                            });
+                    }
+                }
+            });
         },
         sendMessage: async function (files, xhr, formData) {
             formData.append("id", this.personalBajaId);
+            formData.append("motivo", this.selectedAnulacion.id);
         },
         getModalDetail(data) {
             this.$http

@@ -200,21 +200,29 @@ class PersonalBajaController extends Controller
     }
     public function anular(Request $request)
     {
+        if ($request->file('file')) {
+            $data = $request->all();
+            $id = $data['id'];
+            $baja = PersonalBaja::FindOrFail($id);
+            $files = $request->file('file');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            $file = $files[0];
+            $filename = 'baja_' . $baja->dni . '_' . $baja->motivo_baja_id . '_' . $baja->periodo . '.pdf';
 
-        $data = $request->all();
-        $id = $data['id'];
-        $baja = PersonalBaja::FindOrFail($id);
-        $files = $request->file('file');
-        if (!is_array($files)) {
-            $files = [$files];
+            $archivo_id = upload_archive($file, $filename, 'bajas', 'baja de personal');
+            $baja->archivo_id = $archivo_id;
+            $baja->status_baja = 3;
+            $baja->save();
+        } else {
+            $data = $request->all();
+            $id = $data['id'];
+            $baja = PersonalBaja::FindOrFail($id);
+            $baja->motivo_anulacion_id = $data['motivo'];
+            $baja->status_baja = 3;
+            $baja->save();
         }
-        $file = $files[0];
-        $filename = 'baja_' . $baja->dni . '_' . $baja->motivo_baja_id . '_' . $baja->periodo . '.pdf';
-
-        $archivo_id = upload_archive($file, $filename, 'bajas', 'baja de personal');
-        $baja->archivo_id = $archivo_id;
-        $baja->status_baja = 3;
-        $baja->save();
     }
     public function delete($id)
     {
