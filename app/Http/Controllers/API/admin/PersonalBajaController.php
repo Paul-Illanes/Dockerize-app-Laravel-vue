@@ -113,6 +113,8 @@ class PersonalBajaController extends Controller
         if ($baja_id) {
             return response()->json(['id' => $baja_id], 200);
         }
+        $user = $request->user();
+        notificarAdd($user, 'Baja de personal', $personalBaja->id);
     }
     public function getDetail($id)
     {
@@ -166,6 +168,8 @@ class PersonalBajaController extends Controller
                 $user->changeStatus($user, false);
             }
         }
+        $user = $request->user();
+        notificarEdit($user, 'Baja de personal', $personalBaja->id);
     }
     public function modal(Request $request)
     {

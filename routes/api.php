@@ -22,6 +22,7 @@ use App\Http\Controllers\API\admin\PersonalInformesCeseController;
 use App\Http\Controllers\API\admin\LegajosInformesCeseController;
 use App\Http\Controllers\API\admin\ContratosController;
 use App\Http\Controllers\API\ArchivoController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,7 +43,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
-
+        Route::get('/notifications', [NotificationController::class, 'notifications']);
         Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
         Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
         Route::get('/parameter_turno/{varia}', [ParameterController::class, 'parameter_turno']);

@@ -73,4 +73,8 @@ class User extends Authenticatable implements Auditable
             'updated_by' => $user,
         ]);
     }
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'users.' . $this->id;
+    }
 }

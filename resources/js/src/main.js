@@ -5,6 +5,30 @@ import VueCompositionAPI from '@vue/composition-api'
 import router from './router'
 import store from './store'
 import App from './App.vue'
+import Echo from "laravel-echo"
+
+window.Pusher = require('pusher-js');
+const token = sessionStorage.getItem('accessToken')
+window.Echo = new Echo({
+  broadcaster: 'pusher',
+  key: process.env.MIX_PUSHER_APP_KEY,
+  cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+  forceTLS: false,
+  wsHost: window.location.hostname,
+  wsPort: 6001,
+  disableStats: true,
+  auth: {
+      headers: {
+          Authorization: 'Bearer ' + token
+      },
+  },
+});
+const moment = require('moment')
+require('moment/locale/es')
+
+Vue.use(require('vue-moment'), {
+    moment
+})
 
 // Global Components
 import './global-components'

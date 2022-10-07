@@ -32,7 +32,8 @@ class ContratosController extends Controller
                 'updated_by' => $user_id,
             ] + $request->all()
         );
-
+        $user = $request->user();
+        notificarAdd($user, 'Contrato', $contratos->id);
         return response()->json($contratos);
     }
     public function getDetail(Request $request, $id)
@@ -60,7 +61,8 @@ class ContratosController extends Controller
         $contrato->fecha_firma_contrato = $request->fecha_firma_contrato;
         $contrato->updated_by = $user_id;
         $contrato->save();
-
+        $user = $request->user();
+        notificarEdit($user, 'Contrato', $contrato->id);
         return response()->json(200);
     }
     public function status_firma(Request $request, $id)

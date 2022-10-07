@@ -92,6 +92,8 @@ class PersonalInformesCeseController extends Controller
         //         'updated_by' => $user_id,
         //     ] + $request->all()
         // );
+        $user = $request->user();
+        notificarAdd($user, 'Informe de cese', $personalInformesCese->id);
         return response()->json(['msg' => 'registrado correctamente']);
     }
 
@@ -145,7 +147,8 @@ class PersonalInformesCeseController extends Controller
         $personalInformesCese->updated_by = $user_id;
         $personalInformesCese->path_informe = "";
         $personalInformesCese->save();
-
+        $user = $request->user();
+        notificarEdit($user, 'Informe de cese', $personalInformesCese->id);
         return response()->json(['msg' => 'actualizado correctamente']);
     }
 

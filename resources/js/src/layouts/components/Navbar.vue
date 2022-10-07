@@ -17,6 +17,7 @@
         </div>
 
         <b-navbar-nav class="nav align-items-center ml-auto">
+            <notification-dropdown />
             <b-nav-item-dropdown
                 right
                 toggle-class="d-flex align-items-center dropdown-user-link"
@@ -67,6 +68,7 @@ import {
 import { getUserData } from "@/auth/utils";
 import DarkToggler from "@core/layouts/components/app-navbar/components/DarkToggler.vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
+import NotificationDropdown from "@core/layouts//components/app-navbar/components/NotificationDropdown.vue";
 
 export default {
     components: {
@@ -76,7 +78,7 @@ export default {
         BDropdownItem,
         BDropdownDivider,
         BAvatar,
-
+        NotificationDropdown,
         // Navbar Components
         DarkToggler,
     },

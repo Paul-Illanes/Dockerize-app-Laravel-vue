@@ -112,7 +112,8 @@ class LegajosInformesCeseController extends Controller
             $licencias->fecha_termino = $val['fecha_termino'];
             $licencias->save();
         }
-
+        $user = $request->user();
+        notificarAdd($user, 'Legajo Inforne de cese', $legajoInformesCese->id);
         return response()->json(200);
     }
 
@@ -233,6 +234,8 @@ class LegajosInformesCeseController extends Controller
                 $licencias->save();
             }
         }
+        $user = $request->user();
+        notificarEdit($user, 'Legajo Informe de Cese', $legajoInformesCese->id);
         return response()->json(['msg' => 'actualizado correctamente']);
     }
 

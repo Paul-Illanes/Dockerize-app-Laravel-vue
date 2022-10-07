@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\VacacionesDocumento;
 use App\Models\Contratos;
+use App\Notifications\RealTimeMessage;
 
 class PapeletaController extends Controller
 {
@@ -118,9 +119,10 @@ class PapeletaController extends Controller
                 $papeleta->vacaciones_status = 1;
                 $papeleta->save();
             }
-            return response()->json(200);
         }
-        // }
+        $user = $request->user();
+        notificarAdd($user, 'Papeleta', $papeleta->id);
+        return response()->json(200);
     }
     public function crearVacacionDocumento($papeleta, $periodo)
     {
@@ -181,6 +183,8 @@ class PapeletaController extends Controller
         // dd($papeleta);
 
         $papeleta->save();
+        $user = $request->user();
+        notificarEdit($user, 'Papeleta', $papeleta->id);
     }
     public function delete(Papeleta $papeleta)
     {

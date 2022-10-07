@@ -61,7 +61,8 @@ class CambioTurnoController extends Controller
             $cambioTurno->solicitante_id = $request->user()->username;
 
         $cambioTurno->save();
-
+        $user = $request->user();
+        notificarAdd($user, 'Cambio de turno', $cambioTurno->id);
         return response()->json(['msg' => 'registrado correctamente']);
     }
     public function getDetail(Request $request, $id)
@@ -92,6 +93,8 @@ class CambioTurnoController extends Controller
         $turno->motivo = $request->motivo;
         $turno->updated_by = $request->user()->id;
         $turno->save();
+        $user = $request->user();
+        notificarEdit($user, 'Cambio de turno', $turno->id);
     }
     public function observar(Request $request, $id)
     {

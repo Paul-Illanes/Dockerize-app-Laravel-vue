@@ -1,5 +1,10 @@
 <?php
 
+use App\Notifications\RealTimeMessage;
+use Illuminate\Support\Facades\Notification;
+use App\Events\RealTime;
+use App\Models\User;
+
 if (!function_exists('get_months')) {
     /**
      * return months in array to use at dropdown
@@ -359,5 +364,35 @@ if (!function_exists('upload_archive')) {
             $archivo->save();
             return $archivo->id;
         }
+    }
+}
+if (!function_exists('notificarEdit')) {
+    /**
+     * Retun a single value from parameter by ID
+     */
+    function notificarEdit($user, $modulo, $id)
+    {
+        $users = User::whereHas("roles", function ($q) {
+            $q->where("name", "ADMIN");
+        })->get();
+        $userName = $user->name . ' ' . $user->last_name . ' ' . $user->mother_lastname;
+        $text = $userName . ' modifico una ' . $modulo . ' con el id: ' . $id;
+        Notification::send($users, new RealTimeMessage($user, $text));
+        event(new \App\Events\RealTime('Hello World'));
+    }
+}
+if (!function_exists('notificarAdd')) {
+    /**
+     * Retun a single value from parameter by ID
+     */
+    function notificarAdd($user, $modulo, $id)
+    {
+        $users = User::whereHas("roles", function ($q) {
+            $q->where("name", "ADMIN");
+        })->get();
+        $userName = $user->name . ' ' . $user->last_name . ' ' . $user->mother_lastname;
+        $text = $userName . ' agrego una ' . $modulo . ' nueva con id: ' . $id;
+        Notification::send($users, new RealTimeMessage($user, $text));
+        event(new \App\Events\RealTime('Hello World'));
     }
 }

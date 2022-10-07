@@ -66,6 +66,8 @@ class IncorporacionesController extends Controller
     public function store(Request $request)
     {
         $incorporaciones = Incorporaciones::create($request->all());
+        $user = $request->user();
+        notificarAdd($user, 'Incorporacion', $incorporaciones->id);
         return response()->json(200);
     }
     public function getDetail(Request $request, $id)
@@ -193,6 +195,8 @@ class IncorporacionesController extends Controller
         $data->cerrado = $request->cerrado;
         $data->periodo = $request->periodo;
         $data->save();
+        $user = $request->user();
+        notificarEdit($user, 'Incorporacion', $data->id);
     }
     public function validacion(Request $request)
     {
