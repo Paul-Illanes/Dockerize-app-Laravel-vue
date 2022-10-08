@@ -127,11 +127,10 @@ export default {
         },
     },
     mounted() {
-        Echo.channel("events").listen("RealTime", (e) => {
+        Echo.channel("events").listen(".RealTime", (e) => {
             console.log("RealTime: " + e.message);
             axios.get("/api/auth/notifications/").then((response) => {
                 this.unreadNotifications = response.data.unread_notifications;
-                console.log(this.unreadNotifications);
                 this.$toast({
                     component: ToastificationContent,
                     position: "top-right",
