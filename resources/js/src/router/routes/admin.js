@@ -335,4 +335,16 @@ export default [
       action: 'contrato-edit',
     },
   },
+        // *===============================================---*
+  // *--------- agrupar persona-- ---------------------------------------*
+  // *===============================================---*
+  {
+    path: '/admin/agrupar/personal',
+    name: 'admin-agrupar-personal',
+    component: () => import('@/views/admin/informacion/agrupar_personal/AgruparPersonal.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'contrato-index',
+    },
+  },
 ]

@@ -21,6 +21,7 @@ use App\Http\Controllers\API\admin\PersonalBajaController;
 use App\Http\Controllers\API\admin\PersonalInformesCeseController;
 use App\Http\Controllers\API\admin\LegajosInformesCeseController;
 use App\Http\Controllers\API\admin\ContratosController;
+use App\Http\Controllers\API\admin\PersonalAreaController;
 use App\Http\Controllers\API\ArchivoController;
 use App\Http\Controllers\NotificationController;
 /*
@@ -193,6 +194,17 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('statuscontrato/{id}', [ContratosController::class, 'status_contrato']);
             Route::post('delete/{id}', [ContratosController::class, 'delete']);
             Route::get('getpersona/{id}', [ContratosController::class, 'getPersona']);
+        });
+        Route::group(['prefix' => 'personal_area'], function () {
+            Route::get('/', [PersonalAreaController::class, 'index']);
+            Route::post('/getList', [PersonalAreaController::class, 'getList']);
+            Route::post('/create', [PersonalAreaController::class, 'create']);
+            // Route::get('detail/{id}', [ContratosController::class, 'getDetail']);
+            // Route::post('update/{id}', [ContratosController::class, 'update']);
+            // Route::post('statusfirma/{id}', [ContratosController::class, 'status_firma']);
+            Route::post('status/{id}', [PersonalAreaController::class, 'status']);
+            Route::post('delete/{id}', [PersonalAreaController::class, 'delete']);
+            // Route::get('getpersona/{id}', [ContratosController::class, 'getPersona']);
         });
     });
 });

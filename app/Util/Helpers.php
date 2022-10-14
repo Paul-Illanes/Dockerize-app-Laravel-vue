@@ -396,3 +396,19 @@ if (!function_exists('notificarAdd')) {
         event(new \App\Events\RealTime('Hello World'));
     }
 }
+//para validacion de permisos
+if (!function_exists('parameter_get_alias')) {
+    /**
+     * Returns a list of parameters by lang
+     * */
+    function parameter_get_alias($group_alias, $iso = 'es', $parent_id = null)
+    {
+        return App\Models\CmsParameter::select('alias AS name', 'id', 'metadata->permission AS permisos')
+            ->whereIn('group_id', App\Models\CmsParameterGroup::where('alias', $group_alias)->pluck('id'))
+            ->where('parent_id', $parent_id)
+            ->where('active', true)
+            ->orderBy('id')
+            ->get();
+        // ->pluck('name', 'id', 'permisos');
+    }
+}

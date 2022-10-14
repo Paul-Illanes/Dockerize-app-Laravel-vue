@@ -90,6 +90,13 @@ export default [
         action: 'contrato-index',
         icon: 'FileTextIcon',
       },
+      {
+        title: 'Agrupar Personal',
+        route: 'admin-agrupar-personal',
+        resource: 'ACL',
+        action: 'contrato-index',
+        icon: 'FileTextIcon',
+      },
     ],
   },
   {
