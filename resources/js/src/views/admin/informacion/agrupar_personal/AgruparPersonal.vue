@@ -364,7 +364,7 @@ export default {
         },
         fireFilter() {
             this.$http
-                .post("/api/auth/personal_area/getList/", {
+                .post("/api/auth/personal_area/getList", {
                     servicio_id: this.selectedServicio.id,
                     dependencia_id: this.selectedDependencia.id,
                     area: this.area,
