@@ -56,7 +56,7 @@ class PersonalAreaController extends Controller
             'personal_servicios' => $personalServicios,
             'dependencia' => $dependencia
         ];
-        return response()->json($data);
+        return response()->json(['data' => $data]);
     }
     public function create(Request $request)
     {
