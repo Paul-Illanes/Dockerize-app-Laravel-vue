@@ -317,8 +317,8 @@ export default {
             show: false,
             items: [],
             area: "",
-            perPage: 5,
-            pageOptions: [3, 5, 10, 50],
+            perPage: 10,
+            pageOptions: [10, 20, 50],
             totalRows: 1,
             currentPage: 1,
             sortBy: "",
@@ -374,6 +374,7 @@ export default {
                     this.personal = response.data.empleados;
                     this.dependencia = response.data.dependencia;
                     this.items = response.data.personal_servicios;
+                    this.totalRows = this.items.length;
                 })
                 .catch((error) => {
                     console.log(error);
@@ -513,6 +514,7 @@ export default {
                     val.dependencia = this.selectedDependencia.name;
                     this.items.push(val);
                     this.selectedPersonal = 0;
+                    this.totalRows = this.items.length;
                 } else {
                     this.$toast({
                         component: ToastificationContent,

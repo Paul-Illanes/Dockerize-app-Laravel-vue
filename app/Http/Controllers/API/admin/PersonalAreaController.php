@@ -62,6 +62,7 @@ class PersonalAreaController extends Controller
     {
         $user = $request->user();
         $superstructura = $user->supestructuras;
+        $status = 1;
         foreach ($request->items as $value) {
             if (!isset($value['id'])) {
                 $dni = $value['dni'];
@@ -70,29 +71,29 @@ class PersonalAreaController extends Controller
                     ->join('cms_parameters as servicio', 'servicio.id', 'personal_area.servicio_id')
                     ->join('cms_parameters as dependencia', 'dependencia.id', 'personal_area.dependencia_id')
                     ->first();
-                if (isset($principal)) {
+                // var_dump($principal);
+                if (!empty($principal)) {
+                    $status = 0;
                     $personalArea = new PersonalArea();
                     $personalArea->persona_dni = $value['dni'];
                     $personalArea->servicio_id = $value['servicio_id'];
                     $personalArea->dependencia_id = $value['dependencia_id'];
                     $personalArea->superstructura_id = $superstructura[0]['id'];
-                    $personalArea->area_principal = 0;
+                    $personalArea->area_principal = $status;
                     $personalArea->area = $request->area;
                     $personalArea->active = $value['active'];
                     $personalArea->save();
                     return response()->json($principal, 202);
-                } else {
-                    $personalArea = new PersonalArea();
-                    $personalArea->persona_dni = $value['dni'];
-                    $personalArea->servicio_id = $value['servicio_id'];
-                    $personalArea->dependencia_id = $value['dependencia_id'];
-                    $personalArea->superstructura_id = $superstructura[0]['id'];
-                    $personalArea->area_principal = 1;
-                    $personalArea->area = $request->area;
-                    $personalArea->active = $value['active'];
-                    $personalArea->save();
-                    return response()->json();
                 }
+                $personalArea = new PersonalArea();
+                $personalArea->persona_dni = $value['dni'];
+                $personalArea->servicio_id = $value['servicio_id'];
+                $personalArea->dependencia_id = $value['dependencia_id'];
+                $personalArea->superstructura_id = $superstructura[0]['id'];
+                $personalArea->area_principal = $status;
+                $personalArea->area = $request->area;
+                $personalArea->active = $value['active'];
+                $personalArea->save();
             }
         }
     }
