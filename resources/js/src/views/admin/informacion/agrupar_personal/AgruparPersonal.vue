@@ -73,19 +73,7 @@
                         />
                     </b-form-group>
                     <b-button variant="primary" @click="register" class="mr-1">
-                        Actualizar Grupo
-                    </b-button>
-                    <b-button
-                        variant="warning"
-                        v-on:click="
-                            fields.push({
-                                key: 'action',
-                                label: 'action',
-                                sortable: false,
-                            })
-                        "
-                    >
-                        Modificar Grupo
+                        Guardar Grupo
                     </b-button>
                 </b-col>
 
@@ -143,55 +131,6 @@
                 </div>
                 <div class="text-center" v-if="!data.item.id">
                     <b-badge variant="danger">Falta registrar</b-badge>
-                </div>
-            </template>
-            <template #cell(active)="data">
-                <div class="text-center">
-                    <!-- <b-badge
-                        :variant="data.item.active ? 'success' : 'warning'"
-                        >{{ verified(data.item.active) }}</b-badge
-                    > -->
-                    <b-dropdown
-                        toggle-class="p-0"
-                        no-caret
-                        pill
-                        :variant="data.item.active ? 'success' : 'warning'"
-                        class="text-center"
-                    >
-                        <template #button-content>
-                            <b-badge
-                                pill
-                                :variant="
-                                    data.item.active ? 'success' : 'warning'
-                                "
-                            >
-                                {{ verified(data.item.active) }}
-                            </b-badge>
-                        </template>
-
-                        <b-dropdown-item :disabled="data.item.active == 1">
-                            <feather-icon
-                                class="text-success"
-                                icon="CheckIcon"
-                            />
-                            <span
-                                @click="updateStatus(1, data.item.id)"
-                                class="align-middle ml-50"
-                                >Si</span
-                            >
-                        </b-dropdown-item>
-                        <b-dropdown-item :disabled="data.item.active == 0">
-                            <feather-icon
-                                class="text-warning"
-                                icon="PauseCircleIcon"
-                            />
-                            <span
-                                @click="updateStatus(0, data.item.id)"
-                                class="align-middle ml-50"
-                                >No</span
-                            >
-                        </b-dropdown-item>
-                    </b-dropdown>
                 </div>
             </template>
             <template #cell(area)="data">
@@ -338,7 +277,7 @@ export default {
                 { key: "servicio", label: "Servicio", sortable: false },
                 { key: "dependencia", label: "Dependencia", sortable: false },
                 { key: "area", label: "Area", sortable: false },
-                { key: "active", label: "Activo", sortable: true },
+                { key: "action", label: "Action", sortable: true },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,
@@ -483,18 +422,6 @@ export default {
                         });
                 }
             });
-        },
-        updateStatus(status, id) {
-            this.$http
-                .post("/api/auth/personal_area/status/" + id, {
-                    active: status,
-                })
-                .then((res) => {
-                    this.fireFilter();
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
         },
     },
     watch: {

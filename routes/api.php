@@ -199,12 +199,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/', [PersonalAreaController::class, 'index']);
             Route::post('/getList', [PersonalAreaController::class, 'getList']);
             Route::post('/create', [PersonalAreaController::class, 'create']);
-            // Route::get('detail/{id}', [ContratosController::class, 'getDetail']);
-            // Route::post('update/{id}', [ContratosController::class, 'update']);
-            // Route::post('statusfirma/{id}', [ContratosController::class, 'status_firma']);
-            Route::post('status/{id}', [PersonalAreaController::class, 'status']);
             Route::post('delete/{id}', [PersonalAreaController::class, 'delete']);
-            // Route::get('getpersona/{id}', [ContratosController::class, 'getPersona']);
         });
     });
 });

@@ -24,20 +24,15 @@ class PersonalAreaController extends Controller
         $servicio_id = $request->servicio_id;
         $dependencia_id = $request->dependencia_id;
         $area = $request->area;
-        $personalServicios = PersonalArea::select('personal_area.id', 'personal_area.persona_dni as dni', 'personas.nombres as name', 'personas.cargo', 'personal_area.area', 'personal_area.active', 'servicio.alias as servicio', 'servicio.id as servicio_id', 'dependencia.alias as dependencia', 'dependencia.id as dependencia_id')->servicioFilter($servicio_id)
+        $personalServicios = PersonalArea::select('personal_area.id', 'personal_area.persona_dni as dni', 'personas.nombres as name', 'personas.cargo', 'personal_area.area', 'servicio.alias as servicio', 'servicio.id as servicio_id', 'dependencia.alias as dependencia', 'dependencia.id as dependencia_id')->servicioFilter($servicio_id)
             ->join('personas', 'personas.dni', 'personal_area.persona_dni')
             ->join('cms_parameters as servicio', 'servicio.id', 'personal_area.servicio_id')
             ->join('cms_parameters as dependencia', 'dependencia.id', 'personal_area.dependencia_id')
             ->where('dependencia_id', $dependencia_id)
             ->where('area', $area)
+            ->where('area_principal', 1)
             ->orderBy('personal_area.updated_at', 'desc')
             ->get();
-        // $personalServicios = PersonalArea::select('personal_area.id', 'personal_area.persona_dni as dni', 'personas.nombres as name', 'personas.cargo', 'personal_area.area', 'personal_area.active', 'servicio.alias as servicio', 'servicio.id as servicio_id', 'dependencia.alias as dependencia', 'dependencia.id as dependencia_id')
-        //     ->join('personas', 'personas.dni', 'personal_area.persona_dni')
-        //     ->where('area', $area)
-        //     ->servicio('personal_area.servicio_id', $servicio_id)
-        //     ->dependencia('personal_area.dependencia_id', $dependencia_id)
-        //     ->get();
         // cert to array PersonalServicio data 
         $array = $personalServicios->pluck('dni');
         // filter employees, not baja and not in array (previusly recorded) 
@@ -81,7 +76,6 @@ class PersonalAreaController extends Controller
                     $personalArea->superstructura_id = $superstructura[0]['id'];
                     $personalArea->area_principal = $status;
                     $personalArea->area = $request->area;
-                    $personalArea->active = $value['active'];
                     $personalArea->save();
                     return response()->json($principal, 202);
                 }
@@ -92,7 +86,6 @@ class PersonalAreaController extends Controller
                 $personalArea->superstructura_id = $superstructura[0]['id'];
                 $personalArea->area_principal = $status;
                 $personalArea->area = $request->area;
-                $personalArea->active = $value['active'];
                 $personalArea->save();
             }
         }
@@ -101,11 +94,5 @@ class PersonalAreaController extends Controller
     {
         $personal = PersonalArea::FindOrFail($id);
         $personal->delete();
-    }
-    public function status(Request $request, $id)
-    {
-        $personal = PersonalArea::FindOrFail($id);
-        $personal->active = $request->active;
-        $personal->save();
     }
 }

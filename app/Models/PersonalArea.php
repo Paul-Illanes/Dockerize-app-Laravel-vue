@@ -16,7 +16,6 @@ class PersonalArea extends Model
         'superstructura_id',
         'area_principal',
         'area',
-        'active',
     ];
     // public function servicio()
     // {

@@ -344,7 +344,7 @@ export default [
     component: () => import('@/views/admin/informacion/agrupar_personal/AgruparPersonal.vue'),
     meta: {
       resource: 'ACL',
-      action: 'contrato-index',
+      action: 'personal_grupo-index',
     },
   },
 ]

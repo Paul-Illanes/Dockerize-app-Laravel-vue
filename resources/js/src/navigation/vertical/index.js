@@ -94,7 +94,7 @@ export default [
         title: 'Agrupar Personal',
         route: 'admin-agrupar-personal',
         resource: 'ACL',
-        action: 'contrato-index',
+        action: 'personal_grupo-index',
         icon: 'FileTextIcon',
       },
     ],
