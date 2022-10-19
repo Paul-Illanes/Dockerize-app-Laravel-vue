@@ -483,6 +483,7 @@ export default {
                         this.selectedEstructura.value
                 )
                 .then((response) => {
+                    console.log(response)
                     this.dependencia = response.data;
                 })
                 .catch((error) => {
