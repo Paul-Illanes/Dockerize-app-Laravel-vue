@@ -411,4 +411,18 @@ if (!function_exists('parameter_get_alias')) {
             ->get();
         // ->pluck('name', 'id', 'permisos');
     }
+    if (!function_exists('parameter_alias_value')) {
+        /**
+         * Returns a list of parameters by lang
+         * */
+        function parameter_alias_value($group_alias, $iso = 'es', $parent_id = null)
+        {
+            return App\Models\CmsParameter::select('alias AS name', 'value')
+                ->whereIn('group_id', App\Models\CmsParameterGroup::where('alias', $group_alias)->pluck('id'))
+                ->where('parent_id', $parent_id)
+                ->where('active', true)
+                ->orderBy('value')
+                ->get();
+        }
+    }
 }

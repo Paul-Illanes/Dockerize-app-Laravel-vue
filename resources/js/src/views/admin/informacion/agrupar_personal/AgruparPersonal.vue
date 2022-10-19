@@ -3,14 +3,15 @@
         <b-row class="mx-2">
             <b-col cols="12" md="6">
                 <b-form-group>
-                    <label style="font-weight: 700">Servicio</label>
+                    <label style="font-weight: 700">Sub Estructura</label>
                     <v-select
-                        v-model="selectedServicio"
+                        v-model="selectedEstructura"
                         label="name"
-                        item-value="id"
+                        item-value="value"
                         item-text="name"
-                        :options="servicios"
+                        :options="supestructuras"
                         placeholder="Seleccione"
+                        :disabled="grupo.id ? true : false"
                     />
                     <label style="font-weight: 700">Area</label>
                     <b-form-input
@@ -18,7 +19,9 @@
                         type="text"
                         :disabled="!selectedDependencia"
                         v-model="area"
-                        @change="fireFilter()"
+                        v-on:keyup.enter="search_grupo"
+                        ref="inputarea"
+
                     />
                 </b-form-group>
             </b-col>
@@ -28,12 +31,33 @@
                     <v-select
                         v-model="selectedDependencia"
                         label="name"
-                        item-value="dni"
+                        item-value="value"
                         item-text="name"
                         :options="dependencia"
                         placeholder="Seleccione"
-                        :disabled="!selectedServicio"
+                        :disabled="!selectedEstructura || grupo.id ? true : false"
+                       
                     />
+
+                    <b-button
+                        variant="primary"
+                        @click="register_group"
+                        class="mt-2 mr-1"
+                    >
+                        Guardar Grupo
+                    </b-button>
+                    <b-button
+                        variant="warning"
+                        @click="limpiar"
+                        class="mt-2"
+                    >
+                        Limpiar
+                    </b-button>
+                </b-form-group>
+            </b-col>
+            <hr />
+            <b-col cols="12" md="6">
+                <b-form-group>
                     <label style="font-weight: 700">Personal</label>
                     <v-select
                         v-model="selectedPersonal"
@@ -42,7 +66,7 @@
                         item-text="name"
                         :options="personal"
                         placeholder="Seleccione"
-                        :disabled="!area"
+                        :disabled="!grupo"
                     />
                 </b-form-group>
             </b-col>
@@ -72,9 +96,13 @@
                             :options="pageOptions"
                         />
                     </b-form-group>
-                    <b-button variant="primary" @click="register" class="mr-1">
-                        Guardar Grupo
-                    </b-button>
+                    <p class="text-success mt-1" v-if="grupo">
+                        Grupo Actual: {{ grupo.supestructura }} |
+                        {{ grupo.dependencia }} | {{ grupo.area }}
+                    </pp>
+                    <p class="text-danger mt-1" v-else-if="!grupo">
+                        Grupo: ninguno
+                    </p>
                 </b-col>
 
                 <!-- Search -->
@@ -126,20 +154,26 @@
             @filtered="onFiltered"
         >
             <template #cell(index)="data">
-                <div class="text-center" v-if="data.item.id">
+                <div class="text-center">
                     {{ data.index + 1 }}
-                </div>
-                <div class="text-center" v-if="!data.item.id">
-                    <b-badge variant="danger">Falta registrar</b-badge>
                 </div>
             </template>
             <template #cell(area)="data">
-                <div class="text-center">
-                    {{ data.item.area ? data.item.area : area }}
-                </div>
+                <!-- <div class="text-nowrap" v-on:click="setModalData(data.item)"> -->
+                  <!-- <p> {{data.item.area}}</p> -->
+                <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="outline-primary"
+                class="btn-icon"
+                v-on:click="setModalData(data.item)"
+                >
+                <feather-icon icon="RefreshCwIcon" />
+                {{data.item.area}}
+                </b-button>
+                <!-- </div> -->
             </template>
             <template #cell(action)="data">
-                <div class="text-nowrap" v-if="data.item.id">
+                <div class="text-nowrap">
                     <feather-icon
                         :id="`invoice-row-${data.item.id}-preview-icon`"
                         icon="TrashIcon"
@@ -193,13 +227,77 @@
                 </b-col>
             </b-row>
         </div>
+        <b-modal
+            ref="my-modal-change"
+            id="modal-change"
+            centered
+            hide-footer
+            title="Cambiar de area"
+            no-close-on-backdrop
+        >
+            <b-card-body>
+                <validation-observer ref="cambioForm">
+                    <b-form
+                        class="auth-register-form mt-2 ml-2"
+                        @submit.prevent="cambio_area"
+                    >
+                        <b-col md="12">
+                          <label>Persona</label>
+                            <b-form-input
+                                :disabled="true"
+                                v-model="modalData.persona"
+                                type="text"
+                            />
+                            <label>Area origen</label>
+                            <b-form-input
+                                :disabled="true"
+                                v-model="modalData.area"
+                                type="text"
+                            />
+                            <b-form-group>
+                                <label>Area destino</label>
+
+                                <validation-provider
+                                    #default="{ errors }"
+                                    rules="required"
+                                    name="cambioarea"
+                                >
+                                    <v-select
+                                        label="name"
+                                        :options="areas"
+                                        v-model="modalData.cambioArea"
+                                        name="users"
+                                        placeholder="Seleccione"
+                                    />
+                                    <small class="text-danger">{{
+                                        errors[0]
+                                    }}</small>
+                                </validation-provider>
+                            </b-form-group>
+                        </b-col>
+                        <hr />
+                        <b-col cols="12" class="mt-2">
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="cambio_area"
+                            >
+                                Cambiar Area
+                            </b-button>
+                        </b-col>
+                    </b-form>
+                </validation-observer>
+            </b-card-body>
+        </b-modal>
     </b-card-code>
 </template>
 
 <script>
 import BCardCode from "@core/components/b-card-code/BCardCode.vue";
 import Ripple from "vue-ripple-directive";
+import { ValidationProvider, ValidationObserver } from "vee-validate";
 import {
+    BForm,
     BRow,
     BCol,
     BOverlay,
@@ -222,6 +320,7 @@ import ToastificationContent from "@core/components/toastification/Toastificatio
 import vSelect from "vue-select";
 export default {
     components: {
+        BForm,
         BRow,
         BCol,
         BCardText,
@@ -241,6 +340,8 @@ export default {
         vSelect,
         BDropdown,
         BDropdownItem,
+        ValidationProvider,
+        ValidationObserver,
     },
     directives: {
         Ripple,
@@ -248,14 +349,15 @@ export default {
     data() {
         return {
             personal: [],
-            servicios: [],
+            supestructuras: [],
             dependencia: [],
-            selectedServicio: "",
+            selectedEstructura: "",
             selectedPersonal: "",
             selectedDependencia: "",
-            show: false,
+            grupo: "",
             items: [],
             area: "",
+            areas: [],
             perPage: 10,
             pageOptions: [10, 20, 50],
             totalRows: 1,
@@ -265,6 +367,12 @@ export default {
             sortDirection: "asc",
             filter: null,
             filterOn: [],
+            modalData: {
+                persona_id: "",
+                persona: "",
+                area: "",
+                cambioArea: "",
+            },
             fields: [
                 {
                     key: "index",
@@ -272,9 +380,13 @@ export default {
                     sortable: true,
                 },
                 { key: "dni", label: "DNI", sortable: true },
-                { key: "name", label: "Nombres", sortable: true },
+                { key: "nombres", label: "Nombres", sortable: true },
                 { key: "cargo", label: "Cargo", sortable: true },
-                { key: "servicio", label: "Servicio", sortable: false },
+                {
+                    key: "supestructura",
+                    label: "Sup-estructura",
+                    sortable: false,
+                },
                 { key: "dependencia", label: "Dependencia", sortable: false },
                 { key: "area", label: "Area", sortable: false },
                 { key: "action", label: "Action", sortable: true },
@@ -296,35 +408,97 @@ export default {
         this.totalRows = this.items.length;
     },
     methods: {
-        repeat(data) {
-            // console.log(this.solicitante_turno_selected);
-            var dato = this.items.find((item) => item.dni == data);
-            if (dato) return true;
+        setModalData(data){
+            this.$http.post("/api/auth/personal_area/search_areas",{
+                dependencia: this.selectedDependencia.value,
+                supestructura: this.selectedEstructura.value,
+                area: this.area,
+            }).then((res) => {
+               this.areas = res.data;
+               if(this.areas.length == 0){
+                    this.$toast({
+                    component: ToastificationContent,
+                    position: "top-right",
+                    props: {
+                        title: "No se encontro mas areas",
+                        icon: "CoffeeIcon",
+                        variant: "success",
+                        text: `No existe areas con la supestructura y dependencia elegidas`,
+                    },
+                });
+                
+               } else{
+                this.$refs["my-modal-change"].show();
+               } 
+            });
+            this.modalData.area = data.area;
+            this.modalData.persona = data.nombres;
+            this.modalData.persona_id = data.dni;
+           console.log(data);
         },
-        fireFilter() {
+        cambio_area() {
+            this.$refs.cambioForm.validate().then((success) => {
+                if (success) {
+                    this.$http
+                        .post("/api/auth/papeleta/observar", {
+                            id: this.papeletaIdObs,
+                            observacion_id: this.selectedObs.id,
+                            emailPersonal: this.emailPersonal,
+                        })
+                        .then(() => {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Registrado Correctamente",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Observacion registrado correctamente`,
+                                },
+                            });
+                            this.$refs["my-modal-obs"].hide();
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            this.$refs.observerForm.setErrors(
+                                error.response.data.errors
+                            );
+                        });
+                }
+            });
+        },
+        limpiar() {
+            this.selectedEstructura = "";
+            this.selectedDependencia = "";
+            this.selectedPersonal = 0;
+            this.area = "";
+            this.items = [];
+            this.grupo = "";
+        },
+ 
+        getDependencia() {
             this.$http
-                .post("/api/auth/personal_area/getList", {
-                    servicio_id: this.selectedServicio.id,
-                    dependencia_id: this.selectedDependencia.id,
-                    area: this.area,
-                })
+                .get(
+                    "/api/auth/personal_area/getDependencia/" +
+                        this.selectedEstructura.value
+                )
                 .then((response) => {
-                    console.log(response);
-                    this.personal = response.data.empleados;
-                    this.dependencia = response.data.dependencia;
-                    this.items = response.data.personal_servicios;
-                    this.totalRows = this.items.length;
+                    this.dependencia = response.data;
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         },
-        verified(data) {
-            if (data == 1) {
-                return "SI";
-            } else {
-                return "NO";
-            }
+        getEmpleados() {
+            this.$http
+                .get("/api/auth/personal_area/getEmpleados/" + this.grupo.id)
+                .then((response) => {
+                    this.items = response.data;
+                    this.totalRows = this.items.length;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
@@ -373,7 +547,7 @@ export default {
                                 text: `Papeleta registrado correctamente`,
                             },
                         });
-                        this.fireFilter();
+                        
                     })
                     .catch((error) => {});
             else {
@@ -387,6 +561,90 @@ export default {
                     },
                 });
             }
+        },
+        register_group() {
+            if (this.area != "")
+                this.$http
+                    .post("/api/auth/personal_area/create_group", {
+                        supestructura: this.selectedEstructura.value,
+                        dependencia: this.selectedDependencia.value,
+                        area: this.area,
+                    })
+                    .then((res) => {
+                
+                        if (res.status == 202) {
+                            this.$toast(
+                                {
+                                    component: ToastificationContent,
+                                    position: "top-right",
+                                    props: {
+                                        title: res.data.message,
+                                        icon: "CoffeeIcon",
+                                        variant: "danger",
+                                    },
+                                },
+                                {
+                                    timeout: 8000,
+                                }
+                            );
+                        } else {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Grupo registrado",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                },
+                            });
+                            this.get_grupo(res.data.id);
+                        }
+                    })
+                    .catch((error) => {});
+            else {
+                this.$toast({
+                    component: ToastificationContent,
+                    position: "top-right",
+                    props: {
+                        title: "Ingrese el area",
+                        icon: "CoffeeIcon",
+                        variant: "success",
+                    },
+                });
+            }
+        },
+        get_grupo(id) {
+            this.$http
+                .get("/api/auth/personal_area/get_grupo/" + id)
+                .then((res) => {
+          
+                    this.grupo = res.data;
+                });
+        },
+        search_grupo() {
+            this.$http
+                .post("/api/auth/personal_area/search_grupo", {
+                    dependencia: this.selectedDependencia.value,
+                    supestructura: this.selectedEstructura.value,
+                    area: this.area,
+                })
+                .then((res) => {
+                    if (res.data.length == 0) {
+                        this.$toast({
+                            component: ToastificationContent,
+                            position: "top-right",
+                            props: {
+                                title: "No se encontro ningun grupo",
+                                icon: "CoffeeIcon",
+                                variant: "info",
+                            },
+                        });
+                        this.grupo = "";
+                    } else {
+                        this.grupo = res.data;
+                    }
+                    this.$refs.inputarea.blur();
+                });
         },
         confirmDelete(id) {
             this.$swal({
@@ -415,7 +673,7 @@ export default {
                                 },
                             });
                             // console.log(res);
-                            this.fireFilter();
+                            this.get_grupo(this.grupo.id);
                         })
                         .catch((error) => {
                             console.log(error);
@@ -425,40 +683,74 @@ export default {
         },
     },
     watch: {
-        selectedServicio: function (val, oldval) {
-            this.fireFilter();
+        selectedEstructura: function (val, oldval) {
+            this.getDependencia();
         },
-        selectedDependencia: function (val, oldval) {
-            this.fireFilter();
+        grupo: function (val, oldval) {
+            this.$http
+                .get("/api/auth/personal_area/get_personal/" + this.grupo.id)
+                .then((response) => {
+                    this.personal = response.data;
+                    this.getEmpleados();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         },
         selectedPersonal: function (val, oldval) {
-            if (val != 0) {
-                if (!this.repeat(val.dni)) {
-                    val.active = 0;
-                    val.servicio = this.selectedServicio.name;
-                    val.servicio_id = this.selectedServicio.id;
-                    val.dependencia_id = this.selectedDependencia.id;
-                    val.dependencia = this.selectedDependencia.name;
-                    this.items.push(val);
-                    this.selectedPersonal = 0;
-                    this.totalRows = this.items.length;
-                } else {
-                    this.$toast({
-                        component: ToastificationContent,
-                        position: "top-right",
-                        props: {
-                            title: "El personal seleccionado ya se encuentra en el grupo",
-                            icon: "CoffeeIcon",
-                            variant: "warning",
-                        },
-                    });
-                }
+            if(val != 0){
+            this.$http
+                .post("/api/auth/personal_area/create_personal", {
+                    personal_area_id: this.grupo.id,
+                    dni: val.dni,
+                })
+                .then((res) => {
+                
+                    if (res.status == 202) {
+                        this.$toast(
+                            {
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: res.data.nombres,
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text:
+                                        `Ya pertenece a supestructura: ` +
+                                        res.data.supestructura +
+                                        `, dependencia: ` +
+                                        res.data.dependencia +
+                                        ", Area: " +
+                                        res.data.area,
+                                },
+                            },
+                            {
+                                timeout: 8000,
+                            }
+                        );
+                    } else {
+                        this.$toast({
+                            component: ToastificationContent,
+                            position: "top-right",
+                            props: {
+                                title: "Personal Agregado",
+                                icon: "CoffeeIcon",
+                                variant: "success",
+                            },
+                        });
+                        this.getEmpleados();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
             }
         },
+        
     },
     created() {
         this.$http.get("/api/auth/personal_area/").then((res) => {
-            this.servicios = res.data;
+            this.supestructuras = res.data;
         });
     },
 };

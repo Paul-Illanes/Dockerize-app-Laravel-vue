@@ -197,9 +197,16 @@ Route::group(['prefix' => 'auth'], function () {
         });
         Route::group(['prefix' => 'personal_area'], function () {
             Route::get('/', [PersonalAreaController::class, 'index']);
-            Route::post('/getList', [PersonalAreaController::class, 'getList']);
+            Route::get('/getDependencia/{id}', [PersonalAreaController::class, 'getDependencia']);
             Route::post('/create', [PersonalAreaController::class, 'create']);
+            Route::post('/create_group', [PersonalAreaController::class, 'create_group']);
+            Route::post('/create_personal', [PersonalAreaController::class, 'create_personal']);
             Route::post('delete/{id}', [PersonalAreaController::class, 'delete']);
+            Route::get('get_grupo/{id}', [PersonalAreaController::class, 'get_grupo']);
+            Route::get('get_personal/{id}', [PersonalAreaController::class, 'get_personal']);
+            Route::get('getEmpleados/{id}', [PersonalAreaController::class, 'get_empleados']);
+            Route::post('search_grupo', [PersonalAreaController::class, 'search_grupo']);
+            Route::post('search_areas', [PersonalAreaController::class, 'search_areas']);
         });
     });
 });
