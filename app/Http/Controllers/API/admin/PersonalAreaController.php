@@ -23,8 +23,7 @@ class PersonalAreaController extends Controller
     }
     public function getDependencia(Request $request, $cod)
     {
-        $dependencias = CmsParameter::select('alias as name', 'id')->where('metadata->cod_supestructura', $cod)->get();
-        var_dump($dependencias);
+        $dependencias = CmsParameter::select('alias as name', 'value')->where('metadata->cod_supestructura', $cod)->get();
         return response()->json($dependencias);
     }
     public function get_empleados(Request $request, $id)

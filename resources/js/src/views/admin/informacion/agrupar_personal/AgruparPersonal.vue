@@ -484,7 +484,7 @@ export default {
                 )
                 .then((response) => {
                     console.log(response)
-                    this.dependencia = JSON.parse(JSON.stringify(response.data));
+                    this.dependencia = response.data;
                 })
                 .catch((error) => {
                     console.log(error);
