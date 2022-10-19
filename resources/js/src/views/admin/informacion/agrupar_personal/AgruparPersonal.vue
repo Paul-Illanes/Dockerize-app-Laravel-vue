@@ -478,9 +478,10 @@ export default {
  
         getDependencia() {
             this.$http
-                .get(
-                    "/api/auth/personal_area/getDependencia/" +
-                        this.selectedEstructura.value
+                .post(
+                    "/api/auth/personal_area/getDependencia", {
+                       cod: this.selectedEstructura.value,
+                    }    
                 )
                 .then((response) => {
                     console.log(response)

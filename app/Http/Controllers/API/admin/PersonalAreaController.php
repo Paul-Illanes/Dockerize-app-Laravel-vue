@@ -21,8 +21,9 @@ class PersonalAreaController extends Controller
         $supestructura = parameter_alias_value('sup-estructura');
         return response()->json($supestructura);
     }
-    public function getDependencia(Request $request, $cod)
+    public function getDependencia(Request $request)
     {
+        $cod = $request->cod;
         $dependencias = CmsParameter::select('alias as name', 'value')->where('metadata->cod_supestructura', $cod)->get();
         return response()->json($dependencias);
     }
