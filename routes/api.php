@@ -197,7 +197,7 @@ Route::group(['prefix' => 'auth'], function () {
         });
         Route::group(['prefix' => 'personal_area'], function () {
             Route::get('/', [PersonalAreaController::class, 'index']);
-            Route::get('/getDependencia/{id}', [PersonalAreaController::class, 'getDependencia']);
+            Route::get('/getDependencia/{cod}', [PersonalAreaController::class, 'getDependencia']);
             Route::post('/create', [PersonalAreaController::class, 'create']);
             Route::post('/create_group', [PersonalAreaController::class, 'create_group']);
             Route::post('/create_personal', [PersonalAreaController::class, 'create_personal']);
