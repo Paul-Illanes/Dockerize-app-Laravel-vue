@@ -1,23 +1,5 @@
 <template>
-    <b-card-code
-        :title="grupo.supestructura | grupo.dependencia | grupo.area"
-        no-body
-    >
-        <b-row class="mx-2">
-            <b-col cols="12" md="6">
-                <b-form-group>
-                    <label style="font-weight: 700">Personal</label>
-                    <v-select
-                        v-model="selectedPersonal"
-                        label="name"
-                        item-value="dni"
-                        item-text="name"
-                        :options="personal"
-                        placeholder="Seleccione"
-                    />
-                </b-form-group>
-            </b-col>
-        </b-row>
+    <b-card-code title="Personal por servicio" no-body>
         <div class="m-2">
             <!-- Table Top -->
             <b-row>
@@ -41,8 +23,17 @@
                             size="sm"
                             inline
                             :options="pageOptions"
+                            class="mr-1"
                         />
                     </b-form-group>
+                    <b-button
+                        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                        variant="outline-primary"
+                        class="btn-icon"
+                        v-on:click="setModalData()"
+                    >
+                        Registrar
+                    </b-button>
                 </b-col>
 
                 <!-- Search -->
@@ -98,22 +89,20 @@
                     {{ data.index + 1 }}
                 </div>
             </template>
-            <template #cell(area)="data">
-                <!-- <div class="text-nowrap" v-on:click="setModalData(data.item)"> -->
-                <!-- <p> {{data.item.area}}</p> -->
-                <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="outline-primary"
-                    class="btn-icon"
-                    v-on:click="setModalData(data.item)"
-                >
-                    <feather-icon icon="RefreshCwIcon" />
-                    {{ data.item.area }}
-                </b-button>
-                <!-- </div> -->
-            </template>
             <template #cell(action)="data">
                 <div class="text-nowrap">
+                    <feather-icon
+                        @click="
+                            $router.push({
+                                name: 'admin-agrupar-personal',
+                                params: { areaId: data.item.id },
+                            })
+                        "
+                        :id="`invoice-row-${data.item.id}-edit-icon`"
+                        icon="EyeIcon"
+                        class="mx-1 cursor-pointer text-success"
+                        size="16"
+                    />
                     <feather-icon
                         :id="`invoice-row-${data.item.id}-preview-icon`"
                         icon="TrashIcon"
@@ -168,46 +157,55 @@
             </b-row>
         </div>
         <b-modal
-            ref="my-modal-change"
+            ref="my-modal-area"
             id="modal-change"
             centered
             hide-footer
-            title="Cambiar de area"
+            title="Registrar nueva area"
             no-close-on-backdrop
         >
             <b-card-body>
-                <validation-observer ref="cambioForm">
+                <validation-observer ref="areaForm">
                     <b-form
                         class="auth-register-form mt-2 ml-2"
-                        @submit.prevent="cambio_area"
+                        @submit.prevent="registro_area"
                     >
                         <b-col md="12">
-                            <label>Persona</label>
-                            <b-form-input
-                                :disabled="true"
-                                v-model="modalData.persona"
-                                type="text"
+                            <label style="font-weight: 700"
+                                >Sub Estructura</label
+                            >
+                            <v-select
+                                v-model="supestructura"
+                                label="name"
+                                item-value="value"
+                                item-text="name"
+                                :options="supestructuras"
+                                placeholder="Seleccione"
                             />
-                            <label>Area origen</label>
-                            <b-form-input
-                                :disabled="true"
-                                v-model="modalData.area"
-                                type="text"
+                            <label style="font-weight: 700">Dependencia</label>
+                            <v-select
+                                v-model="dependencia"
+                                label="name"
+                                item-value="value"
+                                item-text="name"
+                                :options="dependencias"
+                                placeholder="Seleccione"
+                                :disabled="!supestructura ? true : false"
                             />
                             <b-form-group>
-                                <label>Area destino</label>
+                                <label>Area </label>
 
                                 <validation-provider
                                     #default="{ errors }"
                                     rules="required"
-                                    name="cambioarea"
+                                    name="area"
                                 >
-                                    <v-select
-                                        label="name"
-                                        :options="areas"
-                                        v-model="modalData.cambio_area"
-                                        name="users"
-                                        placeholder="Seleccione"
+                                    <b-form-input
+                                        id="example-input"
+                                        type="text"
+                                        :disabled="!dependencia"
+                                        v-model="area"
+                                        ref="inputarea"
                                     />
                                     <small class="text-danger">{{
                                         errors[0]
@@ -220,9 +218,9 @@
                             <b-button
                                 variant="primary"
                                 type="submit"
-                                @click.prevent="cambio_area"
+                                @click.prevent="registro_area"
                             >
-                                Cambiar Area
+                                Registrar
                             </b-button>
                         </b-col>
                     </b-form>
@@ -290,16 +288,12 @@ export default {
     },
     data() {
         return {
-            personal: [],
             supestructuras: [],
-            dependencia: [],
-            selectedEstructura: "",
-            selectedPersonal: "",
-            selectedDependencia: "",
-            grupo: "",
+            dependencia: "",
+            supestructura: "",
+            dependencias: [],
             items: [],
             area: "",
-            areas: [],
             perPage: 10,
             pageOptions: [10, 20, 50],
             totalRows: 1,
@@ -309,31 +303,19 @@ export default {
             sortDirection: "asc",
             filter: null,
             filterOn: [],
-            modalData: {
-                id: "",
-                persona_id: "",
-                persona: "",
-                area: "",
-                cambio_area: "",
-                area_servicio: "",
-                personal_area_id: "",
-            },
             fields: [
                 {
                     key: "index",
                     label: "#",
                     sortable: true,
                 },
-                { key: "dni", label: "DNI", sortable: true },
-                { key: "nombres", label: "Nombres", sortable: true },
-                { key: "cargo", label: "Cargo", sortable: true },
                 {
                     key: "supestructura",
-                    label: "Sup-estructura",
-                    sortable: false,
+                    label: "Sup-Estructura",
+                    sortable: true,
                 },
-                { key: "dependencia", label: "Dependencia", sortable: false },
-                { key: "area", label: "Area", sortable: false },
+                { key: "dependencia", label: "Dependencia", sortable: true },
+                { key: "area", label: "Area", sortable: true },
                 { key: "action", label: "Action", sortable: true },
             ],
             /* eslint-disable global-require */
@@ -352,127 +334,65 @@ export default {
         // Set the initial number of items
         this.totalRows = this.items.length;
     },
-
     methods: {
-        setModalData(data) {
-            this.$http
-                .post("/api/auth/personal_area/search_areas", {
-                    dependencia: this.selectedDependencia.value,
-                    supestructura: this.selectedEstructura.value,
-                    area: this.area,
-                })
-                .then((res) => {
-                    console.log(data);
-                    this.areas = res.data;
-                    if (this.areas.length == 0) {
-                        this.$toast({
-                            component: ToastificationContent,
-                            position: "top-right",
-                            props: {
-                                title: "No se encontro mas areas",
-                                icon: "CoffeeIcon",
-                                variant: "success",
-                                text: `No existe areas con la supestructura y dependencia elegidas`,
-                            },
-                        });
-                    } else {
-                        this.$refs["my-modal-change"].show();
-                    }
-                });
-            this.modalData.area = data.area;
-            this.modalData.persona = data.nombres;
-            this.modalData.persona_id = data.dni;
-            this.modalData.area_servicio = data.area_servicio;
-            this.modalData.personal_area_id = data.personal_area_id;
-            this.modalData.id = data.id;
+        getItems() {
+            this.$http.get("/api/auth/personal_area/list").then((res) => {
+                this.items = res.data;
+                this.totalRows = this.items.length;
+            });
         },
-        cambio_area() {
-            this.$refs.cambioForm.validate().then((success) => {
+        setModalData() {
+            this.$refs["my-modal-area"].show();
+            this.$http.get("/api/auth/personal_area/").then((res) => {
+                this.supestructuras = res.data;
+            });
+        },
+        registro_area() {
+            this.$refs.areaForm.validate().then((success) => {
                 if (success) {
                     this.$http
-                        .post("/api/auth/personal_area/cambioArea", {
-                            id: this.modalData.id,
-                            personal_area_id: this.modalData.cambio_area.id,
-                            area_servicio: this.modalData.area_servicio,
-                            dni: this.modalData.persona_id,
+                        .post("/api/auth/personal_area/create_group", {
+                            supestructura_id: this.supestructura.value,
+                            dependencia_id: this.dependencia.value,
+                            area: this.area,
                         })
-                        .then(() => {
+                        .then((res) => {
+                            console.log(res);
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",
                                 props: {
-                                    title: "Se realizo el cambio correctamente",
+                                    title: "Se registro correctamente",
                                     icon: "CoffeeIcon",
                                     variant: "success",
-                                    text:
-                                        `Nueva area: ` +
-                                        this.modalData.cambio_area.name,
                                 },
                             });
-                            this.$refs["my-modal-change"].hide();
-                            this.limpiar_modal();
-                            this.getEmpleados();
+                            this.getItems();
+                            this.$refs["my-modal-area"].hide();
+                            this.limpiar();
                         })
                         .catch((error) => {
-                            this.$refs.observerForm.setErrors(
+                            this.$refs.areaForm.setErrors(
                                 error.response.data.errors
                             );
                         });
                 }
             });
         },
-        limpiar_modal() {
-            this.modalData.id = "";
-            this.modalData.persona_id = "";
-            this.modalData.persona = "";
-            this.modalData.area = "";
-            this.modalData.cambio_area = "";
-            this.modalData.area_servicio = "";
-            this.modalData.personal_area_id = "";
-        },
+
         limpiar() {
-            this.selectedEstructura = "";
-            this.selectedDependencia = "";
-            this.selectedPersonal = 0;
+            this.dependencia = "";
+            this.supestructura = "";
             this.area = "";
-            this.items = [];
-            this.grupo = "";
         },
-        getGrupo() {
+
+        getDependencia() {
             this.$http
-                .get(
-                    "/api/auth/personal_area/search_group/" +
-                        this.$route.params.areaId
-                )
-                .then((response) => {
-                    console.log(response);
+                .post("/api/auth/personal_area/getDependencia", {
+                    cod: this.supestructura.value,
                 })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-        getEmpleados() {
-            this.$http
-                .get(
-                    "/api/auth/personal_area/getEmpleados/" +
-                        this.$route.params.areaId
-                )
                 .then((response) => {
-                    this.items = response.data;
-                    this.totalRows = this.items.length;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-        getPersonal() {
-            this.$http
-                .get(
-                    "/api/auth/personal_area/get_personal/" +
-                        this.$route.params.areaId
-                )
-                .then((response) => {
-                    this.personal = response.data;
+                    this.dependencias = response.data;
                 })
                 .catch((error) => {
                     console.log(error);
@@ -483,7 +403,6 @@ export default {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
-
         confirmDelete(id) {
             this.$swal({
                 title: "Estas seguro?",
@@ -510,7 +429,7 @@ export default {
                                     variant: "success",
                                 },
                             });
-                            // console.log(res);
+                            this.getItems();
                         })
                         .catch((error) => {
                             console.log(error);
@@ -520,63 +439,12 @@ export default {
         },
     },
     watch: {
-        selectedPersonal: function (val, oldval) {
-            if (val != 0) {
-                this.$http
-                    .post("/api/auth/personal_area/create_personal", {
-                        personal_area_id: this.$route.params.areaId,
-                        dni: val.dni,
-                    })
-                    .then((res) => {
-                        if (res.status == 202) {
-                            this.$toast(
-                                {
-                                    component: ToastificationContent,
-                                    position: "top-right",
-                                    props: {
-                                        title: res.data.nombres,
-                                        icon: "CoffeeIcon",
-                                        variant: "success",
-                                        text:
-                                            `Ya pertenece a supestructura: ` +
-                                            res.data.supestructura +
-                                            `, dependencia: ` +
-                                            res.data.dependencia +
-                                            ", Area: " +
-                                            res.data.area,
-                                    },
-                                },
-                                {
-                                    timeout: 8000,
-                                }
-                            );
-                            this.getPersonal();
-                            this.selectedPersonal = 0;
-                        } else {
-                            this.$toast({
-                                component: ToastificationContent,
-                                position: "top-right",
-                                props: {
-                                    title: "Personal Agregado",
-                                    icon: "CoffeeIcon",
-                                    variant: "success",
-                                },
-                            });
-                            this.getEmpleados();
-                            this.getPersonal();
-                            this.selectedPersonal = 0;
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            }
+        supestructura: function (val, oldval) {
+            this.getDependencia();
         },
     },
     created() {
-        // this.getGrupo();
-        this.getEmpleados();
-        this.getPersonal();
+        this.getItems();
     },
 };
 </script>

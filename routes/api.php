@@ -24,6 +24,7 @@ use App\Http\Controllers\API\admin\ContratosController;
 use App\Http\Controllers\API\admin\PersonalAreaController;
 use App\Http\Controllers\API\ArchivoController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\API\admin\VacacionesProgramacionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -196,6 +197,7 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('getpersona/{id}', [ContratosController::class, 'getPersona']);
         });
         Route::group(['prefix' => 'personal_area'], function () {
+            Route::get('/list', [PersonalAreaController::class, 'list']);
             Route::get('/', [PersonalAreaController::class, 'index']);
             Route::post('/getDependencia', [PersonalAreaController::class, 'getDependencia']);
             Route::post('/create', [PersonalAreaController::class, 'create']);
@@ -207,6 +209,15 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('getEmpleados/{id}', [PersonalAreaController::class, 'get_empleados']);
             Route::post('search_grupo', [PersonalAreaController::class, 'search_grupo']);
             Route::post('search_areas', [PersonalAreaController::class, 'search_areas']);
+            Route::post('cambioArea', [PersonalAreaController::class, 'cambio_area']);
+        });
+        Route::group(['prefix' => 'cronograma'], function () {
+            Route::get('/', [VacacionesProgramacionController::class, 'index']);
+            Route::post('/getDependencia', [VacacionesProgramacionController::class, 'getDependencia']);
+            Route::post('search_areas', [VacacionesProgramacionController::class, 'search_areas']);
+            Route::get('/get_months/{id}', [VacacionesProgramacionController::class, 'months']);
+            Route::post('getPersonal', [VacacionesProgramacionController::class, 'getPersonal']);
+            Route::post('getVacaciones', [VacacionesProgramacionController::class, 'getVacaciones']);
         });
     });
 });

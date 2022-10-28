@@ -339,12 +339,34 @@ export default [
   // *--------- agrupar persona-- ---------------------------------------*
   // *===============================================---*
   {
-    path: '/admin/agrupar/personal',
+    path: '/admin/agrupar/list',
+    name: 'admin-agrupar-list',
+    component: () => import('@/views/admin/informacion/agrupar_personal/AgruparList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'personal_grupo-index',
+    },
+  },
+  {
+    path: '/admin/agrupar/personal/:areaId',
     name: 'admin-agrupar-personal',
     component: () => import('@/views/admin/informacion/agrupar_personal/AgruparPersonal.vue'),
     meta: {
       resource: 'ACL',
       action: 'personal_grupo-index',
+    },
+  },
+          // *===============================================---*
+  // *--------- cronograma-- ---------------------------------------*
+  // *===============================================---*
+  
+  {
+    path: '/admin/cronograma',
+    name: 'admin-cronograma',
+    component: () => import('@/views/admin/informacion/cronograma/CronogramaList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'cronograma-index',
     },
   },
 ]

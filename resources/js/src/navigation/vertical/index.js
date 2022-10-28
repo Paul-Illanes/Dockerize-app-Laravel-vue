@@ -92,10 +92,17 @@ export default [
       },
       {
         title: 'Agrupar Personal',
-        route: 'admin-agrupar-personal',
+        route: 'admin-agrupar-list',
         resource: 'ACL',
         action: 'personal_grupo-index',
         icon: 'FileTextIcon',
+      },
+      {
+        title: 'Cronograma',
+        route: 'admin-cronograma',
+        resource: 'ACL',
+        action: 'cronograma-index',
+        icon: 'CalendarIcon',
       },
     ],
   },

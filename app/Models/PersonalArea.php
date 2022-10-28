@@ -10,7 +10,7 @@ class PersonalArea extends Model implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
-    protected $table = 'personal_area';
+    protected $table = 'personal_areas';
     protected $fillable = [
         'dependencia_id',
         'supestructura_id',
