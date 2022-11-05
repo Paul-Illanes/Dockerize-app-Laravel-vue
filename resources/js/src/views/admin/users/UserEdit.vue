@@ -645,10 +645,14 @@ export default {
             selectedSuperstructuras: [],
             selectedPermisos: [],
             selectedPermissions: [],
+            prev: [],
         };
     },
 
     mounted() {
+        this.$http.get("/api/auth/superstructura/").then((res) => {
+            this.superstructuras = res.data;
+        });
         this.getRoles();
         this.getDetail();
         this.totalRows = this.permisos.length;
@@ -669,9 +673,10 @@ export default {
 
     created() {
         // this.row = this.tableBasic;
-        this.$http.get("/api/auth/superstructura/").then((res) => {
-            this.superstructuras = res.data;
-        });
+        // this.$http.get("/api/auth/superstructura/").then((res) => {
+        //     this.superstructuras = res.data;
+        //     this.selectedSuperstructuras = prev;
+        // });
         this.$http
             .get("/api/auth/permissions")
             .then((response) => {
@@ -683,6 +688,11 @@ export default {
             });
     },
     methods: {
+        // getSupestructura() {
+        //     this.$http.get("/api/auth/superstructura/").then((res) => {
+        //         this.superstructuras = res.data;
+        //     });
+        // },
         dep: function (data) {
             this.$refs.childComponent.detail(data);
         },
@@ -710,10 +720,12 @@ export default {
                     this.activo =
                         response.data.user.active == 1 ? "true" : "false";
                     this.celular = response.data.user.celular;
-                    this.selectedSuperstructuras = response.data.supestructura;
+
                     this.selectedRole = response.data.roles;
                     this.selectedPermisos = response.data.permissions;
                     this.dep(response.data.dependencia);
+                    this.selectedSuperstructuras = response.data.supestructura;
+                    // this.getSupestructura();
                 })
                 .catch((error) => {
                     console.log(error);
