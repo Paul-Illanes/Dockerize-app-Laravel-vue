@@ -366,7 +366,6 @@
                     </b-row>
                 </b-form-checkbox-group>
             </b-form-group>
-            {{ selectedSuperstructuras }}
         </b-card-code>
         <dependencia-list ref="childComponent" />
         <b-card-code title="Permisos">
@@ -717,7 +716,6 @@ export default {
                     this.selectedRole = response.data.roles;
                     this.selectedPermisos = response.data.permissions;
                     this.dep(response.data.dependencia);
-                    // this.getSupestructura();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -742,6 +740,7 @@ export default {
         },
         superstructuras_all: function (event) {
             if (this.superstructurasAll.length == 1) {
+                this.selectedSuperstructuras = [];
                 this.superstructuras.forEach((item) => {
                     this.selectedSuperstructuras.push(item.value);
                 });
