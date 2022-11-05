@@ -366,6 +366,7 @@
                     </b-row>
                 </b-form-checkbox-group>
             </b-form-group>
+            {{ selectedSuperstructuras }}
         </b-card-code>
         <dependencia-list ref="childComponent" />
         <b-card-code title="Permisos">
