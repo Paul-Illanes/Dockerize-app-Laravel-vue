@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Pin;
 use OwenIt\Auditing\Contracts\Auditable;
+use DB;
 
 class User extends Authenticatable implements Auditable
 {
@@ -76,5 +77,10 @@ class User extends Authenticatable implements Auditable
     public function receivesBroadcastNotificationsOn()
     {
         return 'users.' . $this->id;
+    }
+    public function scopeName($query, $name)
+    {
+        if ($name)
+            return $query->where(DB::raw("CONCAT(`name`,' ',`lastname`,' ',`mother_lastname`)"), 'LIKE', "%$name%");
     }
 }

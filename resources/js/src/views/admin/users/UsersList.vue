@@ -91,7 +91,15 @@
                             :options="pageOptions"
                         />
                     </b-form-group>
+                    <!-- <b-button
+                        variant="primary"
+                        :to="{ name: 'admin-users-add' }"
+                    >
+                        Agregar Usuario
+                    </b-button> -->
+
                     <b-button
+                        v-if="$can('users-create', 'ACL')"
                         variant="primary"
                         :to="{ name: 'admin-users-add' }"
                     >

@@ -1,6 +1,8 @@
 <template>
     <b-card-code
-        :title="grupo.supestructura | grupo.dependencia | grupo.area"
+        :title="
+            grupo.supestructura + ' - ' + grupo.dependencia + ' - ' + grupo.area
+        "
         no-body
     >
         <b-row class="mx-2">
@@ -16,6 +18,16 @@
                         placeholder="Seleccione"
                     />
                 </b-form-group>
+            </b-col>
+            <b-col cols="12" md="6">
+                <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="outline-primary"
+                    class="btn-icon mt-2"
+                    v-on:click="back()"
+                >
+                    Regresar
+                </b-button>
             </b-col>
         </b-row>
         <div class="m-2">
@@ -41,6 +53,7 @@
                             size="sm"
                             inline
                             :options="pageOptions"
+                            class="mr-1"
                         />
                     </b-form-group>
                 </b-col>
@@ -99,17 +112,15 @@
                 </div>
             </template>
             <template #cell(area)="data">
-                <!-- <div class="text-nowrap" v-on:click="setModalData(data.item)"> -->
-                <!-- <p> {{data.item.area}}</p> -->
-                <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="outline-primary"
-                    class="btn-icon"
+                <b-badge
+                    variant="primary"
+                    class="text-nowrap"
                     v-on:click="setModalData(data.item)"
                 >
                     <feather-icon icon="RefreshCwIcon" />
                     {{ data.item.area }}
-                </b-button>
+                </b-badge>
+
                 <!-- </div> -->
             </template>
             <template #cell(action)="data">
@@ -334,7 +345,7 @@ export default {
                 },
                 { key: "dependencia", label: "Dependencia", sortable: false },
                 { key: "area", label: "Area", sortable: false },
-                { key: "action", label: "Action", sortable: true },
+                { key: "action", label: "Action", sortable: false },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,
@@ -354,11 +365,14 @@ export default {
     },
 
     methods: {
+        back() {
+            this.$router.back();
+        },
         setModalData(data) {
             this.$http
                 .post("/api/auth/personal_area/search_areas", {
-                    dependencia: this.selectedDependencia.value,
-                    supestructura: this.selectedEstructura.value,
+                    dependencia: this.grupo.dependencia_id,
+                    supestructura: this.grupo.supestructura_id,
                     area: this.area,
                 })
                 .then((res) => {
@@ -441,11 +455,12 @@ export default {
         getGrupo() {
             this.$http
                 .get(
-                    "/api/auth/personal_area/search_group/" +
+                    "/api/auth/personal_area/search_grupo/" +
                         this.$route.params.areaId
                 )
                 .then((response) => {
-                    console.log(response);
+                    this.grupo = response.data;
+                    console.log(this.grupo);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -485,6 +500,7 @@ export default {
         },
 
         confirmDelete(id) {
+            console.log(id);
             this.$swal({
                 title: "Estas seguro?",
                 text: "No podras revertir esta accion!",
@@ -510,7 +526,7 @@ export default {
                                     variant: "success",
                                 },
                             });
-                            // console.log(res);
+                            this.getEmpleados();
                         })
                         .catch((error) => {
                             console.log(error);
@@ -574,7 +590,7 @@ export default {
         },
     },
     created() {
-        // this.getGrupo();
+        this.getGrupo();
         this.getEmpleados();
         this.getPersonal();
     },

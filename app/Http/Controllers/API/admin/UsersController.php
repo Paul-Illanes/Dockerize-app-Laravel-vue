@@ -10,6 +10,7 @@ use App\Models\Supestructura;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\Pin;
+use App\Models\UserHasDependencia;
 
 class UsersController extends Controller
 {
@@ -51,7 +52,8 @@ class UsersController extends Controller
         // $permissions = $user->getDirectPermissions();
         $role = $user->getRoleNames();
         //jalas todas
-        $consult = DB::table('user_has_supestructura')->where('user_id', $user->id)->pluck('supestructura_id');
+        $supestructura = DB::table('user_has_supestructura')->where('user_id', $user->id)->pluck('supestructura_id');
+        $dependencia = DB::table('user_has_dependencia')->where('user_id', $user->id)->pluck('dependencia_id');
         // $ability = new \stdClass();
         // $total = count($permissions);
         // $i = 0;
@@ -68,7 +70,8 @@ class UsersController extends Controller
             'roles' => $role,
             'permissions' => $permissions,
             'user' => $user,
-            'table' => $consult
+            'supestructura' => $supestructura,
+            'dependencia' => $dependencia
         ];
         return response()->json($data);
     }
@@ -186,5 +189,36 @@ class UsersController extends Controller
         ];
 
         return response()->json($request);
+    }
+    public function dependencias(Request $request)
+    {
+        $dependencias = $request->dependencias;
+        $id = $request->id;
+        $user = $request->user()->id;
+        //insert dependency array
+        foreach ($dependencias as $value) {
+            $dep = new UserHasDependencia();
+            $dep->user_id = $id;
+            $dep->dependencia_id = $value;
+            $dep->created_by = $user;
+            $dep->save();
+        }
+    }
+    public function dependencias_update(Request $request)
+    {
+        $dependencias = $request->dependencias;
+        $id = $request->id;
+        $user = $request->user()->id;
+
+        $delete = UserHasDependencia::where('user_id', $id)->delete();
+        // $personal->delete();
+        //insert dependency array
+        foreach ($dependencias as $value) {
+            $dep = new UserHasDependencia();
+            $dep->user_id = $id;
+            $dep->dependencia_id = $value;
+            $dep->created_by = $user;
+            $dep->save();
+        }
     }
 }

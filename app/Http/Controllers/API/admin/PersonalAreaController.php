@@ -13,6 +13,7 @@ use App\Models\CmsParameterGroup;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\PersonalGrupo;
+use App\Models\User;
 
 class PersonalAreaController extends Controller
 {
@@ -61,30 +62,24 @@ class PersonalAreaController extends Controller
             ->get();
         return response()->json($principal, 200);
     }
-    public function search_grupo(Request $request)
+    public function search_grupo(Request $request, $id)
     {
-        $de = $request->dependencia;
-        $sup = $request->supestructura;
-        $area = $request->area;
-        $principal = PersonalArea::where('dependencia_id', $de)
-            ->where('supestructura_id', $sup)
-            ->where('area', $area)->first();
-        if (!empty($principal)) {
-            $supestructura = CmsParameter::select('alias')->where('value', '=', $sup)->get();
-            $dependencia = CmsParameter::select('alias')->where('value', '=', $de)->get();
-            $principal->dependencia = $dependencia[0]['alias'];
-            $principal->supestructura = $supestructura[0]['alias'];
-            return response()->json($principal, 200);
-        }
-        return response()->json();
+        $area = PersonalArea::find($id);
+        $supestructura = CmsParameter::select('alias')->where('value', '=', $area->supestructura_id)->get();
+        $dependencia = CmsParameter::select('alias')->where('value', '=', $area->dependencia_id)->get();
+        $area->dependencia = $dependencia[0]['alias'];
+        $area->supestructura = $supestructura[0]['alias'];
+        return response()->json($area);
     }
     public function search_areas(Request $request)
     {
         $de = $request->dependencia;
         $sup = $request->supestructura;
+        $area = $request->area;
         $areas = PersonalArea::select('area as name', 'id')
             ->where('dependencia_id', $de)
             ->where('supestructura_id', $sup)
+            ->where('area', '!=', $area)
             ->get();
 
         return response()->json($areas);
@@ -124,6 +119,33 @@ class PersonalAreaController extends Controller
                 $personalArea->save();
             }
         }
+    }
+    public function edit_group(Request $request)
+    {
+        $est = $request->supestructura_id;
+        $dep = $request->dependencia_id;
+        $area = $request->area;
+        $id = $request->id;
+        $request->validate([
+            'supestructura_id' => 'required',
+            'dependencia_id' => 'required',
+            'area' => [
+                'required',
+                Rule::unique('personal_areas')->where(function ($query) use ($id, $est, $dep, $area) {
+                    $query->where('supestructura_id', $est);
+                    $query->where('dependencia_id', $dep);
+                    $query->where('area', $area);
+                    $query->where('id', '!=', $id);
+                })
+            ],
+        ]);
+
+        $personalArea = PersonalArea::find($id);
+        $personalArea->dependencia_id = $dep;
+        $personalArea->supestructura_id = $est;
+        $personalArea->area = $area;
+        $personalArea->save();
+        return response()->json(['id' => $personalArea->id]);
     }
     public function get_personal(Request $request, $id)
     {
@@ -201,7 +223,7 @@ class PersonalAreaController extends Controller
     }
     public function delete($id)
     {
-        $personal = PersonalArea::FindOrFail($id);
+        $personal = PersonalGrupo::FindOrFail($id);
         $personal->delete();
     }
     public function cambio_area(Request $request)
@@ -218,5 +240,20 @@ class PersonalAreaController extends Controller
         $area->save();
 
         return response()->json($area);
+    }
+    public function audits(Request $request, $id)
+    {
+        $personalArea = PersonalArea::find($id);
+        $updatedHistory = $personalArea->audits()
+            ->whereIn('event', ['updated', 'created'])
+            ->latest()->get();
+        $i = 0;
+        foreach ($updatedHistory as $value) {
+            $id = $value->user_id;
+            $user = User::find($id);
+            $updatedHistory[$i]->user = $user;
+            $i++;
+        }
+        return response()->json($updatedHistory);
     }
 }

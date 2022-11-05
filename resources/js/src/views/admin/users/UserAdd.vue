@@ -261,7 +261,7 @@
                         <b-col md="4">
                             <b-form-group>
                                 <label>Rol</label>
-                                {{ selectedRole }}
+
                                 <validation-provider
                                     #default="{ errors }"
                                     rules="required"
@@ -410,6 +410,8 @@
                 <b-button variant="danger" @click="back()"> Volver </b-button>
             </b-col>
         </b-card-code> -->
+        <dependencia-list ref="childComponent" />
+
         <b-card-code title="Permisos">
             <b-card-body>
                 <div class="d-flex justify-content-between flex-wrap">
@@ -585,6 +587,7 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
+import DependenciaList from "./Dependencia.vue";
 import {
     BFormCheckboxGroup,
     BFormInput,
@@ -637,6 +640,7 @@ export default {
         BCardBody,
         BFormSelect,
         BPagination,
+        DependenciaList,
     },
     mixins: [togglePasswordVisibility],
     directives: {
@@ -718,13 +722,15 @@ export default {
             .then((response) => {
                 this.permisos = response.data.data;
                 this.totalRows = this.permisos.length;
-                console.log(this.permisos);
             })
             .catch((error) => {
                 console.log(error);
             });
     },
     methods: {
+        dep: function (id) {
+            this.$refs.childComponent.register(id);
+        },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
@@ -761,9 +767,7 @@ export default {
             this.$http
                 .get("/api/auth/roles/pluck")
                 .then((response) => {
-                    console.log(response);
                     this.roles = response.data;
-                    console.log(this.roles);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -790,22 +794,21 @@ export default {
                             structuras: this.selectedSuperstructuras,
                         })
                         .then((res) => {
-                            console.log(res);
-                            // this.$toast({
-                            //     component: ToastificationContent,
-                            //     position: "top-right",
-                            //     props: {
-                            //         title: "success",
-                            //         icon: "CoffeeIcon",
-                            //         variant: "success",
-                            //         text: `Usuario registrado correctamente!`,
-                            //     },
-                            // });
-
-                            // this.$router.back();
+                            this.dep(res.data.data.id);
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "success",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Usuario registrado correctamente!`,
+                                },
+                            });
+                            this.back();
                         })
                         .catch((error) => {
-                            console.log("xd");
+                            console.log(error);
                             this.$refs.simpleRules.setErrors(
                                 error.response.data.errors
                             );

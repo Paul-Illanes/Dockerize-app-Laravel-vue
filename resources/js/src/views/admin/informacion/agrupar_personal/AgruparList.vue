@@ -92,23 +92,34 @@
             <template #cell(action)="data">
                 <div class="text-nowrap">
                     <feather-icon
+                        @click="setModalAudit(data.item)"
+                        icon="EyeIcon"
+                        class="cursor-pointer text-warning"
+                        size="16"
+                    />
+                    <feather-icon
+                        @click="setModalEdit(data.item.id)"
+                        icon="EditIcon"
+                        class="cursor-pointer text-success"
+                        size="16"
+                    />
+                    <feather-icon
+                        icon="TrashIcon"
+                        size="16"
+                        class="cursor-pointer text-danger"
+                        @click="confirmDelete(data.item.id)"
+                    />
+
+                    <feather-icon
                         @click="
                             $router.push({
                                 name: 'admin-agrupar-personal',
                                 params: { areaId: data.item.id },
                             })
                         "
-                        :id="`invoice-row-${data.item.id}-edit-icon`"
-                        icon="EyeIcon"
-                        class="mx-1 cursor-pointer text-success"
+                        icon="UserIcon"
                         size="16"
-                    />
-                    <feather-icon
-                        :id="`invoice-row-${data.item.id}-preview-icon`"
-                        icon="TrashIcon"
-                        size="16"
-                        class="mx-1 cursor-pointer text-danger"
-                        @click="confirmDelete(data.item.id)"
+                        class="cursor-pointer text-primary"
                     />
                 </div>
             </template>
@@ -227,6 +238,126 @@
                 </validation-observer>
             </b-card-body>
         </b-modal>
+        <b-modal
+            ref="my-modal-edit"
+            id="modal-edit"
+            centered
+            hide-footer
+            title="Editar area"
+            no-close-on-backdrop
+        >
+            <b-card-body>
+                <validation-observer ref="editForm">
+                    <b-form
+                        class="auth-register-form mt-2 ml-2"
+                        @submit.prevent="edit_area"
+                    >
+                        <b-col md="12">
+                            <label style="font-weight: 700"
+                                >Sub Estructura</label
+                            >
+                            <v-select
+                                v-model="supestructura"
+                                label="name"
+                                item-value="value"
+                                item-text="name"
+                                :options="supestructuras"
+                                placeholder="Seleccione"
+                            />
+                            <label style="font-weight: 700">Dependencia</label>
+                            <v-select
+                                v-model="dependencia"
+                                label="name"
+                                item-value="value"
+                                item-text="name"
+                                :options="dependencias"
+                                placeholder="Seleccione"
+                                :disabled="!supestructura ? true : false"
+                            />
+                            <b-form-group>
+                                <label>Area </label>
+
+                                <validation-provider
+                                    #default="{ errors }"
+                                    rules="required"
+                                    name="area"
+                                >
+                                    <b-form-input
+                                        id="example-input"
+                                        type="text"
+                                        :disabled="!dependencia"
+                                        v-model="area"
+                                        ref="inputarea"
+                                    />
+                                    <small class="text-danger">{{
+                                        errors[0]
+                                    }}</small>
+                                </validation-provider>
+                            </b-form-group>
+                        </b-col>
+                        <hr />
+                        <b-col cols="12" class="mt-2">
+                            <b-button
+                                variant="primary"
+                                type="submit"
+                                @click.prevent="edit_area"
+                            >
+                                Actualizar
+                            </b-button>
+                        </b-col>
+                    </b-form>
+                </validation-observer>
+            </b-card-body>
+        </b-modal>
+        <b-modal
+            ref="my-modal-audit"
+            id="modal-audit"
+            centered
+            hide-footer
+            title="Historico de cambios Personal Area"
+            no-close-on-backdrop
+            size="lg"
+        >
+            <b-card-body>
+                <b-row>
+                    <b-col md="6" class="mb-1"
+                        ><strong>Supestructura:</strong>
+                        {{ modalData.supestructura }}</b-col
+                    >
+                    <b-col md="6" class="mb-1"
+                        ><strong>Cod. Dependencia:</strong>
+                        {{ modalData.dependencia_id }}</b-col
+                    >
+                    <b-col md="6" class="mb-1"
+                        ><strong>Dependencia:</strong>
+                        {{ modalData.dependencia }}</b-col
+                    >
+                    <b-col md="6" class="mb-1"
+                        ><strong>Area:</strong> {{ modalData.area }}</b-col
+                    >
+                </b-row>
+                <div>
+                    <b-table striped hover small :fields="rows" :items="audits">
+                        <template #cell(updated_at)="data">
+                            <div class="text-center">
+                                {{
+                                    data.item.updated_at
+                                        | moment("DD, MMMM,YYYY, h:mm:ss a")
+                                }}
+                            </div>
+                        </template>
+
+                        <template #cell(user)="data">
+                            <div class="text-center">
+                                {{ data.item.user.name }}
+                                {{ data.item.user.lastname }}
+                                {{ data.item.user.mother_lastname }}
+                            </div>
+                        </template>
+                    </b-table>
+                </div>
+            </b-card-body>
+        </b-modal>
     </b-card-code>
 </template>
 
@@ -293,8 +424,10 @@ export default {
             supestructura: "",
             dependencias: [],
             items: [],
+            audits: [],
             area: "",
             perPage: 10,
+            grupo_id: "",
             pageOptions: [10, 20, 50],
             totalRows: 1,
             currentPage: 1,
@@ -303,6 +436,13 @@ export default {
             sortDirection: "asc",
             filter: null,
             filterOn: [],
+            modalData: {
+                supestructura: "",
+                dependencia: "",
+                dependencia_id: "",
+                area: "",
+                id: "",
+            },
             fields: [
                 {
                     key: "index",
@@ -316,7 +456,29 @@ export default {
                 },
                 { key: "dependencia", label: "Dependencia", sortable: true },
                 { key: "area", label: "Area", sortable: true },
-                { key: "action", label: "Action", sortable: true },
+                { key: "action", label: "Action", sortable: false },
+            ],
+            rows: [
+                {
+                    key: "updated_at",
+                    label: "Fecha/Hora",
+                    sortable: false,
+                },
+                {
+                    key: "event",
+                    label: "Accion",
+                    sortable: false,
+                },
+                {
+                    key: "old_values",
+                    label: "Datos Modificados",
+                    sortable: false,
+                },
+                {
+                    key: "user",
+                    label: "Modificado por",
+                    sortable: false,
+                },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,
@@ -341,11 +503,44 @@ export default {
                 this.totalRows = this.items.length;
             });
         },
+        setModalAudit(data) {
+            this.modalData.id = data.id;
+            this.modalData.dependencia = data.dependencia;
+            this.modalData.supestructura = data.supestructura;
+            this.modalData.dependencia_id = data.dependencia_id;
+            this.modalData.area = data.area;
+            this.$refs["my-modal-audit"].show();
+            this.$http
+                .get("/api/auth/personal_area/audit/" + this.modalData.id)
+                .then((res) => {
+                    this.audits = res.data;
+                });
+        },
         setModalData() {
             this.$refs["my-modal-area"].show();
             this.$http.get("/api/auth/personal_area/").then((res) => {
                 this.supestructuras = res.data;
             });
+        },
+        setModalEdit(id) {
+            this.$http.get("/api/auth/personal_area/").then((res) => {
+                this.supestructuras = res.data;
+            });
+            this.$http
+                .get("/api/auth/personal_area/get_grupo/" + id)
+                .then((res) => {
+                    this.grupo_id = res.data.id;
+                    this.supestructura = {
+                        value: res.data.supestructura_id,
+                        name: res.data.supestructura,
+                    };
+                    this.dependencia = {
+                        value: res.data.dependencia_id,
+                        name: res.data.dependencia,
+                    };
+                    this.area = res.data.area;
+                });
+            this.$refs["my-modal-edit"].show();
         },
         registro_area() {
             this.$refs.areaForm.validate().then((success) => {
@@ -357,7 +552,6 @@ export default {
                             area: this.area,
                         })
                         .then((res) => {
-                            console.log(res);
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",
@@ -379,7 +573,38 @@ export default {
                 }
             });
         },
-
+        edit_area() {
+            this.$refs.editForm.validate().then((success) => {
+                if (success) {
+                    this.$http
+                        .post("/api/auth/personal_area/edit_group", {
+                            supestructura_id: this.supestructura.value,
+                            dependencia_id: this.dependencia.value,
+                            area: this.area,
+                            id: this.grupo_id,
+                        })
+                        .then((res) => {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Se actualizo correctamente",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                },
+                            });
+                            this.getItems();
+                            this.$refs["my-modal-edit"].hide();
+                            this.limpiar();
+                        })
+                        .catch((error) => {
+                            this.$refs.editForm.setErrors(
+                                error.response.data.errors
+                            );
+                        });
+                }
+            });
+        },
         limpiar() {
             this.dependencia = "";
             this.supestructura = "";
@@ -450,4 +675,7 @@ export default {
 </script>
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
+.tth {
+    font-size: 5px;
+}
 </style>

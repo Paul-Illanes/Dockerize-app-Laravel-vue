@@ -357,8 +357,8 @@
                             md="6"
                         >
                             <b-form-checkbox
-                                :value="item.id"
                                 v-model="selectedSuperstructuras"
+                                :value="item.id"
                             >
                                 {{ item.descripcion }}
                             </b-form-checkbox>
@@ -367,6 +367,7 @@
                 </b-form-checkbox-group>
             </b-form-group>
         </b-card-code>
+        <dependencia-list ref="childComponent" />
         <b-card-code title="Permisos">
             <b-card-body>
                 <div class="d-flex justify-content-between flex-wrap">
@@ -541,6 +542,7 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { togglePasswordVisibility } from "@core/mixins/ui/forms";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import vSelect from "vue-select";
+import DependenciaList from "./Dependencia.vue";
 import {
     BFormCheckboxGroup,
     BFormInput,
@@ -593,6 +595,7 @@ export default {
         BCardBody,
         BFormSelect,
         BPagination,
+        DependenciaList,
     },
     mixins: [togglePasswordVisibility],
     data() {
@@ -664,11 +667,9 @@ export default {
     },
 
     created() {
-        console.log(this.$route.params.userId);
         // this.row = this.tableBasic;
         this.$http.get("/api/auth/superstructura/").then((res) => {
             this.superstructuras = res.data;
-            console.log(this.superstructuras);
         });
         this.$http
             .get("/api/auth/permissions")
@@ -681,6 +682,12 @@ export default {
             });
     },
     methods: {
+        dep: function (data) {
+            this.$refs.childComponent.detail(data);
+        },
+        dep_update: function (id) {
+            this.$refs.childComponent.update(id);
+        },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
@@ -690,30 +697,22 @@ export default {
             this.$http
                 .get("/api/auth/users/detail/" + this.$route.params.userId)
                 .then((response) => {
-                    console.log(response.data);
                     this.email = response.data.user.email;
                     this.username = response.data.user.username;
                     this.name = response.data.user.name;
                     this.lastname = response.data.user.lastname;
                     this.mother_lastname = response.data.user.mother_lastname;
                     this.active = response.data.user.active;
-                    // this.password = response.data.user.password;
-                    // this.c_password = response.data.user.email;
                     this.pin = response.data.user.pin;
-                    // this.verified = response.data.user.verified;
                     this.verified =
                         response.data.user.verified == 1 ? "true" : "false";
                     this.activo =
                         response.data.user.active == 1 ? "true" : "false";
-                    // this.activo = response.data.user.active;
                     this.celular = response.data.user.celular;
-                    // this.name = response.data.data.name;
-                    // this.email = response.data.data.email;
-                    // this.status = response.data.data.status;
-                    this.selectedSuperstructuras = response.data.table;
+                    this.selectedSuperstructuras = response.data.supestructura;
                     this.selectedRole = response.data.roles;
                     this.selectedPermisos = response.data.permissions;
-                    console.log(this.selectedSuperstructuras);
+                    this.dep(response.data.dependencia);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -781,7 +780,7 @@ export default {
                             }
                         )
                         .then((res) => {
-                            // console.log(res);
+                            this.dep_update(this.$route.params.userId);
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",

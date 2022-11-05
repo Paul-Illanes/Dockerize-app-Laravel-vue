@@ -47,6 +47,7 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('user', [AuthController::class, 'user']);
         Route::get('/notifications', [NotificationController::class, 'notifications']);
         Route::get('/superstructura', [SuperstructuraController::class, 'getList']);
+        Route::get('/dependencia', [SuperstructuraController::class, 'getDependencia']);
         Route::get('/parameter/{varia}', [ParameterController::class, 'parameter_pluck']);
         Route::get('/parameter_turno/{varia}', [ParameterController::class, 'parameter_turno']);
         Route::get('/parameter_check/{varia}', [ParameterController::class, 'parameter_check']);
@@ -63,6 +64,8 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('detail/{user}', [UsersController::class, 'getDetail']);
             Route::post('update/{user}', [UsersController::class, 'update']);
             Route::post('delete/{user}', [UsersController::class, 'delete']);
+            Route::post('dependencias', [UsersController::class, 'dependencias']);
+            Route::post('dependencias_update', [UsersController::class, 'dependencias_update']);
         });
         //roles
         Route::group(['prefix' => 'roles'], function () {
@@ -202,14 +205,16 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('/getDependencia', [PersonalAreaController::class, 'getDependencia']);
             Route::post('/create', [PersonalAreaController::class, 'create']);
             Route::post('/create_group', [PersonalAreaController::class, 'create_group']);
+            Route::post('/edit_group', [PersonalAreaController::class, 'edit_group']);
             Route::post('/create_personal', [PersonalAreaController::class, 'create_personal']);
             Route::post('delete/{id}', [PersonalAreaController::class, 'delete']);
             Route::get('get_grupo/{id}', [PersonalAreaController::class, 'get_grupo']);
             Route::get('get_personal/{id}', [PersonalAreaController::class, 'get_personal']);
             Route::get('getEmpleados/{id}', [PersonalAreaController::class, 'get_empleados']);
-            Route::post('search_grupo', [PersonalAreaController::class, 'search_grupo']);
+            Route::get('search_grupo/{id}', [PersonalAreaController::class, 'search_grupo']);
             Route::post('search_areas', [PersonalAreaController::class, 'search_areas']);
             Route::post('cambioArea', [PersonalAreaController::class, 'cambio_area']);
+            Route::get('audit/{id}', [PersonalAreaController::class, 'audits']);
         });
         Route::group(['prefix' => 'cronograma'], function () {
             Route::get('/', [VacacionesProgramacionController::class, 'index']);
