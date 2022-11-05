@@ -349,24 +349,24 @@
                     class="demo-inline-spacing"
                 >
                     <b-row>
-                        <b-col
-                            v-for="item in superstructuras"
-                            v-bind:data="item"
-                            v-bind:key="item.id"
-                            lg="3"
-                            md="6"
-                        >
+                        <b-col v-for="item in superstructuras" lg="3" md="6">
                             <b-form-checkbox
                                 v-model="selectedSuperstructuras"
-                                :value="item.id"
+                                :value="item.value"
                             >
-                                {{ item.descripcion }}
+                                {{ item.name }}
                             </b-form-checkbox>
+
+                            <!-- <b-form-checkbox
+                                v-model="selectedPermisos"
+                                :value="data.value"
+                                >{{ data.value }}</b-form-checkbox
+                            > -->
                         </b-col>
                     </b-row>
                 </b-form-checkbox-group>
             </b-form-group>
-            {{ selectedSuperstructuras }}
+            {{ superstructuras }}
         </b-card-code>
         <dependencia-list ref="childComponent" />
         <b-card-code title="Permisos">
@@ -474,7 +474,7 @@
                     <!-- </b-list-group-item> -->
                 </template>
             </b-table>
-
+            {{ selectedPermisos }}
             <template #overlay>
                 <div class="text-center text-info">
                     <feather-icon icon="ClockIcon" size="24" />
@@ -751,7 +751,7 @@ export default {
         superstructuras_all: function (event) {
             if (this.superstructurasAll.length == 1) {
                 this.superstructuras.forEach((item) => {
-                    this.selectedSuperstructuras.push(item.id);
+                    this.selectedSuperstructuras.push(item.value);
                 });
             } else {
                 this.selectedSuperstructuras = [];

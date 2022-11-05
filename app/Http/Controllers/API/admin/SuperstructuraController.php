@@ -12,7 +12,7 @@ class SuperstructuraController extends Controller
 {
     function getList()
     {
-        $superstructuras = Supestructura::all();
+        $superstructuras = Supestructura::select('id AS value', 'descripcion AS name')->get();
 
         return response()->json($superstructuras);
     }
