@@ -349,24 +349,24 @@
                     class="demo-inline-spacing"
                 >
                     <b-row>
-                        <b-col v-for="item in superstructuras" lg="3" md="6">
+                        <b-col
+                            v-for="item in superstructuras"
+                            v-bind:data="item"
+                            v-bind:key="item.value"
+                            lg="3"
+                            md="6"
+                        >
                             <b-form-checkbox
                                 v-model="selectedSuperstructuras"
                                 :value="item.value"
                             >
                                 {{ item.name }}
                             </b-form-checkbox>
-
-                            <!-- <b-form-checkbox
-                                v-model="selectedPermisos"
-                                :value="data.value"
-                                >{{ data.value }}</b-form-checkbox
-                            > -->
                         </b-col>
                     </b-row>
                 </b-form-checkbox-group>
             </b-form-group>
-            {{ superstructuras }}
+            {{ selectedSuperstructuras }}
         </b-card-code>
         <dependencia-list ref="childComponent" />
         <b-card-code title="Permisos">
@@ -474,7 +474,7 @@
                     <!-- </b-list-group-item> -->
                 </template>
             </b-table>
-            {{ selectedPermisos }}
+
             <template #overlay>
                 <div class="text-center text-info">
                     <feather-icon icon="ClockIcon" size="24" />
@@ -650,11 +650,8 @@ export default {
     },
 
     mounted() {
-        this.$http.get("/api/auth/superstructura/").then((res) => {
-            this.superstructuras = res.data;
-        });
+        this.getSupestructura();
         this.getRoles();
-        this.getDetail();
         this.totalRows = this.permisos.length;
     },
     computed: {
@@ -672,11 +669,6 @@ export default {
     },
 
     created() {
-        // this.row = this.tableBasic;
-        // this.$http.get("/api/auth/superstructura/").then((res) => {
-        //     this.superstructuras = res.data;
-        //     this.selectedSuperstructuras = prev;
-        // });
         this.$http
             .get("/api/auth/permissions")
             .then((response) => {
@@ -688,11 +680,12 @@ export default {
             });
     },
     methods: {
-        // getSupestructura() {
-        //     this.$http.get("/api/auth/superstructura/").then((res) => {
-        //         this.superstructuras = res.data;
-        //     });
-        // },
+        getSupestructura() {
+            this.$http.get("/api/auth/superstructura/").then((res) => {
+                this.superstructuras = res.data;
+                this.getDetail();
+            });
+        },
         dep: function (data) {
             this.$refs.childComponent.detail(data);
         },
@@ -720,11 +713,10 @@ export default {
                     this.activo =
                         response.data.user.active == 1 ? "true" : "false";
                     this.celular = response.data.user.celular;
-
+                    this.selectedSuperstructuras = response.data.supestructura;
                     this.selectedRole = response.data.roles;
                     this.selectedPermisos = response.data.permissions;
                     this.dep(response.data.dependencia);
-                    this.selectedSuperstructuras = response.data.supestructura;
                     // this.getSupestructura();
                 })
                 .catch((error) => {
