@@ -129,18 +129,35 @@ class UsersController extends Controller
             // 'c_password' => 'required|same:password',
             'roles' => 'required'
         ]);
-        $user->update([
-            'email' => $request->email,
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'mother_lastname' => $request->mother_lastname,
-            'username' => $request->username,
-            // 'password' => bcrypt($request->password),
-            'celular' => $request->celular,
-            'pin' => $request->pin,
-            'verified' => $request->verified ? 1 : 0,
-            'active' => $request->active ? 1 : 0,
-        ]);
+        if ($request->password) {
+            $user->update([
+                'email' => $request->email,
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'mother_lastname' => $request->mother_lastname,
+                'username' => $request->username,
+                'password' => bcrypt($request->password),
+                'celular' => $request->celular,
+                'pin' => $request->pin,
+                'verified' => $request->verified ? 1 : 0,
+                'active' => $request->active ? 1 : 0,
+            ]);
+        }
+        if (!$request->password) {
+            $user->update([
+                'email' => $request->email,
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'mother_lastname' => $request->mother_lastname,
+                'username' => $request->username,
+                // 'password' => bcrypt($request->password),
+                'celular' => $request->celular,
+                'pin' => $request->pin,
+                'verified' => $request->verified ? 1 : 0,
+                'active' => $request->active ? 1 : 0,
+            ]);
+        }
+
         // $user->syncPermissions($request->permissions ?? []);
         $user->assignRole($request->roles);
         $user->supestructuras()->sync($request->structuras);

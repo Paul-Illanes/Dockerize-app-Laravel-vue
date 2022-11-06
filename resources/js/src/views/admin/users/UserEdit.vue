@@ -100,7 +100,7 @@
                                 <label>Usuario</label>
                                 <validation-provider
                                     #default="{ errors }"
-                                    rules="required|integer"
+                                    rules="required"
                                     name="username"
                                 >
                                     <b-form-input
@@ -118,17 +118,17 @@
                         </b-col>
 
                         <!--  Only alphabetic characters-->
-                        <b-col md="3">
+                        <b-col md="3" v-if="pass">
                             <!-- password -->
                             <b-form-group
-                                label-for="register-password"
                                 label="Password"
+                                label-for="a-password"
                             >
                                 <validation-provider
                                     #default="{ errors }"
                                     name="Password"
-                                    vid="password"
-                                    rules=""
+                                    vid="Password"
+                                    rules="required|min:8|password"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -139,7 +139,7 @@
                                         "
                                     >
                                         <b-form-input
-                                            id="register-password"
+                                            id="a-password"
                                             v-model="password"
                                             class="form-control-merge"
                                             :type="passwordFieldType"
@@ -148,7 +148,6 @@
                                             "
                                             name="register-password"
                                             placeholder="············"
-                                            disabled
                                         />
                                         <b-input-group-append is-text>
                                             <feather-icon
@@ -167,17 +166,16 @@
                             </b-form-group>
                         </b-col>
 
-                        <b-col md="3">
+                        <b-col md="3" v-if="pass">
                             <!-- password -->
                             <b-form-group
-                                label-for="register-c_password"
-                                label="Password"
+                                label="Confirm Password"
+                                label-for="ac-password"
                             >
                                 <validation-provider
                                     #default="{ errors }"
-                                    name="Password"
-                                    vid="password"
-                                    rules=""
+                                    name="Confirm Password"
+                                    rules="required|confirmed:Password"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -188,8 +186,8 @@
                                         "
                                     >
                                         <b-form-input
-                                            id="register-c_password"
-                                            v-model="c_password"
+                                            id="ac-password"
+                                            v-model="passValue"
                                             class="form-control-merge"
                                             :type="passwordFieldType"
                                             :state="
@@ -197,7 +195,6 @@
                                             "
                                             name="register-c_password"
                                             placeholder="············"
-                                            disabled
                                         />
                                         <b-input-group-append is-text>
                                             <feather-icon
@@ -326,7 +323,15 @@
                                 </validation-provider>
                             </b-form-group>
                         </b-col>
-
+                        <b-col md="1">
+                            <b-button
+                                class="mt-1"
+                                variant="danger"
+                                sm
+                                @click="pass = !pass"
+                                >Cambiar Contraseña</b-button
+                            >
+                        </b-col>
                         <!-- The digits field must be numeric and exactly contain 3 digits -->
                         <!-- submit button -->
                     </b-row>
@@ -634,7 +639,8 @@ export default {
             mother_lastname: "",
             active: "",
             password: "",
-            c_password: "",
+            pass: "",
+            passValue: "",
             pin: "",
             verified: "",
             activo: "",
@@ -679,6 +685,9 @@ export default {
             });
     },
     methods: {
+        cambiar_pass() {
+            this.pass = true;
+        },
         getSupestructura() {
             this.$http.get("/api/auth/superstructura/").then((res) => {
                 this.superstructuras = res.data;

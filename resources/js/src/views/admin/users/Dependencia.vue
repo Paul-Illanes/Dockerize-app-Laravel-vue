@@ -226,11 +226,6 @@ export default {
         this.totalRows = this.dependencias.length;
     },
     computed: {
-        passwordToggleIcon() {
-            return this.passwordFieldType === "password"
-                ? "EyeIcon"
-                : "EyeOffIcon";
-        },
         sortOptions() {
             // Create an options list from our fields
             return this.fields

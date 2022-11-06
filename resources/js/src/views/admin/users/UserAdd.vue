@@ -350,15 +350,15 @@
                         <b-col
                             v-for="item in superstructuras"
                             v-bind:data="item"
-                            v-bind:key="item.id"
+                            v-bind:key="item.value"
                             lg="3"
                             md="6"
                         >
                             <b-form-checkbox
-                                :value="item.id"
+                                :value="item.value"
                                 v-model="selectedSuperstructuras"
                             >
-                                {{ item.descripcion }}
+                                {{ item.name }}
                             </b-form-checkbox>
                         </b-col>
                     </b-row>
@@ -756,7 +756,7 @@ export default {
         superstructuras_all: function (event) {
             if (this.superstructurasAll.length == 1) {
                 this.superstructuras.forEach((item) => {
-                    this.selectedSuperstructuras.push(item.id);
+                    this.selectedSuperstructuras.push(item.value);
                 });
             } else {
                 this.selectedSuperstructuras = [];
