@@ -198,7 +198,7 @@ class PersonalBajaController extends Controller
     }
     public function update_estado(Request $request, $id)
     {
-        $baja = PersonalBaja::FindOrFail($id);
+        $baja = PersonalBaja::Find($id);
         $baja->status_baja = $request->status;
         $baja->save();
     }

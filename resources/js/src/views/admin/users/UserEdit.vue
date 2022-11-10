@@ -12,6 +12,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="nombres"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="name"
@@ -35,6 +36,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="lastname"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="lastname"
@@ -58,6 +60,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="mother_lastname"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="mother_lastname"
@@ -79,6 +82,7 @@
                                     #default="{ errors }"
                                     name="email"
                                     rules="required|email"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="email"
@@ -100,8 +104,9 @@
                                 <label>Usuario</label>
                                 <validation-provider
                                     #default="{ errors }"
-                                    rules="required"
+                                    rules="required|min:8"
                                     name="username"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="username"
@@ -128,7 +133,8 @@
                                     #default="{ errors }"
                                     name="Password"
                                     vid="Password"
-                                    rules="required|min:8|password"
+                                    rules="required"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -176,6 +182,7 @@
                                     #default="{ errors }"
                                     name="Confirm Password"
                                     rules="required|confirmed:Password"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -242,6 +249,7 @@
                                     #default="{ errors }"
                                     rules="integer"
                                     name="celular"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="celular"
@@ -265,6 +273,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="selectedRole"
+                                    :custom-messages="customMessages"
                                 >
                                     <v-select
                                         multiple
@@ -605,6 +614,15 @@ export default {
     mixins: [togglePasswordVisibility],
     data() {
         return {
+            customMessages: {
+                required: "El campo es requerido",
+                email: "Ingrese un email valido",
+                password:
+                    "Su Contraseña debe contener al menos una mayúscula, una minúscula, un carácter especial y un dígito",
+                min: "Su Contraseña debe tener minimo 8 caracteres",
+                max: "Su dni no puede tener mas de 8 caracteres",
+                confirmed: "Las Contraseñas no coinciden",
+            },
             //table
             perPage: 10,
             pageOptions: [3, 5, 10, 50],
@@ -808,7 +826,6 @@ export default {
                             this.$router.back();
                         })
                         .catch((error) => {
-                            console.log("xd");
                             this.$refs.simpleRules.setErrors(
                                 error.response.data.errors
                             );

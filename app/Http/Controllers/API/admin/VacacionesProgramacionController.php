@@ -123,4 +123,15 @@ class VacacionesProgramacionController extends Controller
 
         return response()->json($vacacion);
     }
+    public function getProcesoVacaciones(Request $request)
+    {
+        $vac = VacacionesProgramacion::all();
+        $grupos = PersonalGrupo::all();
+        $data = [
+            'vac' => $vac,
+            'grupo' => $grupos
+        ];
+
+        return response()->json($data, 200);
+    }
 }

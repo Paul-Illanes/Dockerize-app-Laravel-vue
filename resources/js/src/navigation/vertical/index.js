@@ -138,7 +138,13 @@ export default [
         action: 'legajos_informes_cese-index',
         icon: 'EditIcon',
       },
-      
+      {
+        title: 'Proceso vacaciones',
+        route: 'admin-proceso_vacaciones',
+        resource: 'ACL',
+        action: 'vacaciones_programaciones-create',
+        icon: 'EditIcon',
+      },
     ],
   },
 ]

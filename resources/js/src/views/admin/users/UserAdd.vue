@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-card-code title="Registro de usuario">
-            <validation-observer ref="simpleRules">
+            <validation-observer ref="simpleRules" #default="{ invalid }">
                 <b-form>
                     <b-row>
                         <!--  This field is required-->
@@ -12,6 +12,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="nombres"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="name"
@@ -35,6 +36,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="lastname"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="lastname"
@@ -58,6 +60,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="mother_lastname"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="mother_lastname"
@@ -79,6 +82,7 @@
                                     #default="{ errors }"
                                     name="email"
                                     rules="required|email"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="email"
@@ -93,15 +97,14 @@
                                 </validation-provider>
                             </b-form-group>
                         </b-col>
-
-                        <!-- Must match the specified regular expression : ^([0-9]+)$ - numbers only -->
                         <b-col md="3">
                             <b-form-group>
                                 <label>Usuario</label>
                                 <validation-provider
                                     #default="{ errors }"
-                                    rules="required|integer"
+                                    rules="required|min:8"
                                     name="username"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="username"
@@ -116,19 +119,18 @@
                                 </validation-provider>
                             </b-form-group>
                         </b-col>
-
-                        <!--  Only alphabetic characters-->
                         <b-col md="3">
                             <!-- password -->
                             <b-form-group
-                                label-for="register-password"
                                 label="Password"
+                                label-for="a-password"
                             >
                                 <validation-provider
                                     #default="{ errors }"
                                     name="Password"
-                                    vid="password"
+                                    vid="Password"
                                     rules="required"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -139,7 +141,7 @@
                                         "
                                     >
                                         <b-form-input
-                                            id="register-password"
+                                            id="a-password"
                                             v-model="password"
                                             class="form-control-merge"
                                             :type="passwordFieldType"
@@ -169,14 +171,14 @@
                         <b-col md="3">
                             <!-- password -->
                             <b-form-group
-                                label-for="register-password"
-                                label="Password"
+                                label="Confirm Password"
+                                label-for="ac-password"
                             >
                                 <validation-provider
                                     #default="{ errors }"
-                                    name="Password"
-                                    vid="password"
-                                    rules="required"
+                                    name="Confirm Password"
+                                    rules="required|confirmed:Password"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-input-group
                                         class="input-group-merge"
@@ -187,8 +189,8 @@
                                         "
                                     >
                                         <b-form-input
-                                            id="register-c_password"
-                                            v-model="c_password"
+                                            id="ac-password"
+                                            v-model="passValue"
                                             class="form-control-merge"
                                             :type="passwordFieldType"
                                             :state="
@@ -213,29 +215,6 @@
                                 </validation-provider>
                             </b-form-group>
                         </b-col>
-
-                        <!-- Length should not be less than the specified length : 3 -->
-                        <!-- <b-col md="2">
-                            <b-form-group>
-                                <label>PIN</label>
-                                <validation-provider
-                                    #default="{ errors }"
-                                    rules="integer"
-                                    name="pin"
-                                >
-                                    <b-form-input
-                                        v-model="pin"
-                                        :state="
-                                            errors.length > 0 ? false : null
-                                        "
-                                        placeholder=""
-                                    />
-                                    <small class="text-danger">{{
-                                        errors[0]
-                                    }}</small>
-                                </validation-provider>
-                            </b-form-group>
-                        </b-col> -->
                         <b-col md="3">
                             <b-form-group>
                                 <label>Celular</label>
@@ -243,6 +222,7 @@
                                     #default="{ errors }"
                                     rules="integer"
                                     name="celular"
+                                    :custom-messages="customMessages"
                                 >
                                     <b-form-input
                                         v-model="celular"
@@ -266,6 +246,7 @@
                                     #default="{ errors }"
                                     rules="required"
                                     name="selectedRole"
+                                    :custom-messages="customMessages"
                                 >
                                     <v-select
                                         multiple
@@ -615,6 +596,7 @@ import {
     integer,
     password,
     min,
+    max,
     digits,
     alphaDash,
     length,
@@ -648,6 +630,15 @@ export default {
     },
     data() {
         return {
+            customMessages: {
+                required: "El campo es requerido",
+                email: "Ingrese un email valido",
+                password:
+                    "Su Contraseña debe contener al menos una mayúscula, una minúscula, un carácter especial y un dígito",
+                min: "Su Contraseña debe tener minimo 8 caracteres",
+                max: "Su dni no puede tener mas de 8 caracteres",
+                confirmed: "Las Contraseñas no coinciden",
+            },
             //table
             perPage: 10,
             pageOptions: [3, 5, 10, 50],
@@ -788,7 +779,6 @@ export default {
                             pin: this.pin,
                             verified: this.verified,
                             activo: this.activo,
-                            c_password: this.c_password,
                             roles: this.selectedRole,
                             permisos: this.selectedPermisos,
                             structuras: this.selectedSuperstructuras,

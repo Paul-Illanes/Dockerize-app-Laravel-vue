@@ -369,4 +369,17 @@ export default [
       action: 'cronograma-index',
     },
   },
+  // *===============================================---*
+  // *--------- programar vacaiones-- ---------------------------------------*
+  // *===============================================---*
+  
+  {
+    path: '/admin/proceso_vacaciones',
+    name: 'admin-proceso_vacaciones',
+    component: () => import('@/views/admin/proceso_vacaciones/ProcesoVacacionesList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'vacaciones_programaciones-create',
+    },
+  },
 ]

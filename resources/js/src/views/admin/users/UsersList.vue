@@ -159,7 +159,7 @@
                 {{ data.index + 1 }}
             </template>
             <template #cell(verified)="data">
-                <div class="text-center">
+                <div class="text-center p-0">
                     <b-badge
                         :variant="data.item.verified ? 'success' : 'warning'"
                         >{{ verified(data.item.verified) }}</b-badge
@@ -167,7 +167,7 @@
                 </div>
             </template>
             <template #cell(active)="data">
-                <div class="text-center">
+                <div class="text-center p-0">
                     <b-badge
                         :variant="data.item.active ? 'success' : 'warning'"
                         >{{ verified(data.item.active) }}</b-badge
@@ -207,76 +207,48 @@
                 </div>
             </template>
         </b-table>
-        <b-overlay :show="show" opacity="0.40" variant="success" blur="2px">
-            <template #overlay>
-                <div class="text-center text-info">
-                    <feather-icon icon="ClockIcon" size="24" />
-                    <b-card-text id="cancel-label">
-                        Cargando datos...
-                    </b-card-text>
-                </div>
-            </template>
-            <div class="mx-2 mb-2">
-                <b-row>
-                    <b-col
-                        cols="12"
-                        sm="6"
-                        class="d-flex align-items-center justify-content-center justify-content-sm-start"
-                    >
-                    </b-col>
-                    <b-col
-                        cols="12"
-                        sm="6"
-                        class="d-flex align-items-center justify-content-center justify-content-sm-end"
-                    >
-                        <!-- page length -->
-                        <!-- <b-form-group
-                    label="Mostrar"
-                    label-cols="6"
-                    label-align="left"
-                    label-size="sm"
-                    label-for="sortBySelect"
-                    class="text-nowrap mb-md-0 mr-1"
+        <div class="mx-2 mb-2">
+            <b-row>
+                <b-col
+                    cols="12"
+                    sm="6"
+                    class="d-flex align-items-center justify-content-center justify-content-sm-start"
                 >
-                    <b-form-select
-                        id="perPageSelect"
-                        v-model="perPage"
-                        size="sm"
-                        inline
-                        :options="pageOptions"
-                    />
-                </b-form-group> -->
-
-                        <!-- pagination -->
-                        <div>
-                            <b-pagination
-                                v-model="currentPage"
-                                :total-rows="totalRows"
-                                :per-page="perPage"
-                                first-number
-                                last-number
-                                prev-class="prev-item"
-                                next-class="next-item"
-                                class="mb-0"
-                            >
-                                <template #prev-text>
-                                    <feather-icon
-                                        icon="ChevronLeftIcon"
-                                        size="18"
-                                    />
-                                </template>
-                                <template #next-text>
-                                    <feather-icon
-                                        icon="ChevronRightIcon"
-                                        size="18"
-                                    />
-                                </template>
-                            </b-pagination>
-                        </div>
-                    </b-col>
-                </b-row>
-            </div>
-        </b-overlay>
+                </b-col>
+                <b-col
+                    cols="12"
+                    sm="6"
+                    class="d-flex align-items-center justify-content-center justify-content-sm-end"
+                >
+                    <!-- pagination -->
+                    <div>
+                        <b-pagination
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            first-number
+                            last-number
+                            prev-class="prev-item"
+                            next-class="next-item"
+                            class="mb-0"
+                        >
+                            <template #prev-text>
+                                <feather-icon
+                                    icon="ChevronLeftIcon"
+                                    size="18"
+                                />
+                            </template>
+                            <template #next-text>
+                                <feather-icon
+                                    icon="ChevronRightIcon"
+                                    size="18"
+                                />
+                            </template>
+                        </b-pagination>
+                    </div>
+                </b-col>
+            </b-row>
+        </div>
     </b-card-code>
 </template>
 
@@ -349,13 +321,13 @@ export default {
 
                 { key: "name", label: "Nombre", sortable: true },
                 { key: "lastname", label: "Apellidos", sortable: true },
-                { key: "username", label: "DNI", sortable: true },
+                { key: "username", label: "DNI", sortable: false },
                 { key: "email", label: "Email", sortable: true },
-                { key: "celular", label: "Celular", sortable: true },
-                { key: "verified", label: "Verificado", sortable: true },
-                { key: "active", label: "Activo", sortable: true },
+                { key: "celular", label: "Celular", sortable: false },
+                { key: "verified", label: "Verif.", sortable: false },
+                { key: "active", label: "Activo", sortable: false },
                 { key: "roles[0].name", label: "Rol", sortable: true },
-                { key: "action", label: "Action", sortable: true },
+                { key: "action", label: "Action", sortable: false },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,

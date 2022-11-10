@@ -25,6 +25,7 @@ use App\Http\Controllers\API\admin\PersonalAreaController;
 use App\Http\Controllers\API\ArchivoController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\API\admin\VacacionesProgramacionController;
+use App\Http\Controllers\API\admin\PersonalAreasVacacionesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -223,6 +224,11 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/get_months/{id}', [VacacionesProgramacionController::class, 'months']);
             Route::post('getPersonal', [VacacionesProgramacionController::class, 'getPersonal']);
             Route::post('getVacaciones', [VacacionesProgramacionController::class, 'getVacaciones']);
+        });
+        //proceso vacaiones
+        Route::group(['prefix' => 'areas_vacaciones'], function () {
+            Route::get('/', [PersonalAreasVacacionesController::class, 'index']);
+            Route::put('/updateStatus/{id}', [PersonalAreasVacacionesController::class, 'status']);
         });
     });
 });

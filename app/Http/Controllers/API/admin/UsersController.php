@@ -84,7 +84,6 @@ class UsersController extends Controller
             'username' => 'required|int|unique:users',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required',
-            'c_password' => 'required|same:password',
             'roles' => 'required'
         ]);
         $user = User::create([
@@ -159,7 +158,7 @@ class UsersController extends Controller
         }
 
         // $user->syncPermissions($request->permissions ?? []);
-        $user->assignRole($request->roles);
+        $user->syncRoles($request->roles);
         $user->supestructuras()->sync($request->structuras);
         $user->syncPermissions($request->permisos);
         $data = [
