@@ -96,7 +96,11 @@
                         variant="primary"
                         @click="aprobar()"
                         class="mr-1"
-                        v-if="items.length > 0 && !cerrar_status"
+                        v-if="
+                            items.length > 0 &&
+                            !cerrar_status &&
+                            periodo.status == 1
+                        "
                     >
                         Aprobar todos
                     </b-button>
