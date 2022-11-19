@@ -191,7 +191,7 @@
                     <!-- {{ data.item.anio_programacion_reportado }} -->
                     <p class="text-nowrap">
                         {{
-                    periodo.status == 1
+                            periodo.status == 1
                             ? data.item.anio_programacion_solicitado
                             : data.item.anio_programacion_reportado,
 
@@ -204,14 +204,6 @@
                             )
                         }}
                     </p>
-                    <!-- {{
-                        (data.item.anio_programacion_solicitado > periodo.id
-                            ? data.item.anio_programacion_solicitado
-                            : data.item.anio_programacion_reportado,
-                        data.item.mes_programacion_solicitado > periodo.id
-                            ? data.item.mes_programacion_solicitado
-                            : data.item.mes_programacion_reportado)
-                    }} -->
                 </div>
             </template>
             <template #cell(-)="data">
@@ -273,23 +265,25 @@
                 </div>
             </template>
             <template #cell(button)="data">
-                <b-button
-                    v-if="data.item.estado_presentacion == '0'"
-                    size="sm"
-                    variant="warning"
-                    @click="estado(-1, data.item.id)"
-                    :disabled="closeStatus.status == 1 ? true : false"
-                >
-                    Modificar
-                </b-button>
-                <b-button
-                    v-else-if="data.item.estado_presentacion == '-1'"
-                    size="sm"
-                    variant="success"
-                    @click="estado(0, data.item.id)"
-                >
-                    Validar
-                </b-button>
+                <div v-if="periodo.status == 1">
+                    <b-button
+                        v-if="data.item.estado_presentacion == '0'"
+                        size="sm"
+                        variant="warning"
+                        @click="estado(-1, data.item.id)"
+                        :disabled="closeStatus.status == 1 ? true : false"
+                    >
+                        Modificar
+                    </b-button>
+                    <b-button
+                        v-else-if="data.item.estado_presentacion == '-1'"
+                        size="sm"
+                        variant="success"
+                        @click="estado(0, data.item.id)"
+                    >
+                        Validar
+                    </b-button>
+                </div>
             </template>
         </b-table>
         <div class="mx-2 mb-2">
@@ -929,7 +923,6 @@ export default {
                     year: this.periodo.id,
                 })
                 .then((response) => {
-                    console.log(response);
                     this.items = response.data;
                     this.totalRows = this.items.length;
                     this.cerrar_check();
