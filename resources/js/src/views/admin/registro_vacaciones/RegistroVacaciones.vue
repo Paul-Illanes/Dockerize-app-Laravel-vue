@@ -187,16 +187,31 @@
             </template>
             <template #cell(programacion)="data">
                 <div v-if="data.item.periodo_vacacional">
-                    {{
-                        changeDate(
-                            data.item.anio_programacion_solicitado > periodo.id
-                                ? data.item.anio_programacion_solicitado
-                                : data.item.anio_programacion_reportado,
-                            data.item.mes_programacion_solicitado > periodo.id
-                                ? data.item.mes_programacion_solicitado
-                                : data.item.mes_programacion_reportado
-                        )
-                    }}
+                    <!-- {{ data.item.anio_programacion_solicitado }} -->
+                    <!-- {{ data.item.anio_programacion_reportado }} -->
+                    <p class="text-nowrap">
+                        {{
+                    periodo.status == 1
+                            ? data.item.anio_programacion_solicitado
+                            : data.item.anio_programacion_reportado,
+
+                        }}
+                        {{
+                            changeDate(
+                                periodo.status == 1
+                                    ? data.item.mes_programacion_solicitado
+                                    : data.item.mes_programacion_reportado
+                            )
+                        }}
+                    </p>
+                    <!-- {{
+                        (data.item.anio_programacion_solicitado > periodo.id
+                            ? data.item.anio_programacion_solicitado
+                            : data.item.anio_programacion_reportado,
+                        data.item.mes_programacion_solicitado > periodo.id
+                            ? data.item.mes_programacion_solicitado
+                            : data.item.mes_programacion_reportado)
+                    }} -->
                 </div>
             </template>
             <template #cell(-)="data">
@@ -831,10 +846,10 @@ export default {
                 }
             });
         },
-        changeDate(year, month) {
-            var date = new Date();
-            date = year + "-" + month;
-            var fecha = moment(date).format("Y-MM");
+        changeDate(month) {
+            // var date = new Date();
+            // date = month;
+            var fecha = moment(month).format("-MM");
             return fecha;
         },
         changePeriodo(data) {
@@ -914,6 +929,7 @@ export default {
                     year: this.periodo.id,
                 })
                 .then((response) => {
+                    console.log(response);
                     this.items = response.data;
                     this.totalRows = this.items.length;
                     this.cerrar_check();
@@ -970,7 +986,6 @@ export default {
                     id: this.periodos[0].id,
                     status: this.periodos[0].status,
                 };
-               
             });
     },
 };
