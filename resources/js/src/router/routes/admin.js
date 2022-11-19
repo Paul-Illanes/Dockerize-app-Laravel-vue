@@ -382,4 +382,17 @@ export default [
       action: 'vacaciones_programaciones-create',
     },
   },
+    // *===============================================---*
+  // *--------- registro vacaiones-- ---------------------------------------*
+  // *===============================================---*
+  
+  {
+    path: '/admin/registro_vacaciones',
+    name: 'admin-registro_vacaciones',
+    component: () => import('@/views/admin/registro_vacaciones/RegistroVacaciones.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'vacaciones_programaciones-create',
+    },
+  },
 ]

@@ -145,6 +145,13 @@ export default [
         action: 'vacaciones_programaciones-create',
         icon: 'EditIcon',
       },
+      {
+        title: 'Registro vacaciones',
+        route: 'admin-registro_vacaciones',
+        resource: 'ACL',
+        action: 'vacaciones_programaciones-create',
+        icon: 'EditIcon',
+      },
     ],
   },
 ]

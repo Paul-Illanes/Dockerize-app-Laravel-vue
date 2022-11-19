@@ -425,4 +425,87 @@ if (!function_exists('parameter_get_alias')) {
                 ->get();
         }
     }
+    if (!function_exists('cl_to_regimen_laboral')) {
+        /**
+         * return regimen laboral ley from data
+         */
+        function cl_to_regimen_laboral($data)
+        {
+            //$cod_cl = strtolower($data);
+            $valor = '';
+            switch ($data) {
+                case 1:
+                    $valor = 276;
+                    break;
+                case 4:
+                    $valor = 728;
+                    break;
+                case 5:
+                    $valor = 728;
+                    break;
+                case 6:
+                    $valor = 728;
+                    break;
+                case 9:
+                    $valor = 1057;
+                    break;
+                case 10:
+                    $valor = 1057;
+                    break;
+                default:
+                    break;
+            }
+            return $valor;
+        }
+    }
+
+    if (!function_exists('get_vacation_months')) {
+        /**
+         * return regimen laboral ley from data
+         */
+        function get_vacation_months($fechaIngreso, $periodo, $reg_laboral)
+        {
+            $fecha_ini = ($periodo) . substr($fechaIngreso, 4, 4) . '01';
+            //dd($fecha_ini);
+            $dia_mes = date('d', strtotime($fechaIngreso));
+
+            $mes_inicio = $dia_mes == "01" ? 0 : 1;
+            $meses_para_vacaciones = $dia_mes == "01" ? 10 : 11;
+            switch ($reg_laboral) {
+                case '276':
+                    $fecha_ini = "$periodo-01-01";
+                    $mes_inicio = 0;
+                    $meses_para_vacaciones = 11;
+                    break;
+                default:
+                    break;
+            }
+
+            $vacationsMonths = [];
+            $u = 0;
+            for ($i = $mes_inicio; $i <= $meses_para_vacaciones; $i++) {
+                $yearMonthValue = date('Y-m', strtotime($fecha_ini . " + $i months"));
+                $yearMonthText = convert_month_to_name(date('m', strtotime($yearMonthValue))) . '-' . date('Y', strtotime($yearMonthValue));
+                $vacationsMonths[$u]['id'] = $yearMonthValue;
+                $vacationsMonths[$u]['name'] = $yearMonthText;
+                $u++;
+                // $vacationsMonths[$yearMonthValue] = $yearMonthText;
+            }
+            return $vacationsMonths;
+        }
+    }
+    //para obtener el alias desde value
+    if (!function_exists('parameter_get_value')) {
+        /**
+         * Returns a list of parameters by lang
+         * */
+        function parameter_get_value($group_alias, $value)
+        {
+            return App\Models\CmsParameter::whereIn('group_id', App\Models\CmsParameterGroup::where('alias', $group_alias)->pluck('id'))
+                ->where('value', $value)
+                ->where('active', true)
+                ->get()
+                ->first();
+        }
+    }
 }

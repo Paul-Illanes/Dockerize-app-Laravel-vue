@@ -230,5 +230,19 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/', [PersonalAreasVacacionesController::class, 'index']);
             Route::put('/updateStatus/{id}', [PersonalAreasVacacionesController::class, 'status']);
         });
+        Route::group(['prefix' => 'registro_vacaciones'], function () {
+            Route::get('/cronogramaList', [VacacionesProgramacionController::class, 'cronogramaList']);
+            Route::post('/getCronograma', [VacacionesProgramacionController::class, 'getCronograma']);
+            Route::post('/areaList', [VacacionesProgramacionController::class, 'areaList']);
+            Route::post('/getMeses', [VacacionesProgramacionController::class, 'getMeses']);
+            Route::post('/jefe', [VacacionesProgramacionController::class, 'jefe']);
+            Route::post('delete/{id}', [VacacionesProgramacionController::class, 'delete']);
+            Route::post('/aprobar', [VacacionesProgramacionController::class, 'aprobar']);
+            Route::post('/status', [VacacionesProgramacionController::class, 'status']);
+            Route::post('/getCloseStatus', [VacacionesProgramacionController::class, 'getCloseStatus']);
+            Route::post('/cerrarProcesoJefe', [VacacionesProgramacionController::class, 'cerrarProcesoJefe']);
+            Route::get('/file/{name}', [VacacionesProgramacionController::class, 'getfile']);
+            Route::post('/pdf', [VacacionesProgramacionController::class, 'generar_pdf']);
+        });
     });
 });
