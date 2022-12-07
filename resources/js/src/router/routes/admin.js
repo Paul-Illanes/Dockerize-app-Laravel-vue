@@ -395,4 +395,17 @@ export default [
       action: 'vacaciones_programaciones-create',
     },
   },
+      // *===============================================---*
+  // *--------- vinculo laboral-- ---------------------------------------*
+  // *===============================================---*
+  
+  {
+    path: '/admin/vinculo_laboral',
+    name: 'admin-vinculo_laboral',
+    component: () => import('@/views/admin/vinculo_laboral/VinculoLaboralList.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'vinculo_laboral-index',
+    },
+  },
 ]

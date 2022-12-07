@@ -13,17 +13,17 @@ export default {
     fetchBajas(ctx, queryParams) {
         return new Promise((resolve, reject) => {
           
-          if(!JSON.parse(sessionStorage.getItem('bajapersonal')) || queryParams.refreshStatus == 1){
+          // if(!JSON.parse(sessionStorage.getItem('bajapersonal')) || queryParams.refreshStatus == 1){
             
             axios
               .get('/api/auth/personal_bajas/')
               .then(response => {
 
-                sessionStorage.setItem(
-                  "bajapersonal",
-                  JSON.stringify(response.data)
-              );
-              
+              //   sessionStorage.setItem(
+              //     "bajapersonal",
+              //     JSON.stringify(response.data)
+              // );
+              // console.log(response.data)
               const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status_baja = "", type = null } = queryParams
               /* eslint-enable */
            
@@ -62,57 +62,57 @@ export default {
               if (sortDesc) sortedData.reverse()
               const xd = [
                 {
-                  invoices: paginateArray(sortedData, perPage, page),
+                  bajas: paginateArray(sortedData, perPage, page),
                   total: this.filteredData.length,
                 },
               ]
               resolve(xd)
               })
               .catch(error => reject(error))
-          } else {
-            const dato = JSON.parse(sessionStorage.getItem('bajapersonal'));
+          // } else {
+          //   const dato = JSON.parse(sessionStorage.getItem('bajapersonal'));
 
-            const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status_baja = "", type = null } = queryParams
-            /* eslint-enable */
-            const queryLowered = q.toLowerCase();
+          //   const { q = '', perPage = 20, page = 1, sortBy = 'id', sortDesc = false, status_baja = "", type = null } = queryParams
+          //   /* eslint-enable */
+          //   const queryLowered = q.toLowerCase();
 
-            if (status_baja == 'Pendientes'){
-                this.status_baja = 0  
-            }
-            if (status_baja == 'Procesados'){
-              this.status_baja = 1
-            }
-            const filteredData = []
-            if(this.status_baja === 0){
-              this.filteredData = dato.filter(
-                baja =>
-                  /* eslint-disable operator-linebreak, implicit-arrow-linebreak */
-                  (baja.dni.toLowerCase().includes(queryLowered) ||
-                  baja.nombres.toLowerCase().includes(queryLowered)) &&
-                  baja.status_baja === 0,
-              )
-            }
-            else if(this.status_baja == 1 || this.status_baja == 2 || this.status_baja == 3 ){
-              this.filteredData = dato.filter(
-                baja =>
-                  /* eslint-disable operator-linebreak, implicit-arrow-linebreak */
-                  (baja.dni.toLowerCase().includes(queryLowered) ||
-                  baja.nombres.toLowerCase().includes(queryLowered)) &&
-                  baja.status_baja >= 1,
-              )
-            }
+          //   if (status_baja == 'Pendientes'){
+          //       this.status_baja = 0  
+          //   }
+          //   if (status_baja == 'Procesados'){
+          //     this.status_baja = 1
+          //   }
+          //   const filteredData = []
+          //   if(this.status_baja === 0){
+          //     this.filteredData = dato.filter(
+          //       baja =>
+          //         /* eslint-disable operator-linebreak, implicit-arrow-linebreak */
+          //         (baja.dni.toLowerCase().includes(queryLowered) ||
+          //         baja.nombres.toLowerCase().includes(queryLowered)) &&
+          //         baja.status_baja === 0,
+          //     )
+          //   }
+          //   else if(this.status_baja == 1 || this.status_baja == 2 || this.status_baja == 3 ){
+          //     this.filteredData = dato.filter(
+          //       baja =>
+          //         /* eslint-disable operator-linebreak, implicit-arrow-linebreak */
+          //         (baja.dni.toLowerCase().includes(queryLowered) ||
+          //         baja.nombres.toLowerCase().includes(queryLowered)) &&
+          //         baja.status_baja >= 1,
+          //     )
+          //   }
 
-            const sortedData = this.filteredData.sort(sortCompare(sortBy))
+          //   const sortedData = this.filteredData.sort(sortCompare(sortBy))
             
-            if (sortDesc) sortedData.reverse()
-            const xd = [
-              {
-                invoices: paginateArray(sortedData, perPage, page),
-                total: this.filteredData.length,
-              },
-            ]
-            resolve(xd)
-          }
+          //   if (sortDesc) sortedData.reverse()
+          //   const xd = [
+          //     {
+          //       invoices: paginateArray(sortedData, perPage, page),
+          //       total: this.filteredData.length,
+          //     },
+          //   ]
+          //   resolve(xd)
+          // }
         })
       },
     transformStatus(dato) {

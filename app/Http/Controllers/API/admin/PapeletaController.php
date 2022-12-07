@@ -107,8 +107,10 @@ class PapeletaController extends Controller
             'status' => 0,
             'nro_papeleta' => $nroPapeleta,
             'created_by' => $id,
-            'vinculo_laboral' => $vinculo_laboral
+            // 'vinculo_laboral' => $vinculo_laboral
         ] + $request->all());
+        $papeleta->actividad_vinculo($vinculo_laboral);
+
 
         if (is_null($papeleta->dni))
             $papeleta->dni = $persona;
@@ -121,7 +123,7 @@ class PapeletaController extends Controller
             }
         }
         $user = $request->user();
-        notificarAdd($user, 'Papeleta', $papeleta->id);
+        // notificarAdd($user, 'Papeleta', $papeleta->id);
         return response()->json(200);
     }
     public function crearVacacionDocumento($papeleta, $periodo)

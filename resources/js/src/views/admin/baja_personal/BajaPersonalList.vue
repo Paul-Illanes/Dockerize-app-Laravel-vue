@@ -126,12 +126,13 @@
             <!-- fechas -->
             <template #cell(fecha_ultimo_dia)="data">
                 <span class="text-nowrap">
-                    {{ changeDate(data.value) }}
+                    <!-- {{ changeDate(data.value) }} -->
+                    {{ data.value | moment("DD/MM/YYYY") }}
                 </span>
             </template>
             <template #cell(fecha_cese)="data">
                 <span class="text-nowrap">
-                    {{ changeDate(data.value) }}
+                    {{ data.value | moment("DD/MM/YYYY") }}
                 </span>
             </template>
             <!-- Column: Id -->
@@ -191,8 +192,7 @@
                         />
                         <span
                             class="align-middle ml-50"
-                            @click="personalBajaId = data.item.id"
-                            v-b-modal.modal-anular
+                            @click="modalAnular(data.item.id)"
                             >Anular</span
                         >
                     </b-dropdown-item>
@@ -209,6 +209,17 @@
             <!-- Column: Actions -->
             <template #cell(actions)="data">
                 <div class="text-nowrap">
+                    <feather-icon
+                        :id="`pdf-${data.item.id}-preview-icon`"
+                        icon="FileIcon"
+                        v-on:click="setModalpdf(data.item.id)"
+                        size="16"
+                        class="cursor-pointer text-info"
+                    />
+                    <b-tooltip
+                        title="ver archivos"
+                        :target="`pdf-${data.item.id}-preview-icon`"
+                    />
                     <feather-icon
                         @click="data.toggleDetails"
                         :id="`row-${data.item.id}-mas-icon`"
@@ -375,7 +386,11 @@
                         <dl class="row">
                             <dt class="col-sm-4 text-right">Fecha ingreso</dt>
                             <dd class="col-sm-8">
-                                {{ changeDate(modalData.fecha_ingreso) }}
+                                <!-- {{ changeDate(modalData.fecha_ingreso) }} -->
+                                {{
+                                    modalData.fecha_ingreso
+                                        | moment("DD/MM/YYYY")
+                                }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -411,13 +426,20 @@
                                 Fecha ultimo dia
                             </dt>
                             <dd class="col-sm-8">
-                                {{ changeDate(modalData.fecha_ultimo_dia) }}
+                                <!-- {{ changeDate(modalData.fecha_ultimo_dia) }} -->
+                                {{
+                                    modalData.fecha_ultimo_dia
+                                        | moment("DD/MM/YYYY")
+                                }}
                             </dd>
                         </dl>
                         <dl class="row">
                             <dt class="col-sm-4 text-right">Fecha cese</dt>
                             <dd class="col-sm-8">
-                                {{ changeDate(modalData.fecha_cese) }}
+                                <!-- {{ changeDate(modalData.fecha_cese) }} -->
+                                {{
+                                    modalData.fecha_cese | moment("DD/MM/YYYY")
+                                }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -471,10 +493,14 @@
                                 Fecha documento sustento
                             </dt>
                             <dd class="col-sm-8">
-                                {{
+                                <!-- {{
                                     changeDate(
                                         modalData.fecha_documento_sustento
                                     )
+                                }} -->
+                                {{
+                                    modalData.fecha_documento_sustento
+                                        | moment("DD/MM/YYYY")
                                 }}
                             </dd>
                         </dl>
@@ -497,7 +523,7 @@
                                 Creacion - fecha
                             </dt>
                             <dd class="col-sm-8">
-                                {{ changeDate(modalData.created_at) }}
+                                {{ modalData.created_at }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -513,7 +539,7 @@
                                 ultima modificacion - fecha
                             </dt>
                             <dd class="col-sm-8">
-                                {{ changeDate(modalData.updated_at) }}
+                                {{ modalData.updated_at }}
                             </dd>
                         </dl>
                         <dl class="row">
@@ -597,67 +623,99 @@
         >
             <b-card-body>
                 <validation-observer ref="anularForm">
-                    <b-form
-                        class="auth-register-form mt-2 ml-2"
-                        @submit.prevent="anular"
-                    >
-                        <b-col md="12">
-                            <b-form-input hidden name="register-name" />
-                            <b-form-group>
-                                <label>Motivo de Anulacion</label>
+                    <b-col md="12">
+                        <b-form-input hidden name="register-name" />
+                        <b-form-group>
+                            <label>Motivo de Anulacion</label>
 
-                                <validation-provider
-                                    #default="{ errors }"
-                                    rules="required"
-                                    name="motivo Anulacion"
-                                >
-                                    <v-select
-                                        label="name"
-                                        :options="parameterAnulacion"
-                                        v-model="selectedAnulacion"
-                                        placeholder="Seleccione"
-                                    />
-                                    <small class="text-danger">{{
-                                        errors[0]
-                                    }}</small>
-                                </validation-provider>
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="12">
-                            <b-form-input hidden name="register-name" />
-                            <b-form-group>
-                                <label>Archivo adjunto</label>
-                                <vue-dropzone
-                                    ref="myVueDropzone"
-                                    id="dropzone"
-                                    :useCustomSlot="true"
-                                    :options="dropzoneOptions"
-                                    @vdropzone-sending-multiple="sendMessage"
-                                    v-on:vdropzone-success="uploadSuccess"
-                                >
-                                    <div class="dropzone-custom-content">
-                                        <h3 class="dropzone-custom-title">
-                                            Adjunte archivo
-                                        </h3>
-                                        <div class="subtitle">
-                                            Suelte o arrastre
-                                        </div>
-                                    </div>
-                                </vue-dropzone>
-                            </b-form-group>
-                        </b-col>
-                        <hr />
-                        <b-col cols="12" class="mt-2">
-                            <b-button
-                                variant="primary"
-                                type="submit"
-                                @click.prevent="shootMessage"
+                            <validation-provider
+                                #default="{ errors }"
+                                rules="required"
+                                name="motivo Anulacion"
                             >
-                                Registrar
-                            </b-button>
-                        </b-col>
-                    </b-form>
+                                <v-select
+                                    label="name"
+                                    :options="parameterAnulacion"
+                                    v-model="selectedAnulacion"
+                                    placeholder="Seleccione"
+                                />
+                                <small class="text-danger">{{
+                                    errors[0]
+                                }}</small>
+                            </validation-provider>
+                        </b-form-group>
+                    </b-col>
+                    <b-col md="12">
+                        <VueFileAgent
+                            ref="vueFileAgent"
+                            :theme="'list'"
+                            :multiple="true"
+                            :deletable="true"
+                            :meta="true"
+                            :accept="'.pdf'"
+                            :maxSize="'10MB'"
+                            :maxFiles="14"
+                            :helpText="'Arrastre y suelte los archivos'"
+                            :errorText="{
+                                type: 'formato invalido. Solo archivos pdf',
+                                size: 'el archivo supera los 10MB',
+                            }"
+                            @upload="uploadResponse('success', $event)"
+                            @select="filesSelected($event)"
+                            @beforedelete="onBeforeDelete($event)"
+                            @delete="fileDeleted($event)"
+                            v-model="fileRecords"
+                        ></VueFileAgent>
+                    </b-col>
+                    <b-col cols="12" class="mt-2">
+                        <b-button
+                            :disabled="!fileRecordsForUpload.length"
+                            @click="uploadFiles()"
+                        >
+                            Registrar
+                        </b-button>
+                    </b-col>
                 </validation-observer>
+            </b-card-body>
+        </b-modal>
+        <b-modal
+            ref="my-modal-archivo"
+            id="modal-archivos"
+            centered
+            hide-footer
+            title="archivos adjuntos"
+            size="lg"
+        >
+            <b-card-body>
+                <b-row class="p-0 m-0">
+                    <b-list-group vertical="md">
+                        <b-list-group-item
+                            v-for="pdf in archivos"
+                            v-bind:data="pdf"
+                            v-bind:key="pdf.id"
+                        >
+                            <b-button
+                                v-ripple.400="'rgba(40, 199, 111, 0.15)'"
+                                variant="flat-success"
+                                class="btn-icon"
+                                @click="getArchivo(pdf.id)"
+                            >
+                                <feather-icon icon="FileIcon" />
+                            </b-button>
+                            <b-button
+                                v-ripple.400="'rgba(40, 199, 111, 0.15)'"
+                                variant="flat-danger"
+                                class="btn-icon"
+                                @click="trashArchivo(pdf.id)"
+                            >
+                                <feather-icon icon="TrashIcon" />
+                            </b-button>
+                            {{ pdf.nombre }}
+
+                            <b-badge variant="info">{{ pdf.detalle }}</b-badge>
+                        </b-list-group-item>
+                    </b-list-group>
+                </b-row>
             </b-card-body>
         </b-modal>
     </b-card>
@@ -684,11 +742,14 @@ import {
     BTooltip,
     BCardText,
     BCardBody,
+    BMediaBody,
     BListGroup,
     BFormGroup,
     BListGroupItem,
     BFormCheckboxGroup,
     BFormCheckbox,
+    BCardHeader,
+    BCardTitle,
 } from "bootstrap-vue";
 import ToastificationContent from "@core/components/toastification/ToastificationContent.vue";
 import { avatarText } from "@core/utils/filter";
@@ -697,16 +758,12 @@ import { onUnmounted } from "@vue/composition-api";
 import store from "@/store";
 import useBajaPersonalList from "./useBajaPersonalList";
 import bajaPersonalStoreModule from "./bajaPersonalStoreModule";
-import moment from "moment";
+// import moment from "moment";
 import Ripple from "vue-ripple-directive";
-import { parameter_pluck } from "@/helpers/index.js";
-import axios from "axios";
-import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
 
 export default {
     components: {
-        vueDropzone: vue2Dropzone,
         BForm,
         BListGroup,
         BListGroupItem,
@@ -726,46 +783,30 @@ export default {
         BDropdownItem,
         BPagination,
         BTooltip,
+        BMediaBody,
         BFormGroup,
         vSelect,
         BFormCheckboxGroup,
         BFormCheckbox,
         ValidationProvider,
         ValidationObserver,
+        BCardHeader,
+        BCardTitle,
     },
     directives: {
         Ripple,
     },
     data() {
         return {
-            personalBajaId: "",
-            dropzoneOptions: {
-                // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
-                url: "/api/auth/personal_bajas/anular",
-                thumbnailWidth: 150,
-                acceptedFiles: ".pdf",
-                maxFilesize: 0.5,
-                maxFilesize: 1,
-                maxFiles: 1,
-                init: function () {
-                    this.on("maxfilesexceeded", function (file) {
-                        this.removeAllFiles();
-                        this.addFile(file);
-                    });
-                },
-                dictRemoveFile: "Eliminar archivo",
-                addRemoveLinks: true,
-                parallelUploads: 3,
-                autoProcessQueue: false,
-                withCredentials: true,
-                uploadMultiple: true,
-                // headers: { Authorization: "Bearer " + this.token },
-                headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
+            fileRecords: [],
+            uploadUrl: "/api/archivos/save",
+            uploadHeaders: {
+                "X-CSRF-TOKEN": document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
             },
+            fileRecordsForUpload: [], // maintain an upload queue
+            personalBajaId: "",
             bajaId: "",
             //observacion
             selectedObs: "",
@@ -782,11 +823,8 @@ export default {
             updated_by: "",
             tipo_documento: "",
             origen_dependencia: "",
+            archivos: [],
         };
-    },
-    mounted() {
-        // Set the initial number of items
-        this.refreshStatus = 1;
     },
     created() {
         this.$http
@@ -799,58 +837,110 @@ export default {
             });
     },
     methods: {
-        uploadSuccess: async function (file, response) {
-            this.$toast({
-                component: ToastificationContent,
-                position: "top-right",
-                props: {
-                    title: "Archivo subido correctamente",
-                    icon: "CoffeeIcon",
-                    variant: "info",
-                },
-            });
-            this.$refs["my-modal-anular"].hide();
-            this.refreshStatus = 1;
+        modalAnular(id) {
+            this.personalBajaId = id;
+            this.$refs["my-modal-anular"].show();
         },
-        shootMessage: async function () {
-            this.$refs.anularForm.validate().then((success) => {
-                if (success) {
-                    if (this.$refs.myVueDropzone.processQueue()) {
-                        console.log("fer");
-                    } else {
-                        this.$http
-                            .post("/api/auth/personal_bajas/anular", {
-                                id: this.personalBajaId,
-                                motivo: this.selectedAnulacion.id,
-                            })
-                            .then(() => {
-                                this.refreshStatus = 1;
-                                this.$toast({
-                                    component: ToastificationContent,
-                                    position: "top-right",
-                                    props: {
-                                        title: "Anulacion registrado correctamente",
-                                        icon: "CoffeeIcon",
-                                        variant: "success",
-                                    },
+        // Upload with custom FormData
+        uploadFiles() {
+            this.fileRecords.forEach((file, index) => {
+                //create a form data
+                let formData = new FormData();
+                formData.append("file", file.file);
+                formData.append("id", this.personalBajaId);
+                formData.append("detalle", "anulacion");
+                formData.append("modulo", "personal_bajas");
+                formData.append("status", "1");
+                this.$http
+                    .post("/api/archivos/save", formData, this.uploadHeaders)
+                    .then((response) => {
+                        if (response.status == 200) {
+                            this.$http
+                                .post("/api/auth/personal_bajas/anular", {
+                                    id: this.personalBajaId,
+                                    motivo: this.selectedAnulacion.id,
+                                })
+                                .then(() => {
+                                    this.refetchData();
+                                    this.$toast({
+                                        component: ToastificationContent,
+                                        position: "top-right",
+                                        props: {
+                                            title: "Anulacion registrado correctamente",
+                                            icon: "CoffeeIcon",
+                                            variant: "success",
+                                        },
+                                    });
+
+                                    this.$refs["my-modal-anular"].hide();
+                                })
+                                .catch((error) => {
+                                    this.$refs.anularForm.setErrors(
+                                        error.response.data.errors
+                                    );
                                 });
-                                
-                                this.$refs["my-modal-anular"].hide();
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                                this.$refs.anularForm.setErrors(
-                                    error.response.data.errors
-                                );
+                        } else {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Accion realizada",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Ocurrio un error al subir los archivos`,
+                                },
                             });
-                    }
-                }
+                        }
+                    })
+                    .catch((error) => {
+                        this.$refs.registerForm.setErrors(
+                            error.response.data.errors
+                        );
+                    });
             });
         },
-        sendMessage: async function (files, xhr, formData) {
-            formData.append("id", this.personalBajaId);
-            formData.append("motivo", this.selectedAnulacion.id);
+
+        deleteUploadedFile: function (fileRecord) {
+            // Using the default uploader. You may use another uploader instead.
+            this.$refs.vueFileAgent.deleteUpload(
+                this.uploadUrl,
+                this.uploadHeaders,
+                fileRecord
+            );
         },
+        filesSelected: function (fileRecordsNewlySelected) {
+            var validFileRecords = fileRecordsNewlySelected.filter(
+                (fileRecord) => !fileRecord.error
+            );
+            this.fileRecordsForUpload =
+                this.fileRecordsForUpload.concat(validFileRecords);
+        },
+        onBeforeDelete: function (fileRecord) {
+            var i = this.fileRecordsForUpload.indexOf(fileRecord);
+            if (i !== -1) {
+                // queued file, not yet uploaded. Just remove from the arrays
+                this.fileRecordsForUpload.splice(i, 1);
+                var k = this.fileRecords.indexOf(fileRecord);
+                if (k !== -1) this.fileRecords.splice(k, 1);
+            } else {
+                if (confirm("Are you sure you want to delete?")) {
+                    this.$refs.vueFileAgent.deleteFileRecord(fileRecord); // will trigger 'delete' event
+                }
+            }
+        },
+        fileDeleted: function (fileRecord) {
+            var i = this.fileRecordsForUpload.indexOf(fileRecord);
+            if (i !== -1) {
+                this.fileRecordsForUpload.splice(i, 1);
+            } else {
+                this.deleteUploadedFile(fileRecord);
+            }
+        },
+        fileAdded: function (file) {
+            console.log(file);
+            console.log("data url: " + file.dataURL);
+        },
+
         getModalDetail(data) {
             this.$http
                 .post("/api/auth/personal_bajas/modal", {
@@ -897,7 +987,6 @@ export default {
                             this.$refs["my-modal-obs"].hide();
                         })
                         .catch((error) => {
-                            console.log(error);
                             this.$refs.observerForm.setErrors(
                                 error.response.data.errors
                             );
@@ -964,6 +1053,41 @@ export default {
                     });
                 });
         },
+        trashArchivo(id) {
+            this.$swal({
+                title: "Estas seguro?",
+                text: "No podras recuperar el archivo!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Si, Eliminar",
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-outline-danger ml-1",
+                },
+                buttonsStyling: false,
+            }).then((result) => {
+                if (result.value) {
+                    this.$http
+                        .post("/api/auth/archivos/delete/" + id)
+                        .then((res) => {
+                            this.$toast({
+                                component: ToastificationContent,
+                                position: "top-right",
+                                props: {
+                                    title: "Accion realizada",
+                                    icon: "CoffeeIcon",
+                                    variant: "success",
+                                    text: `Archivo eliminado correctamente`,
+                                },
+                            });
+                            this.$refs["my-modal-archivo"].hide();
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+            });
+        },
         confirmDelete(id) {
             this.$swal({
                 title: "Estas seguro?",
@@ -992,7 +1116,7 @@ export default {
                                 },
                             });
                             // console.log(res);
-                            this.refreshStatus = 1;
+                            this.refetchData();
                         })
                         .catch((error) => {
                             console.log(error);
@@ -1004,9 +1128,26 @@ export default {
             this.getModalDetail(data);
             this.modalData = data;
         },
-        changeDate(dato) {
-            return moment(String(dato)).format("DD/MM/YYYY");
+        setModalpdf(id) {
+            this.getArchivos(id);
+            this.$refs["my-modal-archivo"].show();
         },
+        getArchivos(id) {
+            this.$http
+                .post("/api/auth/archivos/all", {
+                    id: id,
+                    modulo: "personal_bajas",
+                })
+                .then((response) => {
+                    this.archivos = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        // changeDate(dato) {
+        //     return moment(String(dato)).format("DD/MM/YYYY");
+        // },
         changeStatus(dato) {
             if (dato == "0") return "Pendiente";
             if (dato == "1") return "Aprobado";
@@ -1026,7 +1167,7 @@ export default {
                 })
                 .then((res) => {
                     // console.log(res);
-                    this.refreshStatus = 1;
+                    this.refetchData();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -1077,7 +1218,6 @@ export default {
             typeFilter,
 
             refetchData,
-            refreshStatus,
 
             resolveInvoiceStatusVariantAndIcon,
             resolveClientAvatarVariant,
@@ -1109,8 +1249,6 @@ export default {
             resolveInvoiceStatusVariantAndIcon,
             resolveClientAvatarVariant,
             resolvePaperStatusVariant,
-
-            refreshStatus,
         };
     },
 };
@@ -1137,44 +1275,5 @@ export default {
 <style lang="scss">
 @import "~@core/scss/vue/libs/vue-select.scss";
 @import "~@core/scss/vue/libs/vue-sweetalert.scss";
-#customdropzone {
-    font-family: "Arial", sans-serif;
-    letter-spacing: 0.2px;
-    color: #777;
-    transition: background-color 0.2s linear;
-    height: 115px;
-    padding: 40px;
-    border: 1px solid #000000;
-}
-
-#customdropzone .dz-preview {
-    width: 160px;
-    display: inline-block;
-}
-#customdropzone .dz-preview .dz-image {
-    width: 80px;
-    height: 80px;
-    margin-left: 40px;
-    margin-bottom: 10px;
-}
-#customdropzone .dz-preview .dz-image > div {
-    width: inherit;
-    height: inherit;
-    border-radius: 50%;
-    background-size: contain;
-}
-#customdropzone .dz-preview .dz-image > img {
-    width: 100%;
-}
-
-#customdropzone .dz-preview .dz-details {
-    color: white;
-    transition: opacity 0.2s linear;
-    text-align: center;
-}
-#customdropzone .dz-success-mark,
-.dz-error-mark,
-.dz-remove {
-    display: none;
-}
+// @import "vue-file-agent/dist/vue-file-agent.css";
 </style>

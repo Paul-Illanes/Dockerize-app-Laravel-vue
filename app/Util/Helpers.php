@@ -508,4 +508,18 @@ if (!function_exists('parameter_get_alias')) {
                 ->first();
         }
     }
+    //registrar actividad de vinculo laboral
+    if (!function_exists('store_actividad_vinculo')) {
+        /**
+         * Returns a list of parameters by lang
+         * */
+        function store_actividad_vinculo($group_alias, $value)
+        {
+            return App\Models\CmsParameter::whereIn('group_id', App\Models\CmsParameterGroup::where('alias', $group_alias)->pluck('id'))
+                ->where('value', $value)
+                ->where('active', true)
+                ->get()
+                ->first();
+        }
+    }
 }

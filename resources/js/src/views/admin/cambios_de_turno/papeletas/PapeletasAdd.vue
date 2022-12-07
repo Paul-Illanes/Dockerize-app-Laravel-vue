@@ -597,7 +597,7 @@ export default {
                                     });
                                 }
 
-                                // this.$router.back();
+                                this.$router.back();
                             })
                             .catch((error) => {
                                 this.$refs.registerForm.setErrors(

@@ -9,5 +9,5 @@ class Archivos extends Model
 {
     use HasFactory;
     protected $table = 'archivos';
-    protected $fillable = ['ruta', 'nombre', 'modulo'];
+    protected $fillable = ['documento_id', 'ruta', 'nombre', 'modulo'];
 }

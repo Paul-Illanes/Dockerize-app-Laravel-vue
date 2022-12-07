@@ -10,6 +10,7 @@ use App\Models\MotivoBaja;
 use App\Models\TipoDocumentoBaja;
 use App\Models\DependenciaDocumento;
 use App\Models\Persona;
+use App\Models\Archivos;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
@@ -19,13 +20,13 @@ class PersonalBajaController extends Controller
     {
         $user_id = $request->user()->id;
 
-        $personalBajas = PersonalBaja::select('personal_bajas.*', 'personas.nombres', 'personas.cod_planilla', 'personas.c_l', 'motivo_bajas.baja')
+        return response()->json(PersonalBaja::select('personal_bajas.*', 'personas.nombres', 'personas.cod_planilla', 'personas.c_l', 'motivo_bajas.baja')
             ->latest('personal_bajas.created_at')
             ->supestructura($user_id)
             ->motivobaja('personal.motivo_baja_id')
-            ->get();
+            ->get());
 
-        return response()->json($personalBajas);
+        // return response()->json($personalBajas);
     }
     public function select(Request $request)
     {
@@ -47,10 +48,11 @@ class PersonalBajaController extends Controller
 
     public function file(Request $request)
     {
+        var_dump($request->all());
         if ($request->file('file')) {
             $data = $request->all();
             $id = $data['id'];
-            $baja = PersonalBaja::FindOrFail($id);
+            $baja = PersonalBaja::Find($id);
             $files = $request->file('file');
             if (!is_array($files)) {
                 $files = [$files];
@@ -97,9 +99,7 @@ class PersonalBajaController extends Controller
             'fecha_registro' => now(),
             'status' => 0,
             'created_by' => $user_id,
-            'updated_by' => $user_id,
-            'vinculo_laboral' => $vinculo_laboral
-
+            'updated_by' => $user_id
         ] + $request->all());
         $baja_id = $personalBaja->id; // id del registro personal baja
         if ($request->fecha_ultimo_dia <= now()) {
@@ -114,7 +114,7 @@ class PersonalBajaController extends Controller
             return response()->json(['id' => $baja_id], 200);
         }
         $user = $request->user();
-        notificarAdd($user, 'Baja de personal', $personalBaja->id);
+        // notificarAdd($user, 'Baja de personal', $personalBaja->id);
     }
     public function getDetail($id)
     {
@@ -134,10 +134,9 @@ class PersonalBajaController extends Controller
         $sustento = new PersonalBaja();
         $documento_sustento = $sustento->DocumentoSustento($request);
 
-        $personalBaja = new PersonalBaja();
-
+        $personalBaja = PersonalBaja::find($id);
         $personalBaja->documento_sustento = $documento_sustento;
-        $personalBaja->fecha_registro = now();
+        // $personalBaja->fecha_registro = now();
         $personalBaja->dni = $request->dni;
         $personalBaja->periodo = $request->periodo;
         $personalBaja->motivo_baja_id = $request->motivo_baja_id;
@@ -152,7 +151,7 @@ class PersonalBajaController extends Controller
         $personalBaja->plaza = $request->plaza;
         $personalBaja->observacion = $request->observacion;
         $personalBaja->updated_by = $user_id;
-        $personalBaja->status = 0;
+        $personalBaja->status = $request->status;
         $personalBaja->save();
         // update person to set baja
         $persona = Persona::find($request->dni);
@@ -168,8 +167,9 @@ class PersonalBajaController extends Controller
                 $user->changeStatus($user, false);
             }
         }
-        $user = $request->user();
-        notificarEdit($user, 'Baja de personal', $personalBaja->id);
+        return response()->json($personalBaja->id);
+        // $user = $request->user();
+        // notificarEdit($user, 'Baja de personal', $personalBaja->id);
     }
     public function modal(Request $request)
     {
@@ -199,34 +199,34 @@ class PersonalBajaController extends Controller
     public function update_estado(Request $request, $id)
     {
         $baja = PersonalBaja::Find($id);
+        if ($baja->status_baja == 3) {
+
+            $baja->status_baja = $request->status;
+            $baja->motivo_anulacion_id = null;
+            $baja->save();
+            // verificar y eliminar pdf de anulacion
+            $id = $baja->id;
+            $ruta = 'archivos';
+            $modulo = 'personal_bajas';
+            $detalle = 'anulacion';
+            $archivo = Archivos::where('documento_id', $id)->where('ruta', $ruta)->where('status', 1)->where('detalle', $detalle)->first();
+            // var_dump($archivo->nombre);
+            if ($archivo) {
+                $name = 'archivos/' . $archivo->nombre;
+                Storage::delete($name);
+                $archivo->delete();
+            }
+        }
         $baja->status_baja = $request->status;
         $baja->save();
     }
     public function anular(Request $request)
     {
-        if ($request->file('file')) {
-            $data = $request->all();
-            $id = $data['id'];
-            $baja = PersonalBaja::FindOrFail($id);
-            $files = $request->file('file');
-            if (!is_array($files)) {
-                $files = [$files];
-            }
-            $file = $files[0];
-            $filename = 'baja_' . $baja->dni . '_' . $baja->motivo_baja_id . '_' . $baja->periodo . '.pdf';
-
-            $archivo_id = upload_archive($file, $filename, 'bajas', 'baja de personal');
-            $baja->archivo_id = $archivo_id;
-            $baja->status_baja = 3;
-            $baja->save();
-        } else {
-            $data = $request->all();
-            $id = $data['id'];
-            $baja = PersonalBaja::FindOrFail($id);
-            $baja->motivo_anulacion_id = $data['motivo'];
-            $baja->status_baja = 3;
-            $baja->save();
-        }
+        $id = $request->id;
+        $baja = PersonalBaja::Find($id);
+        $baja->status_baja = 3;
+        $baja->save();
+        return response()->json(['message' => 'anulado correctamente'], 200);
     }
     public function delete($id)
     {

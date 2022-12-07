@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\actividad_vinculo;
 
 class Papeleta extends Model implements Auditable
 {
@@ -57,5 +58,14 @@ class Papeleta extends Model implements Auditable
     public function userUpdated()
     {
         return $this->hasOne('App\Models\User', 'id', 'updated_by');
+    }
+    public function actividad_vinculo($id_vinculo)
+    {
+        $vinculo = new actividad_vinculo();
+        $vinculo->vinculo_laboral_id = $id_vinculo;
+        $vinculo->documento_id = $this->id;
+        $vinculo->status = 1;
+        $vinculo->referencia = 'papeleta';
+        $vinculo->save();
     }
 }

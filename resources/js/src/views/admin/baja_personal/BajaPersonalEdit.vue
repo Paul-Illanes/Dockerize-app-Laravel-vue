@@ -265,23 +265,26 @@
                             </b-col>
                             <b-col md="6">
                                 <label>Archivo adjunto</label>
-                                <vue-dropzone
-                                    ref="myVueDropzone"
-                                    id="dropzone"
-                                    :useCustomSlot="true"
-                                    :options="dropzoneOptions"
-                                    @vdropzone-sending-multiple="sendMessage"
-                                    v-on:vdropzone-success="uploadSuccess"
-                                >
-                                    <div class="dropzone-custom-content">
-                                        <h3 class="dropzone-custom-title">
-                                            Adjunte archivo
-                                        </h3>
-                                        <div class="subtitle">
-                                            Suelte o arrastre
-                                        </div>
-                                    </div>
-                                </vue-dropzone>
+                                <VueFileAgent
+                                    ref="vueFileAgent"
+                                    :theme="'grid'"
+                                    :multiple="true"
+                                    :deletable="true"
+                                    :meta="true"
+                                    :accept="'.pdf'"
+                                    :maxSize="'10MB'"
+                                    :maxFiles="14"
+                                    :helpText="'Arrastre y suelte los archivos'"
+                                    :errorText="{
+                                        type: 'formato invalido. Solo archivos pdf',
+                                        size: 'el archivo supera los 10MB',
+                                    }"
+                                    @upload="uploadResponse('success', $event)"
+                                    @select="filesSelected($event)"
+                                    @beforedelete="onBeforeDelete($event)"
+                                    @delete="fileDeleted($event)"
+                                    v-model="fileRecords"
+                                ></VueFileAgent>
                             </b-col>
 
                             <b-col cols="12" class="mt-2 mb-5">
@@ -337,12 +340,9 @@ import ToastificationContent from "@core/components/toastification/Toastificatio
 import vSelect from "vue-select";
 import moment from "moment";
 import "animate.css";
-import vue2Dropzone from "vue2-dropzone";
-import "vue2-dropzone/dist/vue2Dropzone.min.css";
 
 export default {
     components: {
-        vueDropzone: vue2Dropzone,
         BCard,
         BRow,
         BCol,
@@ -374,36 +374,14 @@ export default {
 
     data() {
         return {
-            id: "",
-            token: sessionStorage.getItem("accessToken"),
-            // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
-            dropzoneOptions: {
-                // url: this.$http.post("/api/auth/personal_bajas/sendmessage"),
-                url: "/api/auth/sendfile",
-                thumbnailWidth: 150,
-                acceptedFiles: ".pdf",
-                maxFilesize: 0.5,
-                maxFilesize: 1,
-                maxFiles: 1,
-                init: function () {
-                    this.on("maxfilesexceeded", function (file) {
-                        this.removeAllFiles();
-                        this.addFile(file);
-                    });
-                },
-                dictRemoveFile: "Eliminar archivo",
-                addRemoveLinks: true,
-                parallelUploads: 3,
-                autoProcessQueue: false,
-                withCredentials: true,
-                uploadMultiple: true,
-                // headers: { Authorization: "Bearer " + this.token },
-                headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
+            fileRecords: [],
+            uploadUrl: "/api/archivos/save",
+            uploadHeaders: {
+                "X-CSRF-TOKEN": document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
             },
+            fileRecordsForUpload: [], // maintain an upload queue
             selectedPersona: "",
             selectedPeriodo: "",
             selectedMotivoBaja: "",
@@ -440,7 +418,6 @@ export default {
         };
     },
     created() {
-        console.log(this.token);
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
             .get("/api/auth/users/pluck")
@@ -465,6 +442,46 @@ export default {
             });
     },
     methods: {
+        deleteUploadedFile: function (fileRecord) {
+            // Using the default uploader. You may use another uploader instead.
+            this.$refs.vueFileAgent.deleteUpload(
+                this.uploadUrl,
+                this.uploadHeaders,
+                fileRecord
+            );
+        },
+        filesSelected: function (fileRecordsNewlySelected) {
+            var validFileRecords = fileRecordsNewlySelected.filter(
+                (fileRecord) => !fileRecord.error
+            );
+            this.fileRecordsForUpload =
+                this.fileRecordsForUpload.concat(validFileRecords);
+        },
+        onBeforeDelete: function (fileRecord) {
+            var i = this.fileRecordsForUpload.indexOf(fileRecord);
+            if (i !== -1) {
+                // queued file, not yet uploaded. Just remove from the arrays
+                this.fileRecordsForUpload.splice(i, 1);
+                var k = this.fileRecords.indexOf(fileRecord);
+                if (k !== -1) this.fileRecords.splice(k, 1);
+            } else {
+                if (confirm("Are you sure you want to delete?")) {
+                    this.$refs.vueFileAgent.deleteFileRecord(fileRecord); // will trigger 'delete' event
+                }
+            }
+        },
+        fileDeleted: function (fileRecord) {
+            var i = this.fileRecordsForUpload.indexOf(fileRecord);
+            if (i !== -1) {
+                this.fileRecordsForUpload.splice(i, 1);
+            } else {
+                this.deleteUploadedFile(fileRecord);
+            }
+        },
+        fileAdded: function (file) {
+            console.log(file);
+            console.log("data url: " + file.dataURL);
+        },
         getNameDocumentType(data) {
             var dato = this.documentos.find((item) => item.id == data);
             return {
@@ -526,29 +543,12 @@ export default {
                     this.posicion = response.data.posicion;
                     this.plaza = response.data.plaza;
                     this.observacion = response.data.observacion;
-                    console.log(selectedTipoDocumento);
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         },
-        uploadSuccess: async function (file, response) {
-            this.$toast({
-                component: ToastificationContent,
-                position: "top-right",
-                props: {
-                    title: "Archivo subido correctamente",
-                    icon: "CoffeeIcon",
-                    variant: "info",
-                },
-            });
-        },
-        shootMessage: async function () {
-            this.$refs.myVueDropzone.processQueue();
-        },
-        sendMessage: async function (files, xhr, formData) {
-            formData.append("id", this.id);
-        },
+
         back() {
             this.$router.back();
         },
@@ -579,8 +579,32 @@ export default {
                             }
                         )
                         .then((res) => {
-                            this.id = res.data.id;
-                            this.shootMessage();
+                            if (this.fileRecords) {
+                                this.fileRecords.forEach((file, index) => {
+                                    //create a form data
+                                    let formData = new FormData();
+                                    formData.append("file", file.file);
+                                    formData.append(
+                                        "id",
+                                        this.$route.params.bajaId
+                                    );
+                                    formData.append("detalle", "adjunto");
+                                    formData.append("modulo", "personal_bajas");
+                                    formData.append("status", "0");
+                                    this.$http
+                                        .post(
+                                            "/api/archivos/save",
+                                            formData,
+                                            this.uploadHeaders
+                                        )
+                                        .then(() => {
+                                            console.log("archivos subidos");
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        });
+                                });
+                            }
                             this.$toast({
                                 component: ToastificationContent,
                                 position: "top-right",

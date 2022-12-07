@@ -33,7 +33,7 @@ class ContratosController extends Controller
             ] + $request->all()
         );
         $user = $request->user();
-        notificarAdd($user, 'Contrato', $contratos->id);
+        // notificarAdd($user, 'Contrato', $contratos->id);
         return response()->json($contratos);
     }
     public function getDetail(Request $request, $id)

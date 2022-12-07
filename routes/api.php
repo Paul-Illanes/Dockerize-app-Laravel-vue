@@ -26,6 +26,7 @@ use App\Http\Controllers\API\ArchivoController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\API\admin\VacacionesProgramacionController;
 use App\Http\Controllers\API\admin\PersonalAreasVacacionesController;
+use App\Http\Controllers\API\admin\VinculoLaboralController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,12 +38,14 @@ use App\Http\Controllers\API\admin\PersonalAreasVacacionesController;
 |
 */
 
+Route::post('/archivos/save', [ArchivoController::class, 'save'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::get('/soporte', [DirectorioReclamoController::class, 'getList']);
-    Route::post('sendfile', [PersonalBajaController::class, 'file']);
-
+    Route::post('/sendfile', [PersonalBajaController::class, 'file']);
+    Route::post('/archivos/save', [ArchivoController::class, 'save']);
+    Route::post('/archivos/delete/{id}', [ArchivoController::class, 'delete_archivo']);
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
@@ -53,6 +56,7 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('/parameter_turno/{varia}', [ParameterController::class, 'parameter_turno']);
         Route::get('/parameter_check/{varia}', [ParameterController::class, 'parameter_check']);
         Route::get('/archivos/{id}', [ArchivoController::class, 'file']);
+        Route::post('/archivos/all/', [ArchivoController::class, 'all']);
         //permisos
         Route::get('getpersonas', [PersonaControllers::class, 'personList']);
         Route::get('permissions', [PermissionController::class, 'getList']);
@@ -243,6 +247,13 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('/cerrarProcesoJefe', [VacacionesProgramacionController::class, 'cerrarProcesoJefe']);
             Route::get('/file/{name}', [VacacionesProgramacionController::class, 'getfile']);
             Route::post('/pdf', [VacacionesProgramacionController::class, 'generar_pdf']);
+        });
+        Route::group(['prefix' => 'vinculo_laboral'], function () {
+            Route::get('/', [VinculoLaboralController::class, 'index']);
+            Route::post('/create', [VinculoLaboralController::class, 'store']);
+            Route::put('/edit/{id}', [VinculoLaboralController::class, 'edit']);
+            Route::post('/delete/{id}', [VinculoLaboralController::class, 'delete']);
+            Route::get('/getContratos', [VinculoLaboralController::class, 'getContratos']);
         });
     });
 });

@@ -91,6 +91,13 @@ export default [
         icon: 'FileTextIcon',
       },
       {
+        title: 'Vinculo Laboral',
+        route: 'admin-vinculo_laboral',
+        resource: 'ACL',
+        action: 'vinculo_laboral-index',
+        icon: 'FileTextIcon',
+      },
+      {
         title: 'Agrupar Personal',
         route: 'admin-agrupar-list',
         resource: 'ACL',

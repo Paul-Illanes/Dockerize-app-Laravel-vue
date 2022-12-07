@@ -33,7 +33,6 @@ export default function useBajaPersonalList() {
   const isSortDirDesc = ref(true)
   const statusFilter = ref('Pendientes')
   const typeFilter = ref(null)
-  const refreshStatus = ref(0)
 
   const dataMeta = computed(() => {
     const localItemsCount = refBajaPersonalListTable.value ? refBajaPersonalListTable.value.localItems.length : 0
@@ -49,7 +48,7 @@ export default function useBajaPersonalList() {
     
   }
 
-  watch([currentPage, perPage, searchQuery, statusFilter, typeFilter,refreshStatus], () => {
+  watch([currentPage, perPage, searchQuery, statusFilter, typeFilter], () => {
     refetchData()
   })
 
@@ -63,17 +62,14 @@ export default function useBajaPersonalList() {
         sortDesc: isSortDirDesc.value,
         status_baja: statusFilter.value,
         type: typeFilter.value,
-        refreshStatus: refreshStatus.value,
       })
       .then(response => {
-        const { invoices, total } = response[0]
+        const { bajas, total } = response[0]
 
-        callback(invoices)
+        callback(bajas)
         totalInvoices.value = total
-        refreshStatus.value = 0
       })
       .catch((error) => {
-        console.log(error)
         toast({
           component: ToastificationContent,
           props: {
@@ -134,6 +130,5 @@ export default function useBajaPersonalList() {
     resolveClientAvatarVariant,
     resolvePaperStatusVariant,
     refetchData,
-    refreshStatus
   }
 }
