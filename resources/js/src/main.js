@@ -11,7 +11,8 @@ import VueFileAgent from 'vue-file-agent';
 import VueFileAgentStyles from 'vue-file-agent/dist/vue-file-agent.css';
 
 Vue.use(VueFileAgent);
-
+import VueExcelEditor from 'vue-excel-editor'
+Vue.use(VueExcelEditor)
 window.Pusher = require('pusher-js');
 const token = sessionStorage.getItem('accessToken')
 window.Echo = new Echo({

@@ -161,4 +161,17 @@ export default [
       },
     ],
   },
+  {
+    title: 'Roles',
+    icon: 'ListIcon',
+    children: [
+      {
+        title: 'Rol de trabajo',
+        route: 'admin-rol-trabajo',
+        resource: 'ACL',
+        action: 'incorporaciones-index',
+        icon: 'PlusIcon',
+      },
+    ],
+  },
 ]

@@ -27,6 +27,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\API\admin\VacacionesProgramacionController;
 use App\Http\Controllers\API\admin\PersonalAreasVacacionesController;
 use App\Http\Controllers\API\admin\VinculoLaboralController;
+use App\Http\Controllers\API\admin\PersonalRolDetalleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -254,6 +255,13 @@ Route::group(['prefix' => 'auth'], function () {
             Route::put('/edit/{id}', [VinculoLaboralController::class, 'edit']);
             Route::post('/delete/{id}', [VinculoLaboralController::class, 'delete']);
             Route::get('/getContratos', [VinculoLaboralController::class, 'getContratos']);
+        });
+        Route::group(['prefix' => 'rol-detalle'], function () {
+            Route::get('/', [PersonalRolDetalleController::class, 'index']);
+            Route::post('/create', [PersonalRolDetalleController::class, 'store']);
+            Route::put('/edit/{id}', [PersonalRolDetalleController::class, 'edit']);
+            Route::post('/delete/{id}', [PersonalRolDetalleController::class, 'delete']);
+            Route::get('/getContratos', [PersonalRolDetalleController::class, 'getContratos']);
         });
     });
 });

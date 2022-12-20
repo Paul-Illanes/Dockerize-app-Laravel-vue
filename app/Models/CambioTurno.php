@@ -245,4 +245,11 @@ class CambioTurno extends Model implements Auditable
         if ($dni)
             return $query->join('personas as solicitante', 'solicitante.dni', '=', $dni);
     }
+    public function scopeVinculo($query, $id)
+    {
+        if ($id)
+            return $query->join('actividad_vinculo', 'actividad_vinculo.documento_id', '=', $id)
+                ->join('vinculo_laboral', 'vinculo_laboral.id', 'actividad_vinculo.vinculo_laboral_id')
+                ->where('vinculo_laboral.status', '=', '1');
+    }
 }

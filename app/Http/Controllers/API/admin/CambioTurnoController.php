@@ -18,6 +18,7 @@ class CambioTurnoController extends Controller
             ->aceptante('cambio_turnos.aceptante_id')
             ->solicitante('cambio_turnos.solicitante_id')
             ->latest('cambio_turnos.created_at')
+            ->vinculo('cambio_turnos.id')
             ->supestructura($user_id)
             ->orderBy('cambio_turnos.fecha', 'DESC')
             ->get();

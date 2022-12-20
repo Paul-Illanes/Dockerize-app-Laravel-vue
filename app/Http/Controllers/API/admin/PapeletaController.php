@@ -21,6 +21,7 @@ class PapeletaController extends Controller
             // ->join('personas', 'personas.dni', '=', 'papeletas.dni')
             ->select('papeletas.id', 'papeletas.anio', 'papeletas.fecha', 'papeletas.nro_papeleta', 'papeletas.dni', 'personas.nombres', 'personas.dependencia', 'papeletas.fecha_salida', 'papeletas.hora_salida', 'papeletas.fecha_retorno', 'papeletas.hora_retorno', 'papeletas.status', 'tipo_permisos.tipo_permiso')
             // ->where('papeletas.status', '1')
+            ->vinculo('papeletas.id')
             ->supestructura($user_id)
             ->get();
 

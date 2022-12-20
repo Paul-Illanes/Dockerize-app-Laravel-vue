@@ -408,4 +408,17 @@ export default [
       action: 'vinculo_laboral-index',
     },
   },
+        // *===============================================---*
+  // *--------- rol de trabajo-- ---------------------------------------*
+  // *===============================================---*
+  
+  {
+    path: '/admin/rol-trabajo',
+    name: 'admin-rol-trabajo',
+    component: () => import('@/views/admin/roles/rol-trabajo/rolTrabajo.vue'),
+    meta: {
+      resource: 'ACL',
+      action: 'vinculo_laboral-index',
+    },
+  },
 ]
