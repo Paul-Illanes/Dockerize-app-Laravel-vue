@@ -2,44 +2,86 @@
     <b-card title="Programacion Vacacional">
         <b-card-actions title="Filtros" action-collapse>
             <b-row>
-                <b-col md="6">
-                    <!-- <b-form-group
-                        label="Ejecucion Vacacional:"
+                <b-col md="4">
+                    <b-form-group
+                        label="Area:"
                         label-for="h-first-name"
-                        label-cols-md="4"
+                        label-cols-md="2"
                     >
                         <v-select
                             label="name"
-                            :options="periodos"
-                            v-model="periodo"
+                            :options="areas"
+                            v-model="area"
                             name="superstructura"
                         />
-                    </b-form-group> -->
+                    </b-form-group>
                 </b-col>
-                <b-col md="6">
-                    <p class="mt-50">Periodo Vacacional:</p>
+                <b-col md="4">
+                    <b-form-group
+                        label="Periodo:"
+                        label-for="h-first-name"
+                        label-cols-md="2"
+                    >
+                        <v-select
+                            label="name"
+                            :options="anios"
+                            v-model="anio"
+                            name="superstructura"
+                        />
+                    </b-form-group>
+                </b-col>
+                <b-col md="4">
+                    <b-form-group
+                        label="Mes:"
+                        label-for="h-first-name"
+                        label-cols-md="2"
+                    >
+                        <v-select
+                            label="name"
+                            :options="meses"
+                            v-model="mes"
+                            name="superstructura"
+                        />
+                        <p v-if="rol">Fecha cierre: {{ rol.fecha_cierre }}</p>
+                    </b-form-group>
                 </b-col>
             </b-row>
         </b-card-actions>
-        <div id="exc">
-            <vue-excel-editor v-model="jsondata" no-footer filter-row>
+        <div id="exc" v-if="area.id">
+            <vue-excel-editor v-model="personal" @select="onSelect" no-footer>
                 <vue-excel-column
-                    field="user"
-                    label="User ID"
+                    field="nombres"
+                    label="Personal"
                     type="string"
-                    width="80px"
+                    width="250px"
                 />
                 <vue-excel-column
-                    field="name"
-                    label="Name"
+                    field="horas"
+                    label="Horas"
                     type="string"
-                    width="150px"
+                    width="50px"
+                    value="10"
                 />
                 <vue-excel-column
+                    v-for="item in dias"
+                    :field="item.num"
+                    :label="item.dia"
+                    type="map"
+                    width="40px"
+                    :init-style="
+                        item.dia.substr(-1) == 'D' ? feriadoStyle : normalStyle
+                    "
+                    :change="onBeforeChange"
+                    :options="acti"
+                    :readonly="item.dia.substr(-1) == 'D' ? true : false"
+                />
+                <!-- <vue-excel-column
                     field="phone"
                     label="Contact"
                     type="string"
                     width="130px"
+                    :init-style="columnStyle"
+                    :style="columnStyle"
                 />
                 <vue-excel-column
                     field="gender"
@@ -59,7 +101,7 @@
                     label="Date Of Birth"
                     type="date"
                     width="80px"
-                />
+                /> -->
             </vue-excel-editor>
         </div>
     </b-card>
@@ -136,57 +178,186 @@ export default {
     },
     data() {
         return {
-            jsondata: [
-                {
-                    user: "hc",
-                    name: "Harry Cole",
-                    phone: "1-415-2345678",
-                    gender: "M",
-                    age: 25,
-                    birth: "1997-07-01",
-                },
-                {
-                    user: "sm",
-                    name: "Simon Minolta",
-                    phone: "1-123-7675682",
-                    gender: "M",
-                    age: 20,
-                    birth: "1999-11-12",
-                },
-                {
-                    user: "ra",
-                    name: "Raymond Atom",
-                    phone: "1-456-9981212",
-                    gender: "M",
-                    age: 19,
-                    birth: "2000-06-11",
-                },
-                {
-                    user: "ag",
-                    name: "Mary George",
-                    phone: "1-556-1245684",
-                    gender: "F",
-                    age: 22,
-                    birth: "2002-08-01",
-                },
-                {
-                    user: "kl",
-                    name: "Kenny Linus",
-                    phone: "1-891-2345685",
-                    gender: "M",
-                    age: 29,
-                    birth: "1990-09-01",
-                },
-            ],
+            feriadoStyle: {
+                "background-color": "red",
+            },
+            normalStyle: {},
+            acti: [],
+            dias: [],
+            personal: [],
+            meses: [],
+            mes: "",
+            areas: [],
+            area: "",
+            anios: [],
+            anio: "",
+            rol: "",
         };
     },
-    methods: {},
+    methods: {
+        getAnio() {
+            const fecha = new Date();
+            const añoActual = fecha.getFullYear();
+            // this.anios.push(añoActual);
+            for (let i = 0; i < 3; i++) {
+                this.anios.push(añoActual + i);
+            }
+            console.log(this.anios);
+        },
+
+        onSelect(selectedRows) {
+            console.log(selectedRows);
+        },
+        onBeforeChange(newVal, oldVal, row, cell) {
+            console.log(newVal, oldVal, row, cell);
+            if (newVal == null) {
+                console.log("no existe el valor");
+                this.$http
+                    .post("/api/auth/rol-detalle/delete", {
+                        area_id: this.area.id,
+                        dia: cell.name,
+                        mes: this.mes.id,
+                        anio: this.anio,
+                        persona_dni: row.dni,
+                        personal_rol_id: this.rol.id,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                        this.getTable();
+                        this.getRoles();
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            } else {
+                if (row.horas <= 150) {
+                    this.$http
+                        .post("/api/auth/rol-detalle/create", {
+                            area_id: this.area.id,
+                            actividad_id: newVal,
+                            dia: cell.name,
+                            mes: this.mes.id,
+                            anio: this.anio,
+                            persona_dni: row.dni,
+                            personal_rol_id: this.rol.id,
+                        })
+                        .then((response) => {
+                            this.getTable();
+                            this.getRoles();
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                } else {
+                    this.$toast({
+                        component: ToastificationContent,
+                        position: "top-right",
+                        props: {
+                            title: "Ocurrio un inconveniente",
+                            icon: "CoffeeIcon",
+                            variant: "danger",
+                            text: `ya supero sus horas de trabajo: `,
+                        },
+                    });
+                    this.getTable();
+                }
+            }
+        },
+        // onBeforeChange(newVal, oldVal, row) {
+        //     console.log(newVal, oldVal, row); // show all the arguments: newVal, oldVal, oldRow, field
+        // },
+        getTable() {
+            this.$http
+                .post("/api/auth/rol-detalle/index", {
+                    area_id: this.area.id,
+                    anio: this.anio,
+                    mes: this.mes.id,
+                })
+                .then((response) => {
+                    this.personal = response.data.personal;
+                    this.dias = response.data.diasxmes;
+                    this.rol = response.data.rol;
+                    console.log(this.personal);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        getActividades() {
+            this.$http
+                .post("/api/auth/rol-detalle/getActividades", {
+                    area_id: this.area.id,
+                })
+                .then((response) => {
+                    this.acti = response.data;
+
+                    this.getTable();
+                    this.getRoles();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        getRoles() {
+            this.$http
+                .post("/api/auth/rol-detalle/getRoles", {
+                    area_id: this.area.id,
+                    anio: this.anio,
+                    mes: this.mes.id,
+                })
+                .then((response) => {
+                    this.rol = response.data;
+                    // console.log(this.rol);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
+    watch: {
+        area: function (val, oldval) {
+            if (this.mes.id && this.anio) {
+                console.log("area");
+            }
+            // this.getActividades();
+            // this.getRoles();
+        },
+        anio: function (val, oldval) {
+            if (this.mes.id && this.area.id) {
+                console.log("anio");
+            }
+            // this.getActividades();
+            // this.getRoles();
+        },
+        mes: function (val, oldval) {
+            if (this.area.id && this.anio) {
+                console.log("periodo");
+                this.getActividades();
+            }
+            // this.getActividades();
+            // this.getRoles();
+        },
+    },
     created() {
+        this.getAnio();
+        // this.$http
+        //     .post("/api/auth/rol-detalle/getActividades", {
+        //         area_id: 64,
+        //     })
+        //     .then((response) => {
+        //         this.acti = response.data;
+        //         console.log(response);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     });
+
         // await axios.get('/sanctum/csrf-cookie')
         this.$http
-            .get("/api/auth/rol-detalle/")
+            .get("/api/auth/rol-detalle/inicio")
             .then((response) => {
-                console.log(response);
+                this.meses = response.data.meses;
+                this.areas = response.data.servicios;
             })
             .catch((error) => {
                 console.log(error);

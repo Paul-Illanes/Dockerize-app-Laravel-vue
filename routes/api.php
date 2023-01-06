@@ -257,11 +257,15 @@ Route::group(['prefix' => 'auth'], function () {
             Route::get('/getContratos', [VinculoLaboralController::class, 'getContratos']);
         });
         Route::group(['prefix' => 'rol-detalle'], function () {
-            Route::get('/', [PersonalRolDetalleController::class, 'index']);
+            Route::get('inicio', [PersonalRolDetalleController::class, 'inicio']);
+            Route::post('/index', [PersonalRolDetalleController::class, 'index']);
             Route::post('/create', [PersonalRolDetalleController::class, 'store']);
             Route::put('/edit/{id}', [PersonalRolDetalleController::class, 'edit']);
             Route::post('/delete/{id}', [PersonalRolDetalleController::class, 'delete']);
             Route::get('/getContratos', [PersonalRolDetalleController::class, 'getContratos']);
+            Route::post('/getActividades', [PersonalRolDetalleController::class, 'getActividades']);
+            Route::post('/getRoles', [PersonalRolDetalleController::class, 'getRoles']);
+            Route::post('/delete', [PersonalRolDetalleController::class, 'delete']);
         });
     });
 });

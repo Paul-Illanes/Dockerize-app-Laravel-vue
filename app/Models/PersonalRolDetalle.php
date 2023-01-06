@@ -16,7 +16,7 @@ class PersonalRolDetalle extends Model
      *
      * @var array
      */
-    protected $fillable = ['persona_dni', 'actividad_id', 'personal_rol_id', 'fecha_turno', 'anio', 'mes', 'dia', 'hora', 'minuto', 'estado_trabajo'];
+    protected $fillable = ['persona_dni', 'area_id', 'actividad_id', 'personal_rol_id', 'fecha_turno', 'anio', 'mes', 'dia', 'hora', 'minuto', 'estado_trabajo'];
 
 
     /**
