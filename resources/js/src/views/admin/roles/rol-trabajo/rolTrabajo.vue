@@ -47,8 +47,13 @@
                 </b-col>
             </b-row>
         </b-card-actions>
-        <div id="exc" v-if="area.id">
-            <vue-excel-editor v-model="personal" @select="onSelect" no-footer>
+        <div id="exc">
+            <vue-excel-editor
+                :cell-style="myMethod"
+                v-model="personal"
+                @select="onSelect"
+                no-footer
+            >
                 <vue-excel-column
                     field="nombres"
                     label="Personal"
@@ -68,13 +73,12 @@
                     :label="item.dia"
                     type="map"
                     width="40px"
-                    :init-style="
-                        item.dia.substr(-1) == 'D' ? feriadoStyle : normalStyle
-                    "
+                    :init-style="onColor(item)"
                     :change="onBeforeChange"
                     :options="acti"
-                    :readonly="item.dia.substr(-1) == 'D' ? true : false"
+                    :readonly="item.feriado == '1' ? true : false"
                 />
+                <!-- item.dia.substr(-1) == 'D' ? feriadoStyle : normalStyle -->
                 <!-- <vue-excel-column
                     field="phone"
                     label="Contact"
@@ -179,9 +183,14 @@ export default {
     data() {
         return {
             feriadoStyle: {
-                "background-color": "red",
+                "background-color": "blue",
+            },
+            domingoStyle: {
+                "background-color": "#CD5C5C",
             },
             normalStyle: {},
+            abelStyle: { "background-color": "orange" },
+            rodriStyle: { "background-color": "green" },
             acti: [],
             dias: [],
             personal: [],
@@ -195,6 +204,60 @@ export default {
         };
     },
     methods: {
+        myMethod(cell, col) {
+            let nom = "";
+            if (col.name || (col.label != "Personal" && col.label != "Horas"))
+                nom = col.name;
+            let dia = nom.replace("D", "A");
+            if (cell[dia] === "N")
+                return { color: "green", "background-color": "beige" };
+            if (cell[dia] === "D") return { "font-style": "italic" };
+            return { color: "black" };
+            // rec.obj.forEach(function (item) {
+            //     var data = JSON.parse(JSON.stringify(item));
+            //     // console.log(data[nom]);
+            //     if (data[nom] === "N") return { color: "green" };
+            //     if (data[nom] === "D") return { color: "blue" };
+            //     return { color: "black" };
+            // });
+            // if (col.name == "nombres") return { color: "red" };
+            // if (col.name == "horas") return { color: "blue" };
+
+            // // console.log(rec, col);
+            // // var data = rec;
+            // // col.shift();
+
+            // // console.log(nom);
+            // // data.shift();
+            // // console.log(data[nom]);
+            // // console.log(typeof rec.obj);
+            // var data =
+            //     typeof rec.obj !== "undefined"
+            //         ? JSON.parse(JSON.stringify(rec.obj))
+            //         : null;
+            // // if (data) {
+            // //     console.log(data);
+            // // }
+
+            // data.forEach(function (item) {
+            //     // console.log(item[nom]);
+            //     // console.log("existe");
+            //     if (item[nom] === "N") {
+            //         console.log("N");
+            //         return { color: "green" };
+            //     }
+            //     if (item[nom] === "D") {
+            //         console.log("D");
+            //         return { color: "blue" };
+            //     }
+            //     // if (item[nom] === "N") return { "background-color": "green" };
+            //     // if (item[nom] === "D") return { "background-color": "red" };
+            //     // else return { "background-color": "orange" };
+            // });
+            // return { color: "black" };
+            // // if (col.name === "phone" && rec.gender === "F")
+            // // return { color: "green" };
+        },
         getAnio() {
             const fecha = new Date();
             const añoActual = fecha.getFullYear();
@@ -204,7 +267,17 @@ export default {
             }
             console.log(this.anios);
         },
+        onColor(item) {
+            if (item.dia.substr(-1) == "D") {
+                return this.domingoStyle;
+            } else if (item.feriado == 1) {
+                return this.feriadoStyle;
+            } else {
+                return this.normalStyle;
+            }
 
+            console.log(selectedRows);
+        },
         onSelect(selectedRows) {
             console.log(selectedRows);
         },
@@ -242,6 +315,7 @@ export default {
                             personal_rol_id: this.rol.id,
                         })
                         .then((response) => {
+                            console.log(response.data);
                             this.getTable();
                             this.getRoles();
                         })
@@ -307,7 +381,7 @@ export default {
                 })
                 .then((response) => {
                     this.rol = response.data;
-                    // console.log(this.rol);
+                    console.log(this.rol);
                 })
                 .catch((error) => {
                     console.log(error);
