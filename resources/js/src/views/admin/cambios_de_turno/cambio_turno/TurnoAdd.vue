@@ -73,6 +73,7 @@
                                             errors[0]
                                         }}</small>
                                     </validation-provider>
+                                    {{ solicitante_id }}
                                 </b-form-group>
                             </b-col>
                             <b-col md="6">
@@ -110,7 +111,10 @@
                                         <v-select
                                             label="name"
                                             :options="parameters_turno"
-                                            v-model="aceptante_turno_selected"
+                                            v-model="aceptante_turno"
+                                            :disabled="
+                                                solicitante_id ? false : true
+                                            "
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
@@ -126,15 +130,23 @@
                                         name="fecha aceptante"
                                     >
                                         <label>Fecha aceptante</label>
-                                        <b-form-input
+                                        <!-- <b-form-input
                                             id="example-input"
-                                            v-model="fecha_aceptante"
+                                            v-model="
+                                                aceptante_turno_selected.fecha_turno
+                                            "
                                             type="date"
+                                        /> -->
+                                        <v-select
+                                            label="name"
+                                            :options="aceptante_actividades"
+                                            v-model="aceptante_fecha"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
                                         }}</small>
                                     </validation-provider>
+                                    {{ aceptante_fecha }}
                                 </b-form-group>
                             </b-col>
                             <b-col md="3">
@@ -147,7 +159,7 @@
                                         <label>Hora de ingreso</label>
                                         <b-form-input
                                             id="example-input"
-                                            v-model="hora_ingreso_aceptante"
+                                            v-model="aceptante_hora_inicio"
                                             type="time"
                                         />
                                         <small class="text-danger">{{
@@ -166,7 +178,7 @@
                                         <label>Hora de salida</label>
                                         <b-form-input
                                             id="example-input"
-                                            v-model="hora_salida_aceptante"
+                                            v-model="aceptante_hora_fin"
                                             type="time"
                                         />
                                         <small class="text-danger">{{
@@ -189,12 +201,16 @@
                                         <v-select
                                             label="name"
                                             :options="parameters_turno"
-                                            v-model="solicitante_turno_selected"
+                                            v-model="solicitante_turno"
+                                            :disabled="
+                                                aceptante_id ? false : true
+                                            "
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
                                         }}</small>
                                     </validation-provider>
+                                    {{ solicitante_turno }}
                                 </b-form-group>
                             </b-col>
                             <b-col md="3">
@@ -205,15 +221,21 @@
                                         name="fecha solicitante"
                                     >
                                         <label>Fecha solicitante</label>
-                                        <b-form-input
+                                        <!-- <b-form-input
                                             id="example-input"
                                             v-model="fecha_solicitante"
                                             type="date"
+                                        /> -->
+                                        <v-select
+                                            label="name"
+                                            :options="solicitante_actividades"
+                                            v-model="solicitante_fecha"
                                         />
                                         <small class="text-danger">{{
                                             errors[0]
                                         }}</small>
                                     </validation-provider>
+                                    {{ solicitante_fecha }}
                                 </b-form-group>
                             </b-col>
                             <b-col md="3">
@@ -226,7 +248,7 @@
                                         <label>Hora de ingreso</label>
                                         <b-form-input
                                             id="example-input"
-                                            v-model="hora_ingreso_solicitante"
+                                            v-model="solicitante_hora_inicio"
                                             type="time"
                                         />
                                         <small class="text-danger">{{
@@ -245,7 +267,7 @@
                                         <label>Hora de salida</label>
                                         <b-form-input
                                             id="example-input"
-                                            v-model="hora_salida_solicitante"
+                                            v-model="solicitante_hora_fin"
                                             type="time"
                                         />
                                         <small class="text-danger">{{
@@ -353,19 +375,32 @@ export default {
         return {
             nombre_jefe: "",
             nombre_servicio: "",
+            //solicitante
             solicitante_id: "",
+            solicitante_turno: "",
+            solicitante_fecha: "",
+            solicitante_hora_inicio: "",
+            solicitante_hora_fin: "",
+
+            //aceptante
             aceptante_id: "",
-            hora_ingreso_aceptante: "",
-            hora_salida_aceptante: "",
-            aceptante_turno_selected: "",
-            fecha_aceptante: "",
-            hora_ingreso_solicitante: "",
-            hora_salida_solicitante: "",
-            solicitante_turno_selected: "",
-            fecha_solicitante: "",
+            aceptante_turno: "",
+            aceptante_fecha: "",
+            aceptante_hora_inicio: "",
+            aceptante_hora_fin: "",
+            // hora_ingreso_aceptante: "",
+            // hora_salida_aceptante: "",
+            // aceptante_turno_selected: "",
+            // fecha_aceptante: "",
+            // hora_ingreso_solicitante: "",
+            // hora_salida_solicitante: "",
+            // solicitante_turno_selected: "",
+            // fecha_solicitante: "",
             motivo: "",
             parameters_turno: [],
             personas: [],
+            solicitante_actividades: [],
+            aceptante_actividades: [],
             //
         };
     },
@@ -382,9 +417,48 @@ export default {
             });
     },
     mounted() {
-        this.getParameter("turnos");
+        // this.getParameter("turnos");
+        this.getActividades();
     },
     watch: {
+        aceptante_fecha: function (val, oldval) {
+            this.aceptante_hora_inicio = val.hora_inicio;
+            this.aceptante_hora_fin = val.hora_fin;
+        },
+        solicitante_fecha: function (val, oldval) {
+            this.solicitante_hora_inicio = val.hora_inicio;
+            this.solicitante_hora_fin = val.hora_fin;
+        },
+        aceptante_turno: function (val, oldval) {
+            console.log(this.aceptante_id, val.id);
+            this.$http
+                .post("/api/auth/cambios_turno/getFechas/", {
+                    id: this.solicitante_id.id,
+                    actividad: val.id,
+                })
+                .then((response) => {
+                    this.aceptante_actividades = response.data;
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        solicitante_turno: function (val, oldval) {
+            console.log(this.solicitante_id.id, val.id);
+            this.$http
+                .post("/api/auth/cambios_turno/getFechas/", {
+                    id: this.aceptante_id.id,
+                    actividad: val.id,
+                })
+                .then((response) => {
+                    this.solicitante_actividades = response.data;
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         solicitante_id: function (val, oldval) {
             if (val.id != "") {
                 this.$http
@@ -401,6 +475,17 @@ export default {
                                 buttonsStyling: false,
                             });
                             this.solicitante_id = "";
+                        } else {
+                            console.log("test");
+                            // this.$http
+                            //     .get("/api/auth/cambios_turno/getRol/" + val.id)
+                            //     .then((response) => {
+                            //         this.test = response.data;
+                            //         console.log(response);
+                            //     })
+                            //     .catch((error) => {
+                            //         console.log(error);
+                            //     });
                         }
                     })
                     .catch((error) => {
@@ -444,6 +529,17 @@ export default {
                     console.log(error);
                 });
         },
+        getActividades() {
+            this.$http
+                .get("/api/auth/cambios_turno/getActividades")
+                .then((response) => {
+                    console.log(response);
+                    this.parameters_turno = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         back() {
             this.$router.back();
         },
@@ -456,15 +552,17 @@ export default {
                             nombre_servicio: this.nombre_servicio,
                             solicitante_id: this.solicitante_id.id,
                             aceptante_id: this.aceptante_id.id,
-                            turno_origen: this.solicitante_turno_selected.value,
-                            turno_cambio: this.aceptante_turno_selected.value,
-                            origen_fecha: this.fecha_aceptante,
-                            origen_ingreso: this.hora_ingreso_aceptante,
-                            origen_salida: this.hora_salida_aceptante,
-                            cambio_fecha: this.fecha_solicitante,
-                            cambio_ingreso: this.hora_ingreso_solicitante,
-                            cambio_salida: this.hora_salida_solicitante,
+                            turno_origen: this.solicitante_turno.id,
+                            turno_cambio: this.aceptante_turno.id,
+                            origen_fecha: this.solicitante_fecha.fecha_turno,
+                            origen_ingreso: this.solicitante_hora_inicio,
+                            origen_salida: this.solicitante_hora_fin,
+                            cambio_fecha: this.aceptante_fecha.fecha_turno,
+                            cambio_ingreso: this.aceptante_hora_inicio,
+                            cambio_salida: this.aceptante_hora_fin,
                             motivo: this.motivo,
+                            rol_aceptante: this.aceptante_fecha.id,
+                            rol_solicitante: this.solicitante_fecha.id,
                         })
                         .then(() => {
                             this.$toast({

@@ -6,7 +6,7 @@ import { canNavigate } from '@/libs/acl/routeProtection'
 import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 import admin from './routes/admin'
 import dashboard from './routes/dashboard'
-// import uiElements from './routes/ui-elements/index'
+import cliente from './routes/cliente'
 import pages from './routes/pages'
 // import chartsMaps from './routes/charts-maps'
 // import formsTable from './routes/forms-tables'
@@ -25,6 +25,7 @@ const router = new VueRouter({
     ...admin,
     ...dashboard,
     ...pages,
+    ...cliente,
     // ...chartsMaps,
     // ...formsTable,
     // ...uiElements,

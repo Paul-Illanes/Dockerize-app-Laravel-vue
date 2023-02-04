@@ -110,7 +110,7 @@ class PapeletaController extends Controller
             'created_by' => $id,
             // 'vinculo_laboral' => $vinculo_laboral
         ] + $request->all());
-        $papeleta->actividad_vinculo($vinculo_laboral);
+        // $papeleta->actividad_vinculo($vinculo_laboral);
 
 
         if (is_null($papeleta->dni))

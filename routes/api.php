@@ -28,6 +28,8 @@ use App\Http\Controllers\API\admin\VacacionesProgramacionController;
 use App\Http\Controllers\API\admin\PersonalAreasVacacionesController;
 use App\Http\Controllers\API\admin\VinculoLaboralController;
 use App\Http\Controllers\API\admin\PersonalRolDetalleController;
+//clientes
+use App\Http\Controllers\API\employee\ClientePapeletaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -133,6 +135,9 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('obs/{id}', [CambioTurnoController::class, 'observar']);
             Route::post('updateStatus/{id}', [CambioTurnoController::class, 'update_estado']);
             Route::post('delete/{id}', [CambioTurnoController::class, 'delete']);
+            Route::get('getRol/{id}', [CambioTurnoController::class, 'getRol']);
+            Route::get('getActividades', [CambioTurnoController::class, 'getActividades']);
+            Route::post('getFechas', [CambioTurnoController::class, 'getFechas']);
         });
         //personal bajas
         Route::group(['prefix' => 'personal_bajas'], function () {
@@ -266,6 +271,15 @@ Route::group(['prefix' => 'auth'], function () {
             Route::post('/getActividades', [PersonalRolDetalleController::class, 'getActividades']);
             Route::post('/getRoles', [PersonalRolDetalleController::class, 'getRoles']);
             Route::post('/delete', [PersonalRolDetalleController::class, 'delete']);
+        });
+    });
+});
+//para clientes
+Route::group(['prefix' => 'clients'], function () {
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        //todas las rutas clientes
+        Route::group(['prefix' => 'papeletas'], function () {
+            Route::get('/', [ClientePapeletaController::class, 'index']);
         });
     });
 });

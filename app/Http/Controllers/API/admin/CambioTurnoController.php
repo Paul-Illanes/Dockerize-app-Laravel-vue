@@ -5,14 +5,16 @@ namespace App\Http\Controllers\API\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CambioTurno;
+use App\Models\PersonalGrupo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Models\PersonalRolDetalle;
+use App\Models\EssiSubactividades;
 
 class CambioTurnoController extends Controller
 {
     public function getList(Request $request)
     {
-
         $user_id = $request->user()->id;
         $data = CambioTurno::select('solicitante.dependencia', 'solicitante.nombres as solicitante_nombre', 'aceptante.nombres as aceptante_nombre', 'cambio_turnos.anio', 'cambio_turnos.cambio_fecha', 'cambio_turnos.cambio_ingreso', 'cambio_turnos.cambio_salida', 'cambio_turnos.cod_planilla', 'cambio_turnos.created_at', 'cambio_turnos.created_by', 'cambio_turnos.dni', 'cambio_turnos.fecha', 'cambio_turnos.id', 'cambio_turnos.motivo', 'cambio_turnos.nombre_jefe', 'cambio_turnos.nombre_servicio', 'cambio_turnos.nro_papeleta', 'cambio_turnos.numero_correlativo', 'cambio_turnos.observacion_essi_id', 'cambio_turnos.origen_fecha', 'cambio_turnos.origen_ingreso', 'cambio_turnos.origen_salida', 'cambio_turnos.registro_essi', 'cambio_turnos.solicitante_id', 'cambio_turnos.status', 'cambio_turnos.turno_cambio', 'cambio_turnos.turno_origen', 'cambio_turnos.updated_at', 'cambio_turnos.updated_by')
             ->aceptante('cambio_turnos.aceptante_id')
@@ -54,16 +56,30 @@ class CambioTurnoController extends Controller
             'fecha' => $fecha,
             'nro_papeleta' => $nroPapeleta,
             'created_by' => $request->user()->id,
-            'vinculo_laboral' => $vinculo_laboral
+            // 'vinculo_laboral' => $vinculo_laboral
 
         ] + $request->all());
 
         if (is_null($cambioTurno->solicitante_id))
             $cambioTurno->solicitante_id = $request->user()->username;
 
-        $cambioTurno->save();
-        $user = $request->user();
-        notificarAdd($user, 'Cambio de turno', $cambioTurno->id);
+        if ($cambioTurno->save()) {
+            $id_rol_detalle_aceptante = $request->rol_aceptante;
+            $id_rol_detalle_solicitante = $request->rol_solicitante;
+            //cambiar horarios 
+            $aceptante = PersonalRolDetalle::find($id_rol_detalle_aceptante);
+            $aceptante->persona_dni = $request->aceptante_id;
+            $aceptante->cambio_turno = 1;
+            $aceptante->save();
+            //solicitante
+            $solicitante = PersonalRolDetalle::find($id_rol_detalle_solicitante);
+            $solicitante->persona_dni = $request->solicitante_id;
+            $solicitante->cambio_turno = 1;
+            $solicitante->save();
+        }
+
+        // $user = $request->user();
+        // notificarAdd($user, 'Cambio de turno', $cambioTurno->id);
         return response()->json(['msg' => 'registrado correctamente']);
     }
     public function getDetail(Request $request, $id)
@@ -115,5 +131,45 @@ class CambioTurnoController extends Controller
     {
         $turno = CambioTurno::FindOrFail($id);
         $turno->delete();
+    }
+    public function getRol(Request $request, $id)
+    {
+        $area = PersonalGrupo::select('personal_areas.id', 'personal_grupos.dni')
+            ->join('personal_areas', 'personal_areas.id', 'personal_grupos.personal_area_id')
+            ->where('personal_grupos.dni', $id)
+            ->where('personal_grupos.area_servicio', 1)
+            ->first();
+
+        $rol_detalle = PersonalRolDetalle::select('essi_subactividades.id AS id', DB::raw('CONCAT(essi_subactividades.actividad," - ", personal_rol_detalles.fecha_turno) AS name'), 'essi_subactividades.actividad', 'personal_rol_detalles.fecha_turno', 'personal_rol_detalles.hora_inicio', 'personal_rol_detalles.hora_fin', 'personal_rol_detalles.cantidad_horas')
+            ->join('essi_subactividades', 'essi_subactividades.id', 'personal_rol_detalles.actividad_id')
+            ->where('personal_rol_detalles.area_id', $area->id)
+            ->where('personal_rol_detalles.persona_dni', $area->dni)
+            ->get();
+
+        // $rol = PersonalRolDetalle::join('essi_subactividades', 'essi_subactividades.id', 'personal_rol_detalles.actividad_id')->where('fecha_turno', $fechaxactual)->where('persona_dni', $dni)->first();
+        return response()->json($rol_detalle);
+    }
+    public function getActividades(Request $request)
+    {
+        $acti = EssiSubactividades::select('actividad AS name', 'id')->get();
+        return response()->json($acti);
+    }
+    public function getFechas(Request $request)
+    {
+        $dni = $request->id;
+        $actividad = $request->actividad;
+        // var_dump($request->all());
+        $area = PersonalGrupo::select('personal_areas.id', 'personal_grupos.dni')
+            ->join('personal_areas', 'personal_areas.id', 'personal_grupos.personal_area_id')
+            ->where('personal_grupos.dni', $dni)
+            ->where('personal_grupos.area_servicio', 1)
+            ->first();
+        $rol_detalle = PersonalRolDetalle::select('personal_rol_detalles.id AS id', 'essi_subactividades.id AS actividad_id', 'personal_rol_detalles.fecha_turno AS name', 'essi_subactividades.actividad', 'personal_rol_detalles.fecha_turno', 'personal_rol_detalles.hora_inicio', 'personal_rol_detalles.hora_fin', 'personal_rol_detalles.cantidad_horas', 'personal_rol_detalles.persona_dni')
+            ->join('essi_subactividades', 'essi_subactividades.id', 'personal_rol_detalles.actividad_id')
+            ->where('personal_rol_detalles.area_id', $area->id)
+            ->where('personal_rol_detalles.persona_dni', $dni)
+            ->where('personal_rol_detalles.actividad_id', $actividad)
+            ->get();
+        return response()->json($rol_detalle);
     }
 }

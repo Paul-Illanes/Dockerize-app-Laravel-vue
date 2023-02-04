@@ -117,16 +117,22 @@ class PersonalRolDetalleController extends Controller
             foreach ($dias as $item) {
                 $xdia = substr($item['num'], 1);
                 $fechaxactual = date('Y-m-d', strtotime($selectedYear . '-' . $selectedMonth . '-' . $xdia));
-                $rol = PersonalRolDetalle::join('essi_subactividades', 'essi_subactividades.id', 'personal_rol_detalles.actividad_id')->where('fecha_turno', $fechaxactual)->where('persona_dni', $dni)->first();
+                $rol = PersonalRolDetalle::join('essi_subactividades', 'essi_subactividades.id', 'personal_rol_detalles.actividad_id', 'personal_rol_detalles.cambio_turno')->where('fecha_turno', $fechaxactual)->where('persona_dni', $dni)->first();
                 if ($rol != null) {
                     $day = $item['num'];
                     $abr = 'A' . substr($item['num'], 1);
                     $data = [
-                        $day => $rol['abreviacion'],
-                        $abr => $rol['actividad_id']
+                        'name' => $rol['abreviacion'],
+                        'id' => $rol['actividad_id'],
+                        'cambio_turno' => $rol['cambio_turno'],
                     ];
+                    // $data = [
+                    //     $day => $rol['abreviacion'],
+                    //     $abr => $rol['actividad_id']
+                    // ];
+                    // $area[$i][$day] = $data;
                     $area[$i][$day] = $rol['actividad_id'];
-                    $area[$i][$abr] = $rol['abreviacion'];
+                    $area[$i][$abr] = $data;
                     $h = date('H', strtotime($rol['cantidad_horas']));
                     $horas = $horas + $h;
                     array_push($array, $data);
@@ -168,7 +174,7 @@ class PersonalRolDetalleController extends Controller
             ->join('essi_subactividades', 'essi_subactividades.id', 'actividad_area.actividad_id')
             ->where('area_id', $id)
             ->where('essi_subactividades.active', 1)
-            ->pluck('essi_subactividades.abreviacion', 'essi_subactividades.id',);
+            ->pluck('essi_subactividades.abreviacion', 'essi_subactividades.id');
         return response()->json($actividad);
     }
     public function getRoles(Request $request)
@@ -186,6 +192,11 @@ class PersonalRolDetalleController extends Controller
         $dia = substr($request->dia, 1);
         $fecha = date('Y-m-d', strtotime($request->anio . '-' . $request->mes . '-' . $dia));
         $actividad_id = $request->actividad_id;
+        //eliminar si ya existe un registro
+        $ifexist = PersonalRolDetalle::where('fecha_turno', $fecha)->where('persona_dni', $request->persona_dni);
+        if ($ifexist)
+            $ifexist->delete();
+        //procedimiento registrar
         $horario = Subactividad_horario::select('subactividad_horario.actividad_id', 'horarios.metadata')
             ->join('cms_parameters as horarios', 'horarios.id', 'subactividad_horario.horario_id')
             ->where('subactividad_horario.actividad_id', '=', $actividad_id)
@@ -211,7 +222,6 @@ class PersonalRolDetalleController extends Controller
         $dia = substr($request->dia, 1);
         $fecha = date('Y-m-d', strtotime($request->anio . '-' . $request->mes . '-' . $dia));
         $rol = PersonalRolDetalle::where('fecha_turno', $fecha)->where('persona_dni', $request->persona_dni);
-        // $rol->delete();
         if ($rol)
             $rol->delete();
 

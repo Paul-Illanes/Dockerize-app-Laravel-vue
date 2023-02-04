@@ -73,11 +73,18 @@
                     :label="item.dia"
                     type="map"
                     width="40px"
+                    key-field
                     :init-style="onColor(item)"
                     :change="onBeforeChange"
                     :options="acti"
                     :readonly="item.feriado == '1' ? true : false"
                 />
+                <!-- <vue-excel-column
+                    field="obj"
+                    label="array"
+                    type="string"
+                    width="150px"
+                /> -->
                 <!-- item.dia.substr(-1) == 'D' ? feriadoStyle : normalStyle -->
                 <!-- <vue-excel-column
                     field="phone"
@@ -206,57 +213,31 @@ export default {
     methods: {
         myMethod(cell, col) {
             let nom = "";
+            let obj = "";
             if (col.name || (col.label != "Personal" && col.label != "Horas"))
                 nom = col.name;
             let dia = nom.replace("D", "A");
-            if (cell[dia] === "N")
-                return { color: "green", "background-color": "beige" };
-            if (cell[dia] === "D") return { "font-style": "italic" };
+
+            if (cell[dia]) {
+                obj = JSON.parse(JSON.stringify(cell[dia]));
+            }
+            if (obj.name == "N")
+                return obj.cambio_turno == 1
+                    ? {
+                          color: "red",
+                          "background-color": "rgb(43, 189, 243)",
+                          "font-weight": "700",
+                      }
+                    : { color: "red", "font-weight": "700" };
+            if (obj.name == "D")
+                return obj.cambio_turno == 1
+                    ? {
+                          color: "black",
+                          "background-color": "rgb(43, 189, 243)",
+                          "font-weight": "700",
+                      }
+                    : { color: "black", "font-weight": "700" };
             return { color: "black" };
-            // rec.obj.forEach(function (item) {
-            //     var data = JSON.parse(JSON.stringify(item));
-            //     // console.log(data[nom]);
-            //     if (data[nom] === "N") return { color: "green" };
-            //     if (data[nom] === "D") return { color: "blue" };
-            //     return { color: "black" };
-            // });
-            // if (col.name == "nombres") return { color: "red" };
-            // if (col.name == "horas") return { color: "blue" };
-
-            // // console.log(rec, col);
-            // // var data = rec;
-            // // col.shift();
-
-            // // console.log(nom);
-            // // data.shift();
-            // // console.log(data[nom]);
-            // // console.log(typeof rec.obj);
-            // var data =
-            //     typeof rec.obj !== "undefined"
-            //         ? JSON.parse(JSON.stringify(rec.obj))
-            //         : null;
-            // // if (data) {
-            // //     console.log(data);
-            // // }
-
-            // data.forEach(function (item) {
-            //     // console.log(item[nom]);
-            //     // console.log("existe");
-            //     if (item[nom] === "N") {
-            //         console.log("N");
-            //         return { color: "green" };
-            //     }
-            //     if (item[nom] === "D") {
-            //         console.log("D");
-            //         return { color: "blue" };
-            //     }
-            //     // if (item[nom] === "N") return { "background-color": "green" };
-            //     // if (item[nom] === "D") return { "background-color": "red" };
-            //     // else return { "background-color": "orange" };
-            // });
-            // return { color: "black" };
-            // // if (col.name === "phone" && rec.gender === "F")
-            // // return { color: "green" };
         },
         getAnio() {
             const fecha = new Date();
@@ -447,7 +428,7 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
+    margin-top: 5px;
 }
 @import "~@core/scss/vue/libs/vue-select.scss";
 @import "~@core/scss/vue/libs/vue-sweetalert.scss";

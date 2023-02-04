@@ -174,4 +174,18 @@ export default [
       },
     ],
   },
+  //para clientes
+  {
+    title: 'Registro',
+    icon: 'ListIcon',
+    children: [
+      {
+        title: 'Papeletas',
+        route: 'cliente-papeleta-index',
+        resource: 'ACL',
+        action: 'cliente_papeleta-index',
+        icon: 'PlusIcon',
+      },
+    ],
+  },
 ]
