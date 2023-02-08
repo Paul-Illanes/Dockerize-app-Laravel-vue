@@ -26,11 +26,11 @@
                         />
                     </b-form-group>
                     <b-button
-                        v-if="$can('users-create', 'ACL')"
+                        v-if="$can('papeletas-create', 'ACL')"
                         variant="primary"
-                        :to="{ name: 'admin-users-add' }"
+                        :to="{ name: 'cliente-papeletas-add' }"
                     >
-                        Agregar Papeleta
+                        Agregar
                     </b-button>
                 </b-col>
 
@@ -99,38 +99,6 @@
                         :variant="data.item.active ? 'success' : 'warning'"
                         >{{ verified(data.item.active) }}</b-badge
                     >
-                </div>
-            </template>
-            <template #cell(action)="data">
-                <div class="text-nowrap">
-                    <feather-icon
-                        :id="`user-row-${data.item.id}-send-icon`"
-                        @click="
-                            $router.push({
-                                name: 'admin-users-edit',
-                                params: { userId: data.item.id },
-                            })
-                        "
-                        icon="EditIcon"
-                        class="cursor-pointer text-primary"
-                        size="16"
-                    />
-                    <b-tooltip
-                        title="Editar Usuario"
-                        class="cursor-pointer"
-                        :target="`user-row-${data.item.id}-send-icon`"
-                    />
-
-                    <feather-icon
-                        :id="`invoice-row-${data.item.id}-preview-icon`"
-                        icon="TrashIcon"
-                        size="16"
-                        class="mx-1 cursor-pointer text-danger"
-                    />
-                    <b-tooltip
-                        title="Eliminar Usuario"
-                        :target="`invoice-row-${data.item.id}-preview-icon`"
-                    />
                 </div>
             </template>
         </b-table>
@@ -258,7 +226,6 @@ export default {
                     sortable: false,
                 },
                 { key: "status", label: "Estado", sortable: true },
-                { key: "action", label: "Action", sortable: false },
             ],
             /* eslint-disable global-require */
             // codeKitchenSink,

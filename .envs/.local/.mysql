@@ -1,0 +1,7 @@
+# -----------------------------
+MYSQL_HOST=mysql
+MYSQL_DATABASE=vuexy_bootstrap_vue_laravel_template
+MYSQL_ROOT_PASSWORD=root
+MYSQL_USER=laravel
+MYSQL_PASSWORD=laravel
+

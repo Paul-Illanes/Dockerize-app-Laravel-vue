@@ -1,0 +1,61 @@
+version: '3.7'
+
+volumes:
+  mysql_volume_local: {}
+
+networks:
+  app:
+    driver: bridge
+
+services:
+  laravel:
+    build:
+      context: .
+      dockerfile: ./docker/8.1/local/Dockerfile
+    image: laravel_app_local
+    container_name: laravel_app_local
+    working_dir: /app
+    env_file:
+      - ./.envs/.local/.laravel
+      - ./.envs/.local/.mysql
+    ports:
+      - 8000:8000
+    depends_on:
+      - mysql
+      - composer
+    networks:
+      - app
+    volumes:
+      - ./:/app
+    command: /start
+
+  mysql:
+    image: mysql:5.7
+    container_name: database_local
+    volumes:
+      - mysql_volume_local:/var/lib/mysql
+    env_file:
+      - ./.envs/.local/.mysql
+    networks:
+      - app
+
+  node:
+    image: node:14-alpine
+    working_dir: /app
+    container_name: node_build_assets_local
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run watch"
+
+  composer:
+    image: composer:2.1
+    container_name: composer_build_local
+    working_dir: /app
+    environment:
+      - SSH_AUTH_SOCK=/ssh-auth.sock
+    volumes:
+      - ./:/app
+      # - $SSH_AUTH_SOCK:/ssh-auth.sock
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    command: composer install --ignore-platform-reqs --no-scripts

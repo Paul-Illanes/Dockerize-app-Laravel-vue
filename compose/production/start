@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+/usr/local/bin/composer install -n
+
+/usr/local/bin/composer dump-autoload -n
+
+# php artisan migrate --force
+
+php artisan key:generate --force
+
+php artisan optimize
+
+/usr/local/bin/apache2-foreground
